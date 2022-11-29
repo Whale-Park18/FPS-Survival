@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5802635109892472571}
   - component: {fileID: 4109355797583364678}
   - component: {fileID: 4813092810291082106}
-  - component: {fileID: 9190936858657447397}
+  - component: {fileID: 6190138241445740532}
   m_Layer: 8
   m_Name: hand_grenade
   m_TagString: Untagged
@@ -115,7 +115,7 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
---- !u!114 &9190936858657447397
+--- !u!114 &6190138241445740532
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -124,7 +124,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5802635109894660155}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a6701ba32dbea54db9276d08f7c1493, type: 3}
+  m_Script: {fileID: 11500000, guid: b1c9153c0f130114397015ebd3fbfd11, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 1014025752351287827, guid: c81bfb128ee19354aae4b83e1fd4d1f3, type: 3}
