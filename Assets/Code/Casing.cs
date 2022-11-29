@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
+using WhalePark18.MemoryPool;
+
 public class Casing : MonoBehaviour
 {
     [SerializeField]

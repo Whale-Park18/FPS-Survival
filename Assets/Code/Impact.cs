@@ -1,9 +1,11 @@
 using UnityEngine;
 
+using WhalePark18.MemoryPool;
+
 public class Impact : MonoBehaviour
 {
-    private ParticleSystem  particle;
-    private MemoryPool      memoryPool;
+    private ParticleSystem particle;
+    private MemoryPool memoryPool;
 
     private void Awake()
     {
@@ -18,7 +20,7 @@ public class Impact : MonoBehaviour
     private void Update()
     {
         /// 파티클이 재생중이 아니면 비활성화
-        if(particle.isPlaying == false)
+        if (particle.isPlaying == false)
         {
             memoryPool.DeactivePoolItem(gameObject);
         }

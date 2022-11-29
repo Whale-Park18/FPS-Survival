@@ -1,6 +1,8 @@
 using System.Collections;
 using UnityEngine;
 
+using WhalePark18.Character.Player;
+
 public class EnemyProjectile : MonoBehaviour
 {
     private MovementTransform   movment;
