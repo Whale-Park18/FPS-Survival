@@ -35,7 +35,7 @@ namespace WhalePark18.Weapon
                 }
             }
 
-            SwitchingWeapon(WeaponType.Main);
+            SwitchingWeapon(WeaponType.Sub);
         }
 
         private void Update()
@@ -67,8 +67,8 @@ namespace WhalePark18.Weapon
         /// <param name="weaponType">변경할 무기 타입</param>
         private void SwitchingWeapon(WeaponType weaponType)
         {
-            /// 교체 가능한 무기가 없으면 종료
-            if (weapons[(int)weaponType] == null) return;
+            /// 교체 가능한 무기가 없거나 잠금 상태이면 종료
+            if (weapons[(int)weaponType] == null || weapons[(int)weaponType].WeaponLock) return;
 
             /// 현재 사용중인 무기가 있으면 이전 무기 정보에 저장
             if (currentWeapon != null)
