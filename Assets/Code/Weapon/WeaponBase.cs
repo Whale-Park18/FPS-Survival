@@ -29,6 +29,8 @@ namespace WhalePark18.Weapon
     {
         [Header("Weapon Base")]
         [SerializeField]
+        bool weaponLock = true;                         // 무기 해금 
+        [SerializeField]
         protected WeaponType weaponType;                // 무기 종류
         [SerializeField]
         protected WeaponSetting weaponSetting;          // 무기 설정
@@ -47,6 +49,15 @@ namespace WhalePark18.Weapon
         public AmmoEvent onAmmoEvent = new AmmoEvent();             // 탄수 관련 이벤트 관리
         [HideInInspector]
         public MagazineEvent onMagazineEvent = new MagazineEvent(); // 탄창 관련 이벤트 관리
+
+        /// <summary>
+        /// 외부에서 필요한 정보를 수정 및 열람하기 위해 정의한 Set Get 프로퍼티
+        /// </summary>
+        public bool WeaponLock
+        {
+            set => weaponLock = value;
+            get => weaponLock;
+        }
 
         /// <summary>
         /// 외부에서 필요한 정보를 열람하기 위해 정의한 Get 프로퍼티
