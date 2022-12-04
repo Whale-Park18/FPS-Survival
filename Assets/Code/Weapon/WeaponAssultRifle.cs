@@ -5,6 +5,7 @@ using UnityEngine.UI;
 using WhalePark18.MemoryPool;
 using WhalePark18.Objects;
 using WhalePark18.Character.Enemy;
+using WhalePark18.Character;
 
 namespace WhalePark18.Weapon
 {
@@ -39,6 +40,7 @@ namespace WhalePark18.Weapon
         private float defaultModeFOV = 60f;         // 기본모드에서의 카메라 FOV
         private float aimModeFOV = 30f;             // Aim모드에서의 카메라 FOV(시야각)
 
+        private Status status;                      // 플레이어 스테이터스
         private CasingMemoryPool casingMemoryPool;  // 탄피 생성 후, 활성/비활성 관리
         private ImpactMemoryPool impactMemoryPool;  // 공격 효과 생성 후 활성/비활성 관리
         private Camera mainCamera;                  // 광선 발사
@@ -47,6 +49,7 @@ namespace WhalePark18.Weapon
         {
             base.Setup();
 
+            status = GetComponentInParent<Status>();
             casingMemoryPool = GetComponent<CasingMemoryPool>();
             impactMemoryPool = GetComponentInParent<ImpactMemoryPool>();
             mainCamera = Camera.main;
@@ -72,7 +75,7 @@ namespace WhalePark18.Weapon
             /// 무기가 활성화될 떄 해당 무기의 탄창 정보를 갱신
             onMagazineEvent.Invoke(weaponSetting.currentMagazine);
 
-            /// 무기가 활성화될 때 해당 무기의 탄 수 정보를 갱신
+            /// 무기가 활성화될 때 해당 무기의 총알 수 정보를 갱신
             onAmmoEvent.Invoke(weaponSetting.currentAmmo, weaponSetting.maxAmmo);
 
             ResetVariables();
@@ -161,7 +164,8 @@ namespace WhalePark18.Weapon
         private void OnAttack()
         {
             /// 공격 주기 확인
-            if (Time.time - lastAttackTime > weaponSetting.attackRate)
+            float attackRate = weaponSetting.attackRate / status.CurrentAttackSpeed;
+            if (Time.time - lastAttackTime > attackRate)
             {
                 /// 달리기 중이면 공격할 수 없다.
                 if (animator.MoveSpeed > 0.5f)
@@ -173,8 +177,10 @@ namespace WhalePark18.Weapon
                 lastAttackTime = Time.time;
 
                 /// 탄약 수가 없으면 공격 불가능
+                /// 게임 설정 변경으로 자동 재장전
                 if (weaponSetting.currentAmmo <= 0)
                 {
+                    StartReload();
                     return;
                 }
                 /// 공격시 currentAmmo 1 감소, 탄 수 UI 업데이트

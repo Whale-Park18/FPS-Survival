@@ -4,6 +4,7 @@ using UnityEngine;
 using WhalePark18.MemoryPool;
 using WhalePark18.Objects;
 using WhalePark18.Character.Enemy;
+using WhalePark18.Character;
 
 namespace WhalePark18.Weapon
 {
@@ -14,7 +15,7 @@ namespace WhalePark18.Weapon
     {
         [Header("Fire Effect")]
         [SerializeField]
-        private GameObject muzzleFlashEffect;       // 총구 이펙트
+        private GameObject muzzleFlashEffect;       // 총구 이펙트 (On/Off)
 
         [Header("Spawn Points")]
         [SerializeField]
@@ -24,10 +25,26 @@ namespace WhalePark18.Weapon
         [SerializeField]
         private AudioClip audioclipFire;            // 공격 사운드
         [SerializeField]
-        private AudioClip audioClipReload;          // 장전 사운드
+        private AudioClip audioClipReload;          // 재장전 사운드
 
+        private Status status;                      // 플레이어 스테이터스
         private ImpactMemoryPool impactMemoryPool;  // 공격 효과 생성 후 활성/비활성 관리
         private Camera mainCamera;                  // 광선 발사
+
+        private void Awake()
+        {
+            base.Setup();
+
+            status = GetComponentInParent<Status>();
+            impactMemoryPool = GetComponent<ImpactMemoryPool>();
+            mainCamera = Camera.main;
+
+            /// 게임 설정으로 인해 탄창 무제한으로 설정
+            //weaponSetting.currentMagazine = weaponSetting.maxMagazine;
+
+            /// 총알 수 최대로 설정
+            weaponSetting.currentAmmo = weaponSetting.maxAmmo;
+        }
 
         private void OnEnable()
         {
@@ -43,29 +60,30 @@ namespace WhalePark18.Weapon
             ResetVariables();
         }
 
-        private void Awake()
-        {
-            base.Setup();
-
-            impactMemoryPool = GetComponent<ImpactMemoryPool>();
-            mainCamera = Camera.main;
-
-            /// 처음 탄창, 탄 수는 최대로 설정
-            weaponSetting.currentMagazine = weaponSetting.maxMagazine;
-            weaponSetting.currentAmmo = weaponSetting.maxAmmo;
-        }
-
         public override void StartWeaponAction(int type = 0)
         {
             if (type == 0 && isAttack == false && isReload == false)
             {
-                OnAttack();
+                isAttack = true;
+
+                if(weaponSetting.isAutomaticAttack)
+                {
+                    StartCoroutine("OnAttackLoop");
+                }
+                else
+                {
+                    OnAttack();
+                }
             }
         }
 
         public override void StopWeaponAction(int type = 0)
         {
-            isAttack = false;
+            if(type == 0)
+            {
+                isAttack = false;
+                StopCoroutine("OnAttackLoop");
+            }
         }
 
         public override void StartReload()
@@ -79,20 +97,45 @@ namespace WhalePark18.Weapon
         }
 
         /// <summary>
+        /// 무기의 사격모드가 '자동'일 때 실행되는 공격 메소드
+        /// </summary>
+        /// <returns>코루틴</returns>
+        /// <remarks>
+        /// 무한 반복문에서 OnAttack() 메소드 실행
+        /// </remarks>
+        private IEnumerator OnAttackLoop()
+        {
+            while(true)
+            {
+                OnAttack();
+
+                yield return null;
+            }
+        }
+
+        /// <summary>
         /// 공격 메소드
         /// </summary>
         /// /// <remarks>
         /// 실질적으로 공격을 실행하는 메소드
         /// </remarks>
-        public void OnAttack()
+        private void OnAttack()
         {
-            if (Time.time - lastAttackTime > weaponSetting.attackRate)
+            /// 공격 주기 확인
+            float attackRate = weaponSetting.attackRate / status.CurrentAttackSpeed;
+            if (Time.time - lastAttackTime > attackRate)
             {
                 if (animator.MoveSpeed > 0.5f) return;
 
                 lastAttackTime = Time.time;
 
-                if (weaponSetting.currentAmmo <= 0) return;
+                /// 총알이 없다면 공격 불가능
+                /// 게임 설정으로 변경으로 자동 재장전
+                if (weaponSetting.currentAmmo <= 0)
+                {
+                    StartReload();
+                    return;
+                }
 
                 weaponSetting.currentAmmo--;
                 onAmmoEvent.Invoke(weaponSetting.currentAmmo, weaponSetting.maxAmmo);
@@ -148,10 +191,11 @@ namespace WhalePark18.Weapon
                     isReload = false;
 
                     /// 현채 탄창 수를 1 감소시키고, 바뀐 탄창 정보를 Text UI에 업데이트
-                    weaponSetting.currentMagazine--;
-                    onMagazineEvent.Invoke(weaponSetting.currentMagazine);
+                    /// 보조 무기의 탄창의 수를 무제한으로 변경하므로 코드 주석처리
+                    //weaponSetting.currentMagazine--;
+                    //onMagazineEvent.Invoke(weaponSetting.currentMagazine);
 
-                    /// 현재 탄수를 최대로 설정하고, 바뀐 탄 수 정보를 Text UI에 업데이트
+                    /// 현재 총알을 최대로 설정하고, 바뀐 탄 수 정보를 Text UI에 업데이트
                     weaponSetting.currentAmmo = weaponSetting.maxAmmo;
                     onAmmoEvent.Invoke(weaponSetting.currentAmmo, weaponSetting.maxAmmo);
 
