@@ -3,7 +3,7 @@ using UnityEngine;
 
 using WhalePark18.Weapon;
 
-namespace WhalePark18.Item
+namespace WhalePark18.Item.Kit
 {
     public class ItemMagazine : ItemBase
     {
@@ -11,18 +11,6 @@ namespace WhalePark18.Item
         private GameObject magazineEffectPreab;
         [SerializeField]
         private int increaseMagazine = 2;
-        [SerializeField]
-        private float rotateSpeed = 50f;
-
-        private IEnumerator Start()
-        {
-            while (true)
-            {
-                transform.Rotate(Vector3.up, rotateSpeed * Time.deltaTime);
-
-                yield return null;
-            }
-        }
 
         public override void Use(GameObject entity)
         {

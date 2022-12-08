@@ -1,17 +1,11 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using WhalePark18.Character;
 
-namespace WhalePark18.Item
-{ 
-    public class ItemBoostPack : ItemBase
+namespace WhalePark18.Item.Kit
+{
+    public abstract class ItemBase : MonoBehaviour
     {
-        [SerializeField]
-        private float time = 30f;
-        [SerializeField]
-        private float attackSpeedIncrease = 0.15f;
-
+        [Header("Item Animation")]
         [SerializeField]
         private float moveDistance = 0.2f;
         [SerializeField]
@@ -37,23 +31,10 @@ namespace WhalePark18.Item
             }
         }
 
-        public override void Use(GameObject entity)
-        {
-            print(name + "use");
-            StartCoroutine("OnEffect", entity.GetComponent<Status>());
-
-            //Destroy(gameObject);
-        }
-
-        private IEnumerator OnEffect(Status status)
-        {
-            status.IncreaseAttackSpeed(attackSpeedIncrease);
-            print(status.CurrentAttackSpeed);
-
-            yield return new WaitForSeconds(time);
-
-            status.DisincreaseAttackSpeed(attackSpeedIncrease);
-            print(status.CurrentAttackSpeed);
-        }
+        /// <summary>
+        /// 아이템 사용 인터페이스
+        /// </summary>
+        /// <param name="entity">아이템을 사용하는 주체</param>
+        public abstract void Use(GameObject entity);
     }
 }
