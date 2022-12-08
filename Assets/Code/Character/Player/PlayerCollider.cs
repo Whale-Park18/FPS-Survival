@@ -1,6 +1,6 @@
 using UnityEngine;
 
-using WhalePark18.Item;
+using WhalePark18.Item.Kit;
 
 namespace WhalePark18.Character.Player
 {
