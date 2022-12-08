@@ -10,7 +10,7 @@ namespace WhalePark18.Character.Player
         private float rotateCamYAixsSpeed = 5f; // 카메라 y축 회전 속도
 
         private float limitMinX = -80f;         // 카메라 x축 최소 회전 범위
-        private float limitMaxX = 50f;          // 카메라 x축 최대 회전 범위
+        private float limitMaxX = 80f;          // 카메라 x축 최대 회전 범위
         private float eulerAngleX;
         private float eulerAngleY;
 
