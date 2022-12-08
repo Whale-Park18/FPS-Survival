@@ -1,3 +1,4 @@
+using System.Reflection;
 using UnityEngine;
 
 namespace WhalePark18.Character
@@ -136,6 +137,14 @@ namespace WhalePark18.Character
 
         public void IncreaseAttackSpeed(float increaseAttackSpeed)
         {
+            Debug.LogFormat("<color=green>" + MethodBase.GetCurrentMethod().Name + "</color>\n" +
+                "공속증 * 아이템 효율 %: " + (increaseAttackSpeed * currentItemEfficiency) * 100 + '\n' +
+                "반올림 값: " + Mathf.Round((increaseAttackSpeed * currentItemEfficiency) * 100) + '\n' +
+                "실수형: " + Mathf.Round((increaseAttackSpeed * currentItemEfficiency) * 100) / 100);
+            // increaseAttackSpeed * 100
+            // Mathf.Round(increaseAttackSpeed * 100)
+            // Mathf.Round(increaseAttackSpeed * 100) / 100
+
             /// Mathf.Round(): 소숫점 첫째자리에서 반올림
             /// 하지만 아이템 효과와 아이템 효율 스탯에 의해 소숫점 셋째자리를 반올림 해야 함
             /// 따라서 [아이템 효과 * 아이템 효율 스탯] 값에 100을 곱해 소수섬 셋째자리를 
@@ -145,6 +154,11 @@ namespace WhalePark18.Character
 
         public void DisincreaseAttackSpeed(float disincreaseAttackSpeed)
         {
+            Debug.LogFormat("<color=green>" + MethodBase.GetCurrentMethod().Name + "</color>\n" +
+                "공속증 * 아이템 효율 %: " + (disincreaseAttackSpeed * currentItemEfficiency) * 100 + '\n' +
+                "반올림 값: " + Mathf.Round((disincreaseAttackSpeed * currentItemEfficiency) * 100) + '\n' +
+                "실수형: " + Mathf.Round((disincreaseAttackSpeed * currentItemEfficiency) * 100) / 100);
+
             currentAttackSpeed -= Mathf.Round((disincreaseAttackSpeed * currentItemEfficiency) * 100) / 100;
         }
     }
