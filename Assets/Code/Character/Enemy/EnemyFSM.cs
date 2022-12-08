@@ -104,7 +104,7 @@ namespace WhalePark18.Character.Enemy
             navMeshAgent.speed = status.WalkSpeed;
 
             /// 목표 위치로 설정
-            navMeshAgent.SetDestination(CalculateWAnderPosition());
+            navMeshAgent.SetDestination(CalculateWanderPosition());
 
             /// 목표 위치로 회전
             Vector3 to = new Vector3(navMeshAgent.destination.x, 0, navMeshAgent.destination.z);
@@ -132,9 +132,9 @@ namespace WhalePark18.Character.Enemy
             }
         }
 
-        private Vector3 CalculateWAnderPosition()
+        private Vector3 CalculateWanderPosition()
         {
-            float wanderRadius = 10f;     // 현재 위치를 원점으로 하는 원의 반지름
+            float wanderRadius = 10f;   // 현재 위치를 원점으로 하는 원의 반지름
             int wanderJitter = 0;       // 선택된 각도 (wanderJitterMin ~ wanderJitterMax)
             int wanderJitterMin = 0;    // 최소 각도
             int wanderJitterMax = 360;  // 최대 각도
