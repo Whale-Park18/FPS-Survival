@@ -1,0 +1,29 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using WhalePark18.Character.Enemy;
+using WhalePark18.Character.Player;
+using WhalePark18.Objects;
+
+namespace WhalePark18.Item.Active
+{
+    public class NuclearExplosion : MonoBehaviour
+    {
+        [SerializeField]
+        private AudioClip[] explosionAudioClips;        // ���� ���� Ŭ��
+
+        private AudioSource audioSource;
+
+        private void Awake()
+        {
+            audioSource = GetComponent<AudioSource>();
+        }
+
+        private void Start()
+        {
+            int index = Random.Range(0, explosionAudioClips.Length);
+            audioSource.clip = explosionAudioClips[index];
+            audioSource.Play();
+        }
+    }
+}
