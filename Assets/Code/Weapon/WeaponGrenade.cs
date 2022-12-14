@@ -88,6 +88,11 @@ namespace WhalePark18.Weapon
 
             weaponSetting.currentAmmo--;
             onAmmoEvent.Invoke(weaponSetting.currentAmmo, weaponSetting.maxAmmo);
+
+            if(weaponSetting.currentAmmo <= 0)
+            {
+                Lock();
+            }
         }
 
         public override void IncreaseMagazine(int ammo)
