@@ -20,6 +20,8 @@ namespace WhalePark18.Objects
         private float explosionRadius = 10f;    // 폭발 범위
         [SerializeField]
         private float explosionForce = 1000f;   // 폭발 힘
+        [SerializeField]
+        private int explosionDamage = 100;      // 폭발 피해량
 
         private bool isExplode = false;         // 폭발 상태
 
@@ -56,7 +58,7 @@ namespace WhalePark18.Objects
                 PlayerController player = hit.GetComponent<PlayerController>();
                 if (player != null)
                 {
-                    player.TakeDamage(50);
+                    player.TakeDamage(explosionDamage / 5);
                     continue;
                 }
 
@@ -64,7 +66,7 @@ namespace WhalePark18.Objects
                 EnemyFSM enemy = hit.GetComponent<EnemyFSM>();
                 if (enemy != null)
                 {
-                    enemy.TakeDamage(300);
+                    enemy.TakeDamage(explosionDamage);
                     continue;
                 }
 
@@ -72,7 +74,7 @@ namespace WhalePark18.Objects
                 InteractionObject interactionObject = hit.GetComponent<InteractionObject>();
                 if (interactionObject != null)
                 {
-                    interactionObject.TakeDamage(300);
+                    interactionObject.TakeDamage(explosionDamage);
                 }
 
                 /// 폭발 범위에 부딪힌 오브젝트가 중력을 가지고있는 오브젝트이면 힘을 받아 밀려나도록 처리
