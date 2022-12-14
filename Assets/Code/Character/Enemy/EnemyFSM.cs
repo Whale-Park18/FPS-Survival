@@ -1,9 +1,9 @@
 using System.Collections;
-using System.IO.Compression;
 using UnityEngine;
 using UnityEngine.AI;
 
 using WhalePark18.MemoryPool;
+using WhalePark18.Projectile;
 
 namespace WhalePark18.Character.Enemy
 {
