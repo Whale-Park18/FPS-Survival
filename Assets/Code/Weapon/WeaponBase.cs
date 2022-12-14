@@ -84,6 +84,19 @@ namespace WhalePark18.Weapon
         /// </summary>
         public abstract void StartReload();
 
+        public void Lock()
+        {
+            weaponLock = true;
+        }
+
+        public void UnLock()
+        {
+            weaponLock = false;
+            
+            weaponSetting.currentAmmo = weaponSetting.maxAmmo;
+            weaponSetting.currentMagazine = weaponSetting.maxMagazine;
+        }
+
         /// <summary>
         /// 무기 관련 사운드 플레이 메소드
         /// </summary>
