@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 namespace WhalePark18.Item.Kit
 {
@@ -21,17 +18,17 @@ namespace WhalePark18.Item.Kit
 
         public override void Use(GameObject entity)
         {
-            //Vector3 createPosition = new Vector3(entity.transform.position.x, 0, entity.transform.position.z);
-            //Quaternion createRotation = new Quaternion(0, 0, 0, 1);
-            //GameObject clone = Instantiate(ExplosionParticlePrefab, createPosition, createRotation);
-
             GameObject clone = Instantiate(Bomber);
             clone.transform.position = transform.position + CalculateSpawnPosition();
-            clone.GetComponent<Bomber>().Fly(entity.transform);
+            clone.GetComponent<Bomber>().Fly(transform);
 
             Destroy(gameObject);
         }
 
+        /// <summary>
+        /// Bomber 스폰 장소를 계산하는 메소드
+        /// </summary>
+        /// <returns>Bomber 스폰 위치</returns>
         private Vector3 CalculateSpawnPosition()
         {
             float jitter = Random.Range(0, 360);
@@ -41,6 +38,11 @@ namespace WhalePark18.Item.Kit
             return spawnPosition;
         }
 
+        /// <summary>
+        /// angle 각도의 랜덤 위치 계산
+        /// </summary>
+        /// <param name="angle">각도</param>
+        /// <returns>angle 각도의 랜덤 위치</returns>
         private Vector3 CalculatePositionByAngle(float angle)
         {
             Vector3 position = Vector3.zero;

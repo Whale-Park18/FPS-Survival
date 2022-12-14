@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using WhalePark18.Character;
 
@@ -20,18 +19,18 @@ namespace WhalePark18.Item.Kit
 
         public override void Use(GameObject entity)
         {
-            StartCoroutine("TimeScaleTimer");
+            StartCoroutine("TimeScaleTimer", entity.GetComponent<Status>());
             mesh.SetActive(false);
         }
 
         private IEnumerator TimeScaleTimer(Status status)
         {
-            StartTimeSclae();
+            StartTimeScale();
             yield return new WaitForSeconds(effectTime * status.CurrentItemEfficiency);
             StopTimeScale();
         }
 
-        private void StartTimeSclae()
+        private void StartTimeScale()
         {
             Time.timeScale = timeScale;
             Time.fixedDeltaTime = 0.02f * Time.timeScale;

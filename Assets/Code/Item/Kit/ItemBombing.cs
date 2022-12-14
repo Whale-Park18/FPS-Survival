@@ -1,7 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.WindowsRuntime;
-using TreeEditor;
 using UnityEngine;
 using WhalePark18.Character;
 

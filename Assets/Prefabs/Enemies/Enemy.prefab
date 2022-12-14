@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 8650162534705638921}
   - component: {fileID: 5218632669240123434}
   - component: {fileID: 8900937234743850974}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: EnemyBody
   m_TagString: ImpactEnemy
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 8308374302942586661}
   - component: {fileID: 3394408565297427479}
   - component: {fileID: 900665888947984703}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: EnemyGun
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -194,7 +194,7 @@ GameObject:
   - component: {fileID: 4108323961964214008}
   - component: {fileID: 9132275182278328632}
   - component: {fileID: 5204062455322219824}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Enemy
   m_TagString: ImpactEnemy
   m_Icon: {fileID: 0}
@@ -305,4 +305,10 @@ MonoBehaviour:
       m_Calls: []
   walkSpeed: 1.5
   runSpeed: 3
-  maxHP: 100
+  startHP: 100
+  startHPRecoveryForSec: 0
+  startShield: 0
+  startShieldRecoveryForSec: 0
+  startDamagePercentIncrease: 1
+  startPiercing: 0
+  startAttackSpeed: 1

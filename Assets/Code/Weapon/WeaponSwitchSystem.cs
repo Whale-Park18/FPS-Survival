@@ -21,6 +21,10 @@ namespace WhalePark18.Weapon
         private WeaponBase currentWeapon;       // 현재 사용중인 무기
         private WeaponBase previousWeapon;      // 직전에 사용했던 무기
 
+        /// <summary>
+        /// Property
+        /// </summary>
+        public WeaponBase[] Weapons => weapons;
         private void Awake()
         {
             /// 무기 정보 출력을 위해 현재 소지중인 모든 무기 이벤트 등록
@@ -43,6 +47,11 @@ namespace WhalePark18.Weapon
             UpdateSwitch();
         }
 
+        private void LateUpdate()
+        {
+            ForcedSwitchngWeapon();
+        }
+
         private void UpdateSwitch()
         {
             /// 모든 키가 눌리지 않았으면 종료
@@ -58,7 +67,14 @@ namespace WhalePark18.Weapon
             {
                 SwitchingWeapon((WeaponType)(inputIndex - 1));
             }
+        }
 
+        private void ForcedSwitchngWeapon()
+        {
+            if(currentWeapon.WeaponLock)
+            {
+                SwitchingWeapon(WeaponType.Sub);
+            }
         }
 
         /// <summary>
