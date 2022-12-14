@@ -180,6 +180,11 @@ namespace WhalePark18.Weapon
                 /// 게임 설정 변경으로 자동 재장전
                 if (weaponSetting.currentAmmo <= 0)
                 {
+                    if(weaponSetting.currentMagazine <= 0)
+                    {
+                        Lock();
+                    }
+
                     StartReload();
                     return;
                 }
