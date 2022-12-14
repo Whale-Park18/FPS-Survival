@@ -375,5 +375,8 @@ MonoBehaviour:
   moveDistance: 0.2
   pingpongSpeed: 0.5
   rotateSpeed: 50
-  ExplosionParticlePrefab: {fileID: 6966776128785370536, guid: bb02f6d1798f67c42ae044fd71d2e772, type: 3}
-  explosionDelyTime: 1
+  Bomber: {fileID: 1204320689982802495, guid: e2c82040be55c6a4c9e55f82733f8df5, type: 3}
+  minHorizontalRange: 100
+  maxHorizontalRange: 150
+  minVerticalRange: 80
+  maxVerticalRange: 100

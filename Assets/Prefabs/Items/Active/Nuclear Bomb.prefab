@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 1722563523428526438}
   - component: {fileID: 2051186048855151591}
   - component: {fileID: 6486817212640847354}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Mesh1_Group1_Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 4110952277717108182}
   - component: {fileID: 4110952277717108185}
   - component: {fileID: 3370497459160206130}
-  m_Layer: 0
+  m_Layer: 9
   m_Name: Nuclear Bomb
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -162,7 +162,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   explosionPrefab: {fileID: 6966776128785370536, guid: 68fbe60298b30e84f8c50d781c299a60, type: 3}
   explosionDelyTime: 0
-  explosionRadius: 10
+  explosionRadius: 30
   explosionForce: 1000
+  explosionDamage: 300
   minDelayTime: 0
   maxDelayTime: 2

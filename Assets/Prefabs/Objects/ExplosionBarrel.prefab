@@ -131,5 +131,6 @@ MonoBehaviour:
   maxHP: 100
   explosionPrefab: {fileID: 1014025752351287827, guid: c81bfb128ee19354aae4b83e1fd4d1f3, type: 3}
   explosionDelyTime: 0.3
-  explosionRadius: 10
+  explosionRadius: 7.5
   explosionForce: 1000
+  explosionDamage: 100

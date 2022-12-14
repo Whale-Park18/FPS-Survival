@@ -2337,7 +2337,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2410f78095b45454fa2c096c47b4af49, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  weaponLock: 1
+  weaponLock: 0
   weaponType: 2
   weaponSetting:
     weaponName: 2
