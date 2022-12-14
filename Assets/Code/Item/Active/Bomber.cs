@@ -1,87 +1,104 @@
 using System.Collections;
-using System.Collections.Generic;
-using System.Net.Sockets;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.AI;
-using UnityEngine.Apple;
 
-[RequireComponent(typeof(AudioSource))]
-public class Bomber : MonoBehaviour
+namespace WhalePark18.Item.Active
 {
-    [SerializeField]
-    private float speed = 5f;           // 이동 속도;
-
-    [SerializeField]
-    private AudioClip[] engineClips;    // 제트 엔진 클립
-
-    [SerializeField]
-    private GameObject bomb;            // 폭탄
-    private Transform target;           // 타겟
-
-    private AudioSource audioSource;
-
-    private void Awake()
+    [RequireComponent(typeof(AudioSource))]
+    public class Bomber : MonoBehaviour
     {
-        audioSource = GetComponent<AudioSource>();
-    }
+        [SerializeField]
+        private float speed = 5f;           // 이동 속도;
 
-    private IEnumerator OnBomb()
-    {
-        audioSource.clip = engineClips[Random.Range(0, engineClips.Length)];
-        audioSource.loop = true;
-        audioSource.Play();
+        [SerializeField]
+        private AudioClip[] engineClips;    // 제트 엔진 클립
 
-        Vector3 targetPosition = target.position;
-        targetPosition.y = transform.position.y;
-        yield return StartCoroutine("Move", targetPosition);
-        DropBomb();
+        [SerializeField]
+        private GameObject bomb;            // 폭탄
+        private Transform target;           // 타겟
 
-        yield return StartCoroutine("Move", transform.forward * 300f);
-        Destroy(gameObject);
-    }
+        private AudioSource audioSource;
 
-    private IEnumerator Move(Vector3 targetPosition)
-    {
-        Vector3 startPosition = transform.position;
-        float destinationDistance = Vector3.Distance(startPosition, targetPosition);
-        float currentMoveDistance = 0f;
-        float percent = 0f;
-
-        while(true)
+        private void Awake()
         {
-            currentMoveDistance += speed * Time.deltaTime;
-            percent = currentMoveDistance / destinationDistance;
-            transform.position = Vector3.Lerp(startPosition, targetPosition, percent);
-
-            if(percent >= 1f)
-            {
-                yield break;
-            }
-
-            yield return null;
+            audioSource = GetComponent<AudioSource>();
         }
-    }
 
-    private void DropBomb()
-    {
-        bomb.transform.parent = null;
-        bomb.GetComponent<Bomb>().Use();
-    }
+        /// <summary>
+        /// Bomber 비행 인터페이스
+        /// </summary>
+        /// <param name="target">목표</param>
+        public void Fly(Transform target)
+        {
+            this.target = target;
+            LookAt(target.position);
+            StartCoroutine("OnBomb");
+        }
 
-    private void LookAt(Vector3 target)
-    {
-        Vector3 relative = target - transform.position;
-        float radian = Mathf.Atan2(relative.x, relative.z);
-        float degree = radian * Mathf.Rad2Deg;
+        /// <summary>
+        /// Bomber가 target을 향해 바라보게 설정하는 메소드
+        /// </summary>
+        /// <param name="target"></param>
+        private void LookAt(Vector3 target)
+        {
+            Vector3 relative = target - transform.position;
+            float radian = Mathf.Atan2(relative.x, relative.z);
+            float degree = radian * Mathf.Rad2Deg;
 
-        transform.rotation = Quaternion.Euler(transform.eulerAngles.x, degree, transform.eulerAngles.z);
-    }
+            transform.rotation = Quaternion.Euler(transform.eulerAngles.x, degree, transform.eulerAngles.z);
+        }
 
-    public void Fly(Transform target)
-    {
-        this.target = target;
-        LookAt(target.position);
-        StartCoroutine("OnBomb");
+        /// <summary>
+        /// 폭격 메소드
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator OnBomb()
+        {
+            audioSource.clip = engineClips[Random.Range(0, engineClips.Length)];
+            audioSource.loop = true;
+            audioSource.Play();
+
+            Vector3 targetPosition = target.position;
+            targetPosition.y = transform.position.y;
+            yield return StartCoroutine("Move", targetPosition);
+            DropBomb();
+
+            Vector3 retreatPosition = transform.forward * 150f;
+            retreatPosition.y = transform.position.y;
+            yield return StartCoroutine("Move", retreatPosition);
+            Destroy(gameObject);
+        }
+
+        /// <summary>
+        /// 이동 메소드
+        /// </summary>
+        /// <param name="targetPosition">이동 목표 위치</param>
+        /// <returns>코루틴</returns>
+        private IEnumerator Move(Vector3 targetPosition)
+        {
+            Vector3 startPosition = transform.position;
+            float destinationDistance = Vector3.Distance(startPosition, targetPosition);
+            float currentMoveDistance = 0f;
+            float percent = 0f;
+
+            while (true)
+            {
+                currentMoveDistance += speed * Time.deltaTime;
+                percent = currentMoveDistance / destinationDistance;
+                transform.position = Vector3.Lerp(startPosition, targetPosition, percent);
+
+                if (percent >= 1f)
+                {
+                    yield break;
+                }
+
+                yield return null;
+            }
+        }
+
+        private void DropBomb()
+        {
+            bomb.transform.parent = null;
+            bomb.GetComponent<Bomb>().Use();
+        }
     }
 }
