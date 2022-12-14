@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using WhalePark18.Item.Active;
+
 namespace WhalePark18.Item.Kit
 {
     public class ItemNuclear : ItemBase
