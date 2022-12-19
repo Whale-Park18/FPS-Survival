@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Reflection;
 using UnityEngine;
 
@@ -7,10 +8,20 @@ namespace WhalePark18.Character
     [System.Serializable]
     public class HPEvent : UnityEngine.Events.UnityEvent<int, int> { }
 
+    [System.Serializable]
+    public class CoinEvent : UnityEngine.Events.UnityEvent<int> { }
+
     public class Status : MonoBehaviour
     {
         [HideInInspector]
         public HPEvent onHPEvent = new HPEvent();
+        [HideInInspector]
+        public CoinEvent onCoinEvent = new CoinEvent();
+
+        [Header("Coin")]
+        [SerializeField]
+        private int startCoin = 0;
+        private int currentCoin;
 
         [Header("Walk, Run Speed")]
         [SerializeField]
@@ -93,6 +104,9 @@ namespace WhalePark18.Character
 
         private void Awake()
         {
+            /// 코인
+            currentCoin = startCoin;
+
             /// 생명력
             maxHP = currentHP = startHP;
             currentHPRecoveryForSec = startHPRecoveryForSec;
@@ -110,6 +124,37 @@ namespace WhalePark18.Character
             currentItemEfficiency = startItemEfficiency;
         }
 
+        /// <summary>
+        /// 코인 증가 인터페이스
+        /// </summary>
+        /// <param name="coin">획득 코인</param>
+        public void IncreaseCoin(int coin)
+        {
+            currentCoin += coin;
+            onCoinEvent.Invoke(currentCoin);
+        }
+
+        /// <summary>
+        /// 코인 감소 인터페이스
+        /// </summary>
+        /// <param name="coin">감소 코인</param>
+        /// <returns>감소 성공 여부</returns>
+        public bool DecreaseCoin(int coin)
+        {
+            if (currentCoin - coin < 0)
+                return false;
+
+            currentCoin -= coin;
+            onCoinEvent.Invoke(coin);
+
+            return true;
+        }
+
+        /// <summary>
+        /// 체력 감소 인터페이스
+        /// </summary>
+        /// <param name="damage">피해량</param>
+        /// <returns>사망 여부</returns>
         public bool DecreaseHP(int damage)
         {
             int previousHP = currentHP;
@@ -126,6 +171,10 @@ namespace WhalePark18.Character
             return false;
         }
 
+        /// <summary>
+        /// 체력 증가 인터페이스
+        /// </summary>
+        /// <param name="hp">회복량</param>
         public void IncreaseHP(int hp)
         {
             int previousHP = currentHP;
@@ -135,6 +184,10 @@ namespace WhalePark18.Character
             onHPEvent.Invoke(previousHP, currentHP);
         }
 
+        /// <summary>
+        /// 공격 속도 증가 인터페이스
+        /// </summary>
+        /// <param name="increaseAttackSpeed">공격 속도 증가량</param>
         public void IncreaseAttackSpeed(float increaseAttackSpeed)
         {
             Debug.LogFormat("<color=green>" + MethodBase.GetCurrentMethod().Name + "</color>\n" +
@@ -152,6 +205,10 @@ namespace WhalePark18.Character
             currentAttackSpeed += Mathf.Round((increaseAttackSpeed * currentItemEfficiency) * 100) / 100;
         }
 
+        /// <summary>
+        /// 공격 속도 감소 인터페이스
+        /// </summary>
+        /// <param name="disincreaseAttackSpeed">공격 속도 감소량</param>
         public void DisincreaseAttackSpeed(float disincreaseAttackSpeed)
         {
             Debug.LogFormat("<color=green>" + MethodBase.GetCurrentMethod().Name + "</color>\n" +
