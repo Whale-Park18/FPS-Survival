@@ -19,6 +19,8 @@ namespace WhalePark18.Item.Active
         LayerMask layerMask;                        // 탐색 레이어 마스크
         [SerializeField]
         private float guardRotationSpeed = 45f;     // 경계 회전 속도
+        [SerializeField]
+        private float destroyTime;                  // 파괴 시간
 
         [Header("Attack")]
         [SerializeField]
@@ -41,6 +43,11 @@ namespace WhalePark18.Item.Active
 
         private AudioSource audioSource;
 
+        public float DestroyTime
+        {
+            set => destroyTime = value;
+        }
+
         private void Awake()
         {
             audioSource = GetComponent<AudioSource>();
@@ -50,6 +57,7 @@ namespace WhalePark18.Item.Active
         {
             AudioPlay(buildClip);
             StartCoroutine("SearchEnemy");
+            StartCoroutine("AutoDestroyByTime", destroyTime);
         }
 
         /// <summary>
@@ -173,6 +181,13 @@ namespace WhalePark18.Item.Active
         {
             audioSource.clip = clip;
             audioSource.Play();
+        }
+
+        private IEnumerator AutoDestroyByTime(float duration)
+        {
+            yield return new WaitForSeconds(duration);
+
+            Destroy(gameObject);
         }
 
         private void OnDrawGizmos()
