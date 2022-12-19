@@ -40,7 +40,13 @@ namespace WhalePark18.Character.Player
 
         private List<GameObject> magazineList;  // 탄창 UI 리스트
 
-        [Header("HP & BloodScreen UI")]
+        [Header("Coin")]
+        [SerializeField]
+        private TextMeshProUGUI textCoin;       // 코인 텍스트
+
+        [Header("HP & Shield & BloodScreen UI")]
+        [SerializeField]
+        private Slider sliderHP;
         [SerializeField]
         private TextMeshProUGUI textHP;         // 플레이어의 체력을 출력하는 text
         [SerializeField]
@@ -48,13 +54,94 @@ namespace WhalePark18.Character.Player
         [SerializeField]
         private AnimationCurve curveBloodScreen;
 
+        [Header("Dynamic Panel")]
+        [SerializeField]
+        private float hidePosition;                 // 패널 비활성화시 숨기는 위치
+        [SerializeField]
+        private float panelMoveTime = 1f;           // 패널 이동 시간(활성화, 비활성화)
+        [SerializeField]
+        private GameObject paenlIdentity;           // 특성 패널
+        private bool panelIdentityActive = false;   // 특성 패널 활성화 여부
+
         private void Awake()
         {
             /// 메소드가 등록되어 있는 이벤트 클래스(weapon.xx)의
-            /// Invoke() 메소드가 호출되 ㄹ때 등록된 메소드(매개변수)가 실행된다.
+            /// Invoke() 메소드가 호출될 때 등록된 메소드(매개변수)가 실행된다.
+            status.onCoinEvent.AddListener(UpdateCoinHUD);
+
             status.onHPEvent.AddListener(UpdateHPHUD);
         }
 
+        private void UpdateCoinHUD(int current)
+        {
+            textCoin.text = current.ToString();
+        }
+
+        /// <summary>
+        /// HP HUD 업데이트 메소드
+        /// </summary>
+        /// <param name="previous">이전 체력</param>
+        /// <param name="current">현재 체력</param>
+        private void UpdateHPHUD(int previous, int current)
+        {
+            textHP.text = current.ToString();
+            sliderHP.value = current / 100f;
+
+            /// 체력이 증가했을 때는 화면에 빨간색 이미지를 출력하지 않도록 return
+            if (previous <= current) return;
+
+            if (previous - current > 0)
+            {
+                StopCoroutine("OnBloodScreen");
+                StartCoroutine("OnBloodScreen");
+            }
+        }
+
+        /// <summary>
+        /// 피해 가시적 이펙트 메소드
+        /// </summary>
+        /// <returns>코루틴</returns>
+        private IEnumerator OnBloodScreen()
+        {
+            float percent = 0;
+
+            while (percent < 1)
+            {
+                percent += Time.deltaTime;
+
+                Color color = imageBloodScreen.color;
+                color.a = Mathf.Lerp(1, 0, curveBloodScreen.Evaluate(percent));
+                imageBloodScreen.color = color;
+
+                yield return null;
+            }
+        }
+
+        /// <summary>
+        /// 무기 변경 메소드
+        /// </summary>
+        /// <param name="newWeapon">변경할 새로운 무기</param>
+        public void SwitchingWeapon(WeaponBase newWeapon)
+        {
+            weapon = newWeapon;
+
+            SetupWeapon();
+        }
+
+        /// <summary>
+        /// 무기 설정 메소드
+        /// </summary>
+        private void SetupWeapon()
+        {
+            textWeaponName.text = weapon.WeaponName.ToString();
+            imageWeaponIcon.sprite = spriteeWeaponIcions[(int)weapon.WeaponName];
+            imageWeaponIcon.rectTransform.sizeDelta = sizeWeaponIcions[(int)weapon.WeaponName];
+        }
+
+        /// <summary>
+        /// 모든 무기를 설정하는 메소드
+        /// </summary>
+        /// <param name="weapons">관리할 무기 배열</param>
         public void SetupAllWeapons(WeaponBase[] weapons)
         {
             SetupMagaine();
@@ -67,25 +154,9 @@ namespace WhalePark18.Character.Player
             }
         }
 
-        public void SwitchingWeapon(WeaponBase newWeapon)
-        {
-            weapon = newWeapon;
-
-            SetupWeapon();
-        }
-
-        private void SetupWeapon()
-        {
-            textWeaponName.text = weapon.WeaponName.ToString();
-            imageWeaponIcon.sprite = spriteeWeaponIcions[(int)weapon.WeaponName];
-            imageWeaponIcon.rectTransform.sizeDelta = sizeWeaponIcions[(int)weapon.WeaponName];
-        }
-
-        private void UpdateAmmoHUD(int currentAmmo, int maxAmmo)
-        {
-            textAmmo.text = $"<size=40>{currentAmmo}/</size>{maxAmmo}";
-        }
-
+        /// <summary>
+        /// 탄창 설정 메소드
+        /// </summary>
         private void SetupMagaine()
         {
             /// weapon에 등록되어 있는 최대 탄창 개수만큼 Image Icon을 생성
@@ -101,6 +172,20 @@ namespace WhalePark18.Character.Player
             }
         }
 
+        /// <summary>
+        /// 총알 HUD 업데이트 메소드
+        /// </summary>
+        /// <param name="currentAmmo">현재 총알 개수</param>
+        /// <param name="maxAmmo">최대 총알 개수</param>
+        private void UpdateAmmoHUD(int currentAmmo, int maxAmmo)
+        {
+            textAmmo.text = $"<size=40>{currentAmmo}/</size>{maxAmmo}";
+        }
+
+        /// <summary>
+        /// 탄창 HUD 업데이트메소드
+        /// </summary>
+        /// <param name="currentMagazine">현재 탄창</param>
         private void UpdateMagazineHUD(int currentMagazine)
         {
             Debug.LogFormat("<color=red>UpdateMagazineHUD</color>");
@@ -114,33 +199,43 @@ namespace WhalePark18.Character.Player
             }
         }
 
-        private void UpdateHPHUD(int previous, int current)
+        public void OnPanelIdentity()
         {
-            textHP.text = "HP " + current;
+            panelIdentityActive = !panelIdentityActive;
 
-            /// 체력이 증가했을 때는 화면에 빨간색 이미지를 출력하지 않도록 return
-            if (previous <= current) return;
-
-            if (previous - current > 0)
+            if(panelIdentityActive)
             {
-                StopCoroutine("OnBloodScreen");
-                StartCoroutine("OnBloodScreen");
+                StopCoroutine("PanelDown");
+                StartCoroutine("PanelUp", paenlIdentity);
+            }
+            else
+            {
+                StopCoroutine("PanelUp");
+                StartCoroutine("PanelDown", paenlIdentity);
             }
         }
 
-        private IEnumerator OnBloodScreen()
+        private IEnumerator PanelUp(GameObject panel)
         {
-            float percent = 0;
+            Vector3 startPosition = panel.transform.position;
 
-            while (percent < 1)
+            for (float currentTime = 0, percent = 0; currentTime <= panelMoveTime; currentTime += Time.deltaTime, percent = currentTime / panelMoveTime) 
             {
-                percent += Time.deltaTime;
-
-                Color color = imageBloodScreen.color;
-                color.a = Mathf.Lerp(1, 0, curveBloodScreen.Evaluate(percent));
-                imageBloodScreen.color = color;
-
+                panel.transform.position = Vector3.Lerp(startPosition, new Vector3(Camera.main.pixelWidth / 2, Camera.main.pixelHeight / 2, 0), percent);
                 yield return null;
+            }
+        }
+
+        private IEnumerator PanelDown(GameObject panel)
+        {
+            while (true)
+            {
+                Vector3 startPosition = panel.transform.position;
+                for (float currentTime = 0, percent = 0; currentTime <= panelMoveTime; currentTime += Time.deltaTime, percent = currentTime / panelMoveTime)
+                {
+                    panel.transform.position = Vector3.Lerp(startPosition, new Vector3(Camera.main.pixelWidth / 2, -Camera.main.pixelHeight, 0), percent);
+                    yield return null;
+                }
             }
         }
     }
