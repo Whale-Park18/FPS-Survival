@@ -16,6 +16,8 @@ namespace WhalePark18.Character.Player
         private KeyCode keyCodeJump = KeyCode.Space;        // 점프 키
         [SerializeField]
         private KeyCode keyCodeReload = KeyCode.R;          // 탄 재장전 키
+        [SerializeField]
+        private KeyCode keyCodeIdentity = KeyCode.Tab;      // 특성 창 키
 
         [Header("Audio Clips")]
         [SerializeField]
@@ -28,6 +30,7 @@ namespace WhalePark18.Character.Player
         private Status status;                              // 이동속도 등의 플레이어 정보
         private AudioSource audioSource;                    // 사운드 재생 제어
         private WeaponBase weapon;                          // 무기 최상위 클래스를 이용항 공격 제어
+        private PlayerHUD playerHUD;                        // 플레이어 HUD
 
         private void Awake()
         {
@@ -41,6 +44,7 @@ namespace WhalePark18.Character.Player
             movement = GetComponent<MovementCharacterController>();
             status = GetComponent<Status>();
             audioSource = GetComponent<AudioSource>();
+            playerHUD = GetComponentInChildren<PlayerHUD>();
         }
 
         private void Update()
@@ -49,6 +53,7 @@ namespace WhalePark18.Character.Player
             UpdateMove();
             UpdateJump();
             UpdateWeaponAction();
+            UpdateIdentityPanel();
         }
 
         private void UpdateRotate()
@@ -130,6 +135,14 @@ namespace WhalePark18.Character.Player
             if (Input.GetKeyDown(keyCodeReload))
             {
                 weapon.StartReload();
+            }
+        }
+
+        private void UpdateIdentityPanel()
+        {
+            if (Input.GetKeyDown(keyCodeIdentity))
+            {
+                playerHUD.OnPanelIdentity();
             }
         }
 
