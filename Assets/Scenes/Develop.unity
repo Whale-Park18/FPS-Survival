@@ -2676,7 +2676,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &418696842
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12781,6 +12781,11 @@ Transform:
   m_Father: {fileID: 1755781410}
   m_RootOrder: 11
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1775049645 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 7414988988393348732, guid: ed10b8cb8f8f31c499827fa67b5b2e5d, type: 3}
+  m_PrefabInstance: {fileID: 1933507815}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1784571854
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -13151,6 +13156,8 @@ MonoBehaviour:
   textCoin: {fileID: 0}
   sliderHP: {fileID: 0}
   textHP: {fileID: 1092555234}
+  sliderShield: {fileID: 0}
+  textShield: {fileID: 0}
   imageBloodScreen: {fileID: 664976075}
   curveBloodScreen:
     serializedVersion: 2
@@ -13176,9 +13183,8 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  hidePosition: 0
   panelMoveTime: 1
-  paenlIdentity: {fileID: 0}
+  paenlTraits: {fileID: 0}
 --- !u!4 &1861707439
 Transform:
   m_ObjectHideFlags: 0
@@ -13554,10 +13560,22 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2394507236361326223, guid: ed10b8cb8f8f31c499827fa67b5b2e5d, type: 3}
+      propertyPath: delayHPResilience
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2394507236361326223, guid: ed10b8cb8f8f31c499827fa67b5b2e5d, type: 3}
+      propertyPath: startHPResilienceForSec
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2394507236361326225, guid: ed10b8cb8f8f31c499827fa67b5b2e5d, type: 3}
       propertyPath: m_Name
       value: Player With Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 6280251614525234724, guid: ed10b8cb8f8f31c499827fa67b5b2e5d, type: 3}
+      propertyPath: paenlTraits
+      value: 
+      objectReference: {fileID: 1775049645}
     - target: {fileID: 8368422196126924491, guid: ed10b8cb8f8f31c499827fa67b5b2e5d, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
