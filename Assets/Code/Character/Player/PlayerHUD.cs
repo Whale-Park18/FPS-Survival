@@ -46,9 +46,13 @@ namespace WhalePark18.Character.Player
 
         [Header("HP & Shield & BloodScreen UI")]
         [SerializeField]
-        private Slider sliderHP;
+        private Slider sliderHP;                // 플레이어 체력을 출력하는 슬라이더
         [SerializeField]
         private TextMeshProUGUI textHP;         // 플레이어의 체력을 출력하는 text
+        [SerializeField]
+        private Slider sliderShield;            // 플레이어의 실드를 출력하는 슬라이더
+        [SerializeField]
+        private TextMeshProUGUI textShield;     // 플레이어의 실드를 출력하는 text
         [SerializeField]
         private Image imageBloodScreen;         // 플레이어가 공격 받았을 때 화면에 표시되는 Image
         [SerializeField]
@@ -56,22 +60,31 @@ namespace WhalePark18.Character.Player
 
         [Header("Dynamic Panel")]
         [SerializeField]
-        private float hidePosition;                 // 패널 비활성화시 숨기는 위치
-        [SerializeField]
         private float panelMoveTime = 1f;           // 패널 이동 시간(활성화, 비활성화)
         [SerializeField]
-        private GameObject paenlIdentity;           // 특성 패널
-        private bool panelIdentityActive = false;   // 특성 패널 활성화 여부
+        private GameObject paenlTraits;           // 특성 패널
+        private bool panelTraitsActive = false;   // 특성 패널 활성화 여부
 
         private void Awake()
         {
             /// 메소드가 등록되어 있는 이벤트 클래스(weapon.xx)의
             /// Invoke() 메소드가 호출될 때 등록된 메소드(매개변수)가 실행된다.
             status.onCoinEvent.AddListener(UpdateCoinHUD);
-
             status.onHPEvent.AddListener(UpdateHPHUD);
+            status.onShieldEvent.AddListener(UpdateShieldHUD);
         }
 
+        private void Start()
+        {
+            UpdateCoinHUD(status.CurrentCoin);
+            UpdateHPHUD(status.CurrentHP, status.CurrentHP);
+            UpdateShieldHUD(status.CurrentShield);
+        }
+
+        /// <summary>
+        /// 코인 HUD 업데이트 메소드
+        /// </summary>
+        /// <param name="current"></param>
         private void UpdateCoinHUD(int current)
         {
             textCoin.text = current.ToString();
@@ -85,7 +98,7 @@ namespace WhalePark18.Character.Player
         private void UpdateHPHUD(int previous, int current)
         {
             textHP.text = current.ToString();
-            sliderHP.value = current / 100f;
+            sliderHP.value = (float)current / status.MaxHP;
 
             /// 체력이 증가했을 때는 화면에 빨간색 이미지를 출력하지 않도록 return
             if (previous <= current) return;
@@ -95,6 +108,16 @@ namespace WhalePark18.Character.Player
                 StopCoroutine("OnBloodScreen");
                 StartCoroutine("OnBloodScreen");
             }
+        }
+
+        private void UpdateShieldHUD(int current)
+        {
+            textShield.text = current.ToString();
+
+            if (status.shieldActive == false) 
+                sliderShield.value = 0;
+            else 
+                sliderShield.value = (float)current / status.MaxShield;
         }
 
         /// <summary>
@@ -199,23 +222,31 @@ namespace WhalePark18.Character.Player
             }
         }
 
-        public void OnPanelIdentity()
+        /// <summary>
+        /// 특성 패널 인터페이스
+        /// </summary>
+        public void OnPanelTraits()
         {
-            panelIdentityActive = !panelIdentityActive;
+            panelTraitsActive = !panelTraitsActive;
 
-            if(panelIdentityActive)
+            if(panelTraitsActive)
             {
-                StopCoroutine("PanelDown");
-                StartCoroutine("PanelUp", paenlIdentity);
+                StopCoroutine("OnPanelDisActive");
+                StartCoroutine("OnPanelActive", paenlTraits);
             }
             else
             {
-                StopCoroutine("PanelUp");
-                StartCoroutine("PanelDown", paenlIdentity);
+                StopCoroutine("OnPanelActive");
+                StartCoroutine("OnPanelDisActive", paenlTraits);
             }
         }
 
-        private IEnumerator PanelUp(GameObject panel)
+        /// <summary>
+        /// 패널 활성화 메소드
+        /// </summary>
+        /// <param name="panel">패널 오브젝트</param>
+        /// <returns>코루틴</returns>
+        private IEnumerator OnPanelActive(GameObject panel)
         {
             Vector3 startPosition = panel.transform.position;
 
@@ -226,7 +257,12 @@ namespace WhalePark18.Character.Player
             }
         }
 
-        private IEnumerator PanelDown(GameObject panel)
+        /// <summary>
+        /// 패널 비활성화 메소드
+        /// </summary>
+        /// <param name="panel">패널 오브젝트</param>
+        /// <returns>코루틴</returns>
+        private IEnumerator OnPanelDisActive(GameObject panel)
         {
             while (true)
             {
