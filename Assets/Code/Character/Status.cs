@@ -6,17 +6,22 @@ namespace WhalePark18.Character
 {
 
     [System.Serializable]
+    public class CoinEvent : UnityEngine.Events.UnityEvent<int> { }
+
+    [System.Serializable]
     public class HPEvent : UnityEngine.Events.UnityEvent<int, int> { }
 
     [System.Serializable]
-    public class CoinEvent : UnityEngine.Events.UnityEvent<int> { }
+    public class ShieldEvent : UnityEngine.Events.UnityEvent<int> { }
 
     public class Status : MonoBehaviour
     {
         [HideInInspector]
+        public CoinEvent onCoinEvent = new CoinEvent();
+        [HideInInspector]
         public HPEvent onHPEvent = new HPEvent();
         [HideInInspector]
-        public CoinEvent onCoinEvent = new CoinEvent();
+        public ShieldEvent onShieldEvent = new ShieldEvent();
 
         [Header("Coin")]
         [SerializeField]
@@ -36,8 +41,10 @@ namespace WhalePark18.Character
         private int maxHP;                              // 최대 HP
 
         [SerializeField]
-        private int startHPRecoveryForSec = 0;          // 게임 시작 초당 HP 회복량
-        private int currentHPRecoveryForSec;            // 현재 초당 HP 회복량
+        private float delayHPResilience = 10;           // HP 회복 지연 시간
+        [SerializeField]
+        private int startHPResilienceForSec = 0;        // 게임 시작 초당 HP 회복량
+        private int currentHPResilienceForSec;          // 현재 초당 HP 회복량
 
         [Header("Shield")]
         [SerializeField]
@@ -46,8 +53,10 @@ namespace WhalePark18.Character
         private int maxShield;                          // 최대 실드량
 
         [SerializeField]
-        private float startShieldRecoveryForSec = 0f;   // 게임 시작 초당 실드 회복 퍼센트
-        private float currentShieldRecoveryForSec;      // 현재 초당 실드 회복 퍼센트
+        private float delayShieldResilience;            // 실드 회복 지연 시간
+        [SerializeField]
+        private float startShieldResilienceForSec = 0f; // 게임 시작 초당 실드 회복 퍼센트
+        private float currentShieldResilienceForSec;    // 현재 초당 실드 회복 퍼센트
 
         [Header("Attack")]
         [SerializeField]
@@ -73,10 +82,22 @@ namespace WhalePark18.Character
         public float RunSpeed => runSpeed;
 
         /// <summary>
+        /// Coin Property
+        /// </summary>
+        public int CurrentCoin => currentCoin;
+
+        /// <summary>
         /// HP Property
         /// </summary>
         public int MaxHP => maxHP;
         public int CurrentHP => currentHP;
+
+        /// <summary>
+        /// 실드 Property
+        /// </summary>
+        public int MaxShield => maxShield;
+        public int CurrentShield => currentShield;
+        public bool shieldActive => maxShield > 0;
 
         /// <summary>
         /// Attack Property
@@ -109,11 +130,11 @@ namespace WhalePark18.Character
 
             /// 생명력
             maxHP = currentHP = startHP;
-            currentHPRecoveryForSec = startHPRecoveryForSec;
+            currentHPResilienceForSec = startHPResilienceForSec;
 
             /// 실드
-            currentShield = startShield;
-            currentShieldRecoveryForSec = startShieldRecoveryForSec;
+            maxShield = currentShield = startShield;
+            currentShieldResilienceForSec = startShieldResilienceForSec;
 
             /// 공격
             currentDamagePercentIncrease = startDamagePercentIncrease;
@@ -151,6 +172,19 @@ namespace WhalePark18.Character
         }
 
         /// <summary>
+        /// 체력 증가 인터페이스
+        /// </summary>
+        /// <param name="hp">회복량</param>
+        public void IncreaseHP(int hp)
+        {
+            int previousHP = currentHP;
+
+            currentHP = currentHP + hp > maxHP ? maxHP : currentHP + hp;
+
+            onHPEvent.Invoke(previousHP, currentHP);
+        }
+
+        /// <summary>
         /// 체력 감소 인터페이스
         /// </summary>
         /// <param name="damage">피해량</param>
@@ -172,16 +206,95 @@ namespace WhalePark18.Character
         }
 
         /// <summary>
-        /// 체력 증가 인터페이스
+        /// HP 회복력 활성화 인터페이스
         /// </summary>
-        /// <param name="hp">회복량</param>
-        public void IncreaseHP(int hp)
+        public void StartHPResilience()
+        {
+            print("StartHPResilience");
+            StartCoroutine("OnHPResilience");
+        }
+
+        /// <summary>
+        /// HP 회복력 비활성화 인터페이스
+        /// </summary>
+        public void StopHPResilience()
+        {
+            print("StopHPResilience");
+            StopCoroutine("OnHPResilience");
+        }
+
+        /// <summary>
+        /// HP 회복력 메소드
+        /// </summary>
+        /// <returns></returns>
+        private IEnumerator OnHPResilience()
+        {
+            print("OnHPResilience(): Wait Delay");
+            yield return new WaitForSeconds(delayHPResilience);
+            print("OnHPResilience(): complated Delay");
+
+            while (currentHP < maxHP)
+            {
+                print(currentHP + " / " + maxHP);
+                IncreaseHP(1);
+                yield return new WaitForSeconds(1);
+            }
+        }
+
+        /// <summary>
+        /// 실드 증가 인터페이스
+        /// </summary>
+        /// <param name="shield">회복량</param>
+        public void IncreaseShield(int shield)
+        {
+            int previousShield = currentShield;
+
+            currentShield = currentShield + shield > maxShield ? maxShield : currentShield + shield;
+
+            // TODO: onShieldEvent 객체 생성
+            onHPEvent.Invoke(previousShield, currentHP);
+        }
+
+        /// <summary>
+        /// 실드 감소 인터페이스
+        /// </summary>
+        /// <param name="damage">피해량</param>
+        /// <returns>사망 여부</returns>
+        public bool DecreaseShield(int damage)
         {
             int previousHP = currentHP;
 
-            currentHP = currentHP + hp > startHP ? startHP : currentHP + hp;
+            currentHP = currentHP - damage > 0 ? currentHP - damage : 0;
 
             onHPEvent.Invoke(previousHP, currentHP);
+
+            if (currentHP == 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public void StartShieldResilience()
+        {
+            StartCoroutine("OnShieldResilience");
+        }
+
+        public void StopShieldResilience()
+        {
+            StopCoroutine("OnShieldResilience");
+        }
+
+        private IEnumerator OnShieldResilience()
+        {
+            yield return new WaitForSeconds(delayShieldResilience);
+
+            while (currentShield < maxShield)
+            {
+                IncreaseHP(1);
+                yield return new WaitForSeconds(1);
+            }
         }
 
         /// <summary>
