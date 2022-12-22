@@ -142,7 +142,7 @@ namespace WhalePark18.Character.Player
         {
             if (Input.GetKeyDown(keyCodeIdentity))
             {
-                playerHUD.OnPanelIdentity();
+                playerHUD.OnPanelTraits();
             }
         }
 
@@ -152,12 +152,28 @@ namespace WhalePark18.Character.Player
         /// <param name="damge">피해량</param>
         public void TakeDamage(int damge)
         {
-            bool isDie = status.DecreaseHP(damge);
-
-            if (isDie == true)
+            // TODO: 실드 활성화 여부 변수 or 메소드 추가
+            if(status.MaxShield > 0)
             {
-                print("Game Over");
+                bool isShieldDestroy = status.DecreaseShield(damge);
+                if(isShieldDestroy)
+                {
+                    status.StopShieldResilience();
+                    status.StartShieldResilience();
+                }
             }
+            else
+            {
+                bool isDie = status.DecreaseHP(damge);
+                status.StopHPResilience();
+                status.StartHPResilience();
+
+                if (isDie == true)
+                {
+                    print("Game Over");
+                }
+            }
+
         }
 
         /// <summary>
