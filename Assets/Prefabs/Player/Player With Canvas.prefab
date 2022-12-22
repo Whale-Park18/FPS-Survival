@@ -219,19 +219,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f6037d9eaffa9a468c9add02c6eaf79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  onCoinEvent:
+    m_PersistentCalls:
+      m_Calls: []
   onHPEvent:
     m_PersistentCalls:
       m_Calls: []
-  onCoinEvent:
+  onShieldEvent:
     m_PersistentCalls:
       m_Calls: []
   startCoin: 0
   walkSpeed: 4
   runSpeed: 5
   startHP: 100
-  startHPRecoveryForSec: 0
+  delayHPResilience: 10
+  startHPResilienceForSec: 0
   startShield: 0
-  startShieldRecoveryForSec: 0
+  delayShieldResilience: 0
+  startShieldResilienceForSec: 0
   startDamagePercentIncrease: 1
   startPiercing: 0
   startAttackSpeed: 1
@@ -736,6 +741,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &2182373743663345880 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1305429580649835834, guid: bce6f76701900f749992351e89070887, type: 3}
+  m_PrefabInstance: {fileID: 888484641413717474}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67db9e8f0e2ae9c40bc1e2b64352a6b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &2688350746017228352 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 2961812541843028898, guid: bce6f76701900f749992351e89070887, type: 3}
@@ -817,6 +833,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 7137535439812772071, guid: bce6f76701900f749992351e89070887, type: 3}
   m_PrefabInstance: {fileID: 888484641413717474}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &8140687278168198102 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8983854287177848372, guid: bce6f76701900f749992351e89070887, type: 3}
+  m_PrefabInstance: {fileID: 888484641413717474}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &9045257086012911528 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 8202107668227732042, guid: bce6f76701900f749992351e89070887, type: 3}
@@ -2559,9 +2586,21 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 7556287036393535043}
     - target: {fileID: 8208365477826048319, guid: e458f63fa28d5b3499439e7ac519f599, type: 3}
+      propertyPath: textShield
+      value: 
+      objectReference: {fileID: 8140687278168198102}
+    - target: {fileID: 8208365477826048319, guid: e458f63fa28d5b3499439e7ac519f599, type: 3}
+      propertyPath: paenlTraits
+      value: 
+      objectReference: {fileID: 7414988988393348732}
+    - target: {fileID: 8208365477826048319, guid: e458f63fa28d5b3499439e7ac519f599, type: 3}
       propertyPath: hidePosition
       value: -1080
       objectReference: {fileID: 0}
+    - target: {fileID: 8208365477826048319, guid: e458f63fa28d5b3499439e7ac519f599, type: 3}
+      propertyPath: sliderShield
+      value: 
+      objectReference: {fileID: 2182373743663345880}
     - target: {fileID: 8208365477826048319, guid: e458f63fa28d5b3499439e7ac519f599, type: 3}
       propertyPath: paenlIdentity
       value: 
