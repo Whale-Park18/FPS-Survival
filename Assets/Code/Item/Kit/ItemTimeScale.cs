@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-using WhalePark18.Character;
+using WhalePark18.Character.Player;
 
 namespace WhalePark18.Item.Kit
 {
@@ -19,24 +19,35 @@ namespace WhalePark18.Item.Kit
 
         public override void Use(GameObject entity)
         {
-            StartCoroutine("TimeScaleTimer", entity.GetComponent<Status>());
+            StartCoroutine("TimeScaleTimer", entity.GetComponent<PlayerStatus>());
             mesh.SetActive(false);
         }
 
-        private IEnumerator TimeScaleTimer(Status status)
+        /// <summary>
+        /// Time Scale이 일정시간동안 작동하도록 하는 메소드
+        /// </summary>
+        /// <param name="status">플레이어 Status</param>
+        /// <returns></returns>
+        private IEnumerator TimeScaleTimer(PlayerStatus status)
         {
-            StartTimeScale();
-            yield return new WaitForSeconds(effectTime * status.CurrentItemEfficiency);
-            StopTimeScale();
+            EnableTimeScale();
+            yield return new WaitForSeconds(effectTime * status.ItemEfficiency.currentAbility);
+            DisableTimeScale();
         }
 
-        private void StartTimeScale()
+        /// <summary>
+        /// TimeScale 활성화 메소드
+        /// </summary>
+        private void EnableTimeScale()
         {
             Time.timeScale = timeScale;
             Time.fixedDeltaTime = 0.02f * Time.timeScale;
         }
 
-        private void StopTimeScale()
+        /// <summary>
+        /// TimeScale 비활성화 메소드
+        /// </summary>
+        private void DisableTimeScale()
         {
             Time.timeScale = 1f;
             Time.fixedDeltaTime = 0.02f * Time.timeScale;

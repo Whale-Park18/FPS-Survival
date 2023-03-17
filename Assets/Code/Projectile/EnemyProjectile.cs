@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using WhalePark18.Character.Player;
+using WhalePark18.Objects;
 
 namespace WhalePark18.Projectile
 {
@@ -41,9 +42,13 @@ namespace WhalePark18.Projectile
             if (other.CompareTag("Player"))
             {
                 other.GetComponent<PlayerController>().TakeDamage(damage);
-
-                Destroy(gameObject);
             }
+            else if(other.CompareTag("InteractionObject"))
+            {
+                other.GetComponent<InteractionObject>().TakeDamage(damage);
+            }
+
+            Destroy(gameObject);
         }
     }
 }

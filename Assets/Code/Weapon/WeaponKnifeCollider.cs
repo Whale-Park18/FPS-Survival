@@ -1,9 +1,10 @@
 using System.Collections;
 using UnityEngine;
 
-using WhalePark18.MemoryPool;
+using WhalePark18;
 using WhalePark18.Objects;
 using WhalePark18.Character.Enemy;
+using WhalePark18.Manager;
 
 namespace WhalePark18.Weapon
 {
@@ -52,7 +53,7 @@ namespace WhalePark18.Weapon
 
         private void OnTriggerEnter(Collider other)
         {
-            impactMemoryPool.SpawnImpact(other, knifeTransform);
+            ImpactManager.Instance.SpawnImpact(other, knifeTransform);
 
             if (other.CompareTag("ImpactEnemy"))
             {

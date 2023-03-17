@@ -1,5 +1,7 @@
 using UnityEngine;
 
+using WhalePark18.Manager;
+
 namespace WhalePark18.Character.Player
 {
     public class RotateToMouse : MonoBehaviour
@@ -16,6 +18,8 @@ namespace WhalePark18.Character.Player
 
         public void UpdateRotate(float mouseX, float mouseY)
         {
+            if(GameManager.Instance.IsPause) return;
+
             eulerAngleY += mouseX * rotateCamYAixsSpeed;    // 마우스 좌/우 이동으로 카메라 y축 회전
             eulerAngleX -= mouseY * rotateCamXAixsSpeed;    // 마우스 위/아래 이동으로 카메라 x축 회전
 

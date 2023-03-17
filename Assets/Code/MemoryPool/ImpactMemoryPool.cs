@@ -1,13 +1,14 @@
 using UnityEngine;
 
-namespace WhalePark18.MemoryPool
+namespace WhalePark18
 {
     /// Normal: 벽, 바닥 등
     /// Obstacle: 장애물
-    public enum ImpactType { Normal = 0, Obstacle, Enemy, InteractionObject, }
+    public enum TmpImpactType { Normal = 0, Obstacle, Enemy, InteractionObject, }
 
     public class ImpactMemoryPool : MonoBehaviour
     {
+
         [SerializeField]
         private GameObject[] impactPrefab;  // 피격 이펙트
         private MemoryPool[] memoryPool;    // 피격 이펙트 메모리풀
@@ -31,21 +32,21 @@ namespace WhalePark18.MemoryPool
             /// 부딪힌 오브젝트의 Tag 정보에 따라 다르게 처리
             if (hit.transform.CompareTag("ImpactNormal"))
             {
-                OnSpawnImpact(ImpactType.Normal, hit.point, Quaternion.LookRotation(hit.normal));
+                OnSpawnImpact(TmpImpactType.Normal, hit.point, Quaternion.LookRotation(hit.normal));
             }
             else if (hit.transform.CompareTag("ImpactObstacle"))
             {
-                OnSpawnImpact(ImpactType.Obstacle, hit.point, Quaternion.LookRotation(hit.normal));
+                OnSpawnImpact(TmpImpactType.Obstacle, hit.point, Quaternion.LookRotation(hit.normal));
             }
             else if (hit.transform.CompareTag("ImpactEnemy"))
             {
-                OnSpawnImpact(ImpactType.Enemy, hit.point, Quaternion.LookRotation(hit.normal));
+                OnSpawnImpact(TmpImpactType.Enemy, hit.point, Quaternion.LookRotation(hit.normal));
             }
             else if (hit.transform.CompareTag("InteractionObject"))
             {
                 Color color = hit.transform.GetComponentInChildren<MeshRenderer>().material.color;
 
-                OnSpawnImpact(ImpactType.InteractionObject, hit.point, Quaternion.LookRotation(hit.normal), color);
+                OnSpawnImpact(TmpImpactType.InteractionObject, hit.point, Quaternion.LookRotation(hit.normal), color);
             }
         }
 
@@ -59,31 +60,31 @@ namespace WhalePark18.MemoryPool
             /// 부딪힌 오브젝트의 Tag 정보에 따라 다르게 처리
             if (other.CompareTag("ImpactNormal"))
             {
-                OnSpawnImpact(ImpactType.Normal, knifeTransform.position, Quaternion.Inverse(knifeTransform.rotation));
+                OnSpawnImpact(TmpImpactType.Normal, knifeTransform.position, Quaternion.Inverse(knifeTransform.rotation));
             }
             else if (other.CompareTag("ImpactObstacle"))
             {
-                OnSpawnImpact(ImpactType.Obstacle, knifeTransform.position, Quaternion.Inverse(knifeTransform.rotation));
+                OnSpawnImpact(TmpImpactType.Obstacle, knifeTransform.position, Quaternion.Inverse(knifeTransform.rotation));
             }
             else if (other.CompareTag("ImpactEnemy"))
             {
-                OnSpawnImpact(ImpactType.Enemy, knifeTransform.position, Quaternion.Inverse(knifeTransform.rotation));
+                OnSpawnImpact(TmpImpactType.Enemy, knifeTransform.position, Quaternion.Inverse(knifeTransform.rotation));
             }
             else if (other.CompareTag("InteractionObject"))
             {
                 Color color = other.transform.GetComponentInChildren<MeshRenderer>().material.color;
-                OnSpawnImpact(ImpactType.InteractionObject, knifeTransform.position, Quaternion.Inverse(knifeTransform.rotation));
+                OnSpawnImpact(TmpImpactType.InteractionObject, knifeTransform.position, Quaternion.Inverse(knifeTransform.rotation));
             }
         }
 
-        public void OnSpawnImpact(ImpactType type, Vector3 position, Quaternion rotation, Color color = new Color())
+        public void OnSpawnImpact(TmpImpactType type, Vector3 position, Quaternion rotation, Color color = new Color())
         {
             GameObject item = memoryPool[(int)type].ActivePoolItem();
             item.transform.position = position;
             item.transform.rotation = rotation;
             item.GetComponent<Impact>().Setup(memoryPool[(int)type]);
 
-            if (type == ImpactType.InteractionObject)
+            if (type == TmpImpactType.InteractionObject)
             {
                 ParticleSystem.MainModule main = item.GetComponent<ParticleSystem>().main;
                 main.startColor = color;

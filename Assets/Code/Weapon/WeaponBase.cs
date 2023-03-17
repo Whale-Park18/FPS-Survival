@@ -38,9 +38,14 @@ namespace WhalePark18.Weapon
         protected float lastAttackTime = 0;             // 마지막 발사시간 체크용
         protected bool isReload;                        // 재장전 중인지 체크
         protected bool isAttack = false;                // 공격 여부 체크용
+        protected bool isAimModeChaing = false;         // 에임 모드 전환중 체크용
+        protected bool isAimMode = false;               // 모드 전환 여부 체크용
 
         protected AudioSource audioSource;              // 사운드 재생 컴포넌트
+        protected PlayerStatus playerStatus;            // 플레이어 상태
         protected PlayerAnimatorController animator;    // 애니메이션 재생 제어
+
+        public bool IsAimMode => isAimMode;
 
         /// <summary>
         /// 외부에서 이벤트 함수 등록을 할 수 있도록 public 선언
@@ -84,11 +89,17 @@ namespace WhalePark18.Weapon
         /// </summary>
         public abstract void StartReload();
 
+        /// <summary>
+        /// 무기 잠금 메소드
+        /// </summary>
         public void Lock()
         {
             weaponLock = true;
         }
 
+        /// <summary>
+        /// 무기 잠금 해제 메소드
+        /// </summary>
         public void UnLock()
         {
             weaponLock = false;

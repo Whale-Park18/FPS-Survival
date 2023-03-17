@@ -1,10 +1,13 @@
 using System.Collections;
 using UnityEngine;
 
-using WhalePark18.MemoryPool;
+using WhalePark18;
 using WhalePark18.Objects;
 using WhalePark18.Character.Enemy;
-using WhalePark18.Character;
+using WhalePark18.Character.Player;
+using System.Reflection;
+using System;
+using WhalePark18.Manager;
 
 namespace WhalePark18.Weapon
 {
@@ -27,16 +30,15 @@ namespace WhalePark18.Weapon
         [SerializeField]
         private AudioClip audioClipReload;          // 재장전 사운드
 
-        private Status status;                      // 플레이어 스테이터스
-        private ImpactMemoryPool impactMemoryPool;  // 공격 효과 생성 후 활성/비활성 관리
+        private PlayerStatus status;                // 플레이어 스테이터스
         private Camera mainCamera;                  // 광선 발사
 
         private void Awake()
         {
             base.Setup();
 
-            status = GetComponentInParent<Status>();
-            impactMemoryPool = GetComponent<ImpactMemoryPool>();
+            status = GetComponentInParent<PlayerStatus>();
+            //impactMemoryPool = GetComponent<ImpactMemoryPool>();
             mainCamera = Camera.main;
 
             /// 게임 설정으로 인해 탄창 무제한으로 설정
@@ -122,7 +124,7 @@ namespace WhalePark18.Weapon
         private void OnAttack()
         {
             /// 공격 주기 확인
-            float attackRate = weaponSetting.attackRate / status.CurrentAttackSpeed;
+            float attackRate = weaponSetting.attackRate / status.AttackSpeed.currentAbility;
             if (Time.time - lastAttackTime > attackRate)
             {
                 if (animator.MoveSpeed > 0.5f) return;
@@ -148,7 +150,8 @@ namespace WhalePark18.Weapon
                 PlaySound(audioclipFire);
 
                 /// 광선을 발사해 원하는 위치 공격(+Impact Effect)
-                TwoStepRaycast();
+                //TwoStepRaycast();
+                HitScan();
             }
         }
 
@@ -224,6 +227,7 @@ namespace WhalePark18.Weapon
             ray = mainCamera.ViewportPointToRay(Vector2.one * 0.5f);
             if (Physics.Raycast(ray, out hit, weaponSetting.attackDistance))
             {
+                print(MethodBase.GetCurrentMethod().Name + ": " + hit.collider.name);
                 targetPoint = hit.point;
             }
             /// 공격 사거리 안에 부딪히는 오브젝트가 없으면 targetPoint는 최대 사거리 위치
@@ -231,25 +235,72 @@ namespace WhalePark18.Weapon
             {
                 targetPoint = ray.origin + ray.direction * weaponSetting.attackDistance;
             }
-            Debug.DrawRay(ray.origin, ray.direction * weaponSetting.attackDistance, Color.red);
+            UnityEngine.Debug.DrawRay(ray.origin, ray.direction * weaponSetting.attackDistance, Color.red);
 
             /// 첫 번째 Raycast연산으로 얻어진 targetPoint를 목표지점으로 설정하고
             /// 총구를 시적점으로 하여 Raycast 연산
             Vector3 attackDirection = (targetPoint - bulletSpawnPoint.position).normalized;
             if (Physics.Raycast(bulletSpawnPoint.position, attackDirection, out hit, weaponSetting.attackDistance))
             {
-                impactMemoryPool.SpawnImpact(hit);
+                ImpactManager.Instance.SpawnImpact(hit);
 
                 if (hit.transform.CompareTag("ImpactEnemy"))
                 {
-                    hit.transform.GetComponent<EnemyFSM>().TakeDamage(weaponSetting.damage);
+                    print("<Color=green>" + MethodBase.GetCurrentMethod().Name + "</Color>" + '\n'
+                        + "공격력 증가값: " + status.AttackDamage.currentAbility + " / " + status.AttackDamage.currentAbility * 100 + "%\n"
+                        + "적용값: " + weaponSetting.damage * status.AttackDamage.currentAbility + '\n'
+                        + "반올림: " + Math.Round(weaponSetting.damage * status.AttackDamage.currentAbility)
+                    );
+                    hit.transform.GetComponent<EnemyFSM>().TakeDamage((int)Math.Round(weaponSetting.damage * status.AttackDamage.currentAbility));
                 }
                 else if (hit.transform.CompareTag("InteractionObject"))
                 {
                     hit.transform.GetComponent<InteractionObject>().TakeDamage(weaponSetting.damage);
                 }
             }
-            Debug.DrawRay(bulletSpawnPoint.position, attackDirection * weaponSetting.attackDistance, Color.blue);
+            UnityEngine.Debug.DrawRay(bulletSpawnPoint.position, attackDirection * weaponSetting.attackDistance, Color.blue);
+        }
+
+        private void HitScan()
+        {
+            /// 화면 중앙에서 Ray를 발사해 피격된 모든 객체 정보를 hitInfoList에 담는다.
+            Ray ray = mainCamera.ViewportPointToRay(Vector2.one * 0.5f);
+            RaycastHit[] hitInfoList = Physics.RaycastAll(ray, weaponSetting.attackDistance);
+
+            /// 피격된 객체가 없다면 종료한다.
+            if (hitInfoList.Length <= 0)
+                return;
+
+            /// Physics.RaycatAll()은 임의의 순서로 정보륿 반환하기 때문에 짧은 거리순으로 정렬한다.
+            Array.Sort(hitInfoList, (RaycastHit a, RaycastHit b) => a.distance.CompareTo(b.distance));
+
+            /// 인덱스가 Raycast에 검색된 리스트의 길이를 벗어나지 않는 것에 한해
+            /// 관통수 능력치 만큼 피격처리를 한다.
+            for (int i = 0; i < status.AttackNunberOfPiercing.currentAbility && i < hitInfoList.Length; i++)
+            {              
+                RaycastHit hitInfo = hitInfoList[i];
+                int damage = (int)Math.Round(weaponSetting.damage * status.AttackDamage.currentAbility);
+
+                ImpactManager.Instance.SpawnImpact(hitInfo);
+
+                if (hitInfo.transform.CompareTag("ImpactEnemy"))
+                {
+                    UnityEngine.Debug.LogFormat("<color=red>{0} - {1}</color>\n" +
+                    "hitPoint: {2}\n" + 
+                    "피해량 = 피해증폭({3}%) x 공격력({4}) = {5}"
+                    , MethodBase.GetCurrentMethod().Name, hitInfo.collider.name, hitInfo.point
+                    , status.AttackDamage.currentAbility * 100, weaponSetting.damage, damage);
+                    WhalePark18.Debug.Log(DebugCategory.Debug, MethodBase.GetCurrentMethod().Name,
+                        ""
+                    );
+
+                    hitInfo.transform.GetComponent<EnemyFSM>().TakeDamage(damage);
+                }
+                else if(hitInfo.transform.CompareTag("InteractionObject"))
+                {
+                    hitInfo.transform.GetComponent<InteractionObject>().TakeDamage(damage);
+                }
+            }
         }
 
         private void ResetVariables()

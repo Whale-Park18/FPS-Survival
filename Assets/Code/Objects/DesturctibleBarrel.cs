@@ -15,7 +15,7 @@ namespace WhalePark18.Objects
 
         public override void TakeDamage(int damage)
         {
-            currentHP = -damage;
+            currentHP -= damage;
 
             if (currentHP <= 0 && isDestroyed == false)
             {

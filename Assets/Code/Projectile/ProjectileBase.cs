@@ -1,24 +1,25 @@
 using System.Collections;
 using UnityEngine;
 using WhalePark18.Character.Enemy;
+using WhalePark18.Character.Player;
 
 namespace WhalePark18.Projectile
 {
     public class ProjectileBase : MonoBehaviour
     {
         [SerializeField]
-        private float projectileSpeed = 5f;
+        protected float projectileSpeed = 5f;
         [SerializeField]
-        private float projectileDistance = 30f;
+        protected float projectileDistance = 30f;
         [SerializeField]
-        private int damage = 10;
+        protected int damage = 10;
 
-        public void Move()
+        public virtual void Move()
         {
             StartCoroutine("OnMove");
         }
 
-        private IEnumerator OnMove()
+        protected virtual IEnumerator OnMove()
         {
             float moveDistance = 0f;
             while(true)
@@ -41,9 +42,17 @@ namespace WhalePark18.Projectile
             if (other.CompareTag("ImpactEnemy"))
             {
                 other.GetComponent<EnemyFSM>().TakeDamage(damage);
-
-                Destroy(gameObject);
             }
+            else if(other.CompareTag("Player"))
+            {
+                other.GetComponent<PlayerController>().TakeDamage(damage);
+            }
+            else if(other.CompareTag("Intercation"))
+            {
+
+            }
+            
+            Destroy(gameObject);
         }
     }
 }

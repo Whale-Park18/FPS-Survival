@@ -1,6 +1,6 @@
 using UnityEngine;
-
-using WhalePark18.Character;
+using System.Reflection;
+using WhalePark18.Character.Player;
 using WhalePark18.Item.Active;
 
 namespace WhalePark18.Item.Kit
@@ -16,7 +16,7 @@ namespace WhalePark18.Item.Kit
 
         public override void Use(GameObject entity)
         {
-            int maxCount = numberOfBomb + CalculateBombIncrease(entity.GetComponent<Status>());
+            int maxCount = numberOfBomb + CalculateBombIncrease(entity.GetComponent<PlayerStatus>());
             for(int i = 0; i < maxCount; i++)
             {
                 GameObject bomb = Instantiate(bombPrefab);
@@ -32,11 +32,11 @@ namespace WhalePark18.Item.Kit
         /// </summary>
         /// <param name="status">«√∑π¿ÃæÓ stats</param>
         /// <returns>∆¯≈∫ ¡ı∞°∑Æ</returns>
-        private int CalculateBombIncrease(Status status)
+        private int CalculateBombIncrease(PlayerStatus status)
         {
-            print("<color=green>" + (status.CurrentItemEfficiency - 1f) + "</color>");
-
-            int bombIncrease = (int)((status.CurrentItemEfficiency - 1f) * 10);
+            int bombIncrease = (int)((status.ItemEfficiency.currentAbility - 1f) * 10);
+            
+            Debug.Log(DebugCategory.Debug, MethodBase.GetCurrentMethod().Name, "æ∆¿Ã≈€ »ø¿≤: {0}, ¡ı∞°µ» ∆¯≈∫: {1}", (status.ItemEfficiency.currentAbility - 1f), bombIncrease);
 
             return bombIncrease;
         }

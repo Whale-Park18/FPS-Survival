@@ -3,7 +3,7 @@ using UnityEngine;
 
 using WhalePark18.Character.Enemy;
 
-namespace WhalePark18.MemoryPool
+namespace WhalePark18
 {
     public class EnemyMemoryPool : MonoBehaviour
     {
@@ -41,7 +41,7 @@ namespace WhalePark18.MemoryPool
             int currentNumber = 0;
             int maximumNumber = 50;
 
-            while (true)
+            while (true) 
             {
                 /// 동시에 numberOfEnemiesSpawnedAtOnce 숫자만큼 적이 생성되도록 반복문 사용
                 for (int i = 0; i < numberOfEnemiesSpawnedAtOnce; i++)

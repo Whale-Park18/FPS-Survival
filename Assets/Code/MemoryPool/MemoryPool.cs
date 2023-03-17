@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UIElements;
 
-namespace WhalePark18.MemoryPool
+namespace WhalePark18
 {
     public class MemoryPool : MonoBehaviour
     {
@@ -10,19 +11,19 @@ namespace WhalePark18.MemoryPool
         /// </summary>
         private class PoolItem
         {
-            public bool isActive;           // "gameObject"의 활성화/비활성화 정보
-            public GameObject gameObject;         // 화면에 보이는 실제 게임오브젝트
+            public bool isActive;                               // "gameObject"의 활성화/비활성화 정보
+            public GameObject gameObject;                       // 화면에 보이는 실제 게임오브젝트
         }
 
-        private int increaseCount = 5;              // 오브젝특가 부족할 떄 Instantiate()로 추가되는 오브젝트 개수
-        private int maxCount;                       // 현재 리스트에 둥록되어 있는 오브젝트 개수
-        private int activeCount;                    // 현재 게임에 사용되고 있는(활성화된) 오브젝트 개수
+        private int increaseCount = 5;                          // 오브젝특가 부족할 떄 Instantiate()로 추가되는 오브젝트 개수
+        private int maxCount;                                   // 현재 리스트에 둥록되어 있는 오브젝트 개수
+        private int activeCount;                                // 현재 게임에 사용되고 있는(활성화된) 오브젝트 개수
 
-        private GameObject poolObject;         // 오브젝트 풀링에서 관리하는 게임 오브젝트 프리팹
-        private List<PoolItem> poolItemList;       // 관리되는 모든 오브젝트를 저장하는 리스트
+        private GameObject poolObject;                          // 오브젝트 풀링에서 관리하는 게임 오브젝트 프리팹
+        private List<PoolItem> poolItemList;                    // 관리되는 모든 오브젝트를 저장하는 리스트
 
-        public int MaxCount => maxCount;        // 외부에서 현재 리스트에 등록되어 있는 오브젝트 개수 확인을 위한 프로퍼티
-        public int ActiveCount => activeCount;     // 외부에서 현재 활성화 되어 있는 오브젝트 개수 확인을 위한 프로퍼티
+        public int MaxCount => maxCount;                        // 외부에서 현재 리스트에 등록되어 있는 오브젝트 개수 확인을 위한 프로퍼티
+        public int ActiveCount => activeCount;                  // 외부에서 현재 활성화 되어 있는 오브젝트 개수 확인을 위한 프로퍼티
 
         private Vector3 tempPosition = new Vector3(48, 1, 48);  // 오브젝트가 임시로 보관되는 위치
 
@@ -48,6 +49,7 @@ namespace WhalePark18.MemoryPool
             {
                 PoolItem poolItem = new PoolItem();
 
+                /// 
                 poolItem.isActive = false;
                 poolItem.gameObject = GameObject.Instantiate(poolObject);
                 poolItem.gameObject.transform.position = tempPosition;
@@ -129,7 +131,8 @@ namespace WhalePark18.MemoryPool
                 {
                     activeCount--;
 
-                    poolItem.gameObject.transform.position = tempPosition;
+                    poolItem.gameObject.transform.SetParent(transform);
+                    poolItem.gameObject.transform.localPosition = Vector3.zero;
                     poolItem.isActive = false;
                     poolItem.gameObject.SetActive(false);
 
@@ -152,7 +155,8 @@ namespace WhalePark18.MemoryPool
 
                 if (poolItem.gameObject != null && poolItem.isActive)
                 {
-                    poolItem.gameObject.transform.position = tempPosition;
+                    poolItem.gameObject.transform.SetParent(transform);
+                    poolItem.gameObject.transform.localPosition = Vector3.zero;
                     poolItem.isActive = false;
                     poolItem.gameObject.SetActive(false);
                 }

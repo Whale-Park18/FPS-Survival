@@ -1,8 +1,10 @@
 using System.Collections;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.AI;
 
-using WhalePark18.MemoryPool;
+using WhalePark18.Item;
+using WhalePark18.Manager;
 using WhalePark18.Projectile;
 
 namespace WhalePark18.Character.Enemy
@@ -13,34 +15,45 @@ namespace WhalePark18.Character.Enemy
     {
         [Header("Pursuit")]
         [SerializeField]
-        private float targetRecognitionRange = 8f;    // 인식 범위(이 범위 안에 들어오면 "Pursuit" 상태로 변경
+        private float targetRecognitionRange = 8f;          // 인식 범위(이 범위 안에 들어오면 "Pursuit" 상태로 변경
         [SerializeField]
-        private float pursuitLimitRange = 10f;          // 추적 범위(이 범위 밖으로 나가면 "Wander" 상태로 변경
+        private float pursuitLimitRange = 10f;              // 추적 범위(이 범위 밖으로 나가면 "Wander" 상태로 변경
 
         [Header("Attack")]
         [SerializeField]
-        private GameObject projectilePrefab;       // 발사체 프리팹
+        private GameObject projectilePrefab;                // 발사체 프리팹
         [SerializeField]
-        private Transform projectileSpawnPoint;   // 발사체 생성 위치
+        private Transform projectileSpawnPoint;             // 발사체 생성 위치
         [SerializeField]
-        private float attackRange = 5f;       // 공격 범위(이 범위 안에 들어오면 "Attack"상태로 변경)
+        private float attackRange = 5f;                     // 공격 범위(이 범위 안에 들어오면 "Attack"상태로 변경)
         [SerializeField]
-        private float attackRate = 1f;        // 공격 속도
+        private float attackRate = 1f;                      // 공격 속도
 
-        private EnemyState enemyState = EnemyState.None;   // 현재 적 행동
+        private EnemyState enemyState = EnemyState.None;    // 현재 적 행동
         private float lastAttackTime = 0;
 
-        private Status status;                         // 이동속도 등의 정보
-        private NavMeshAgent navMeshAgent;                   // 이동 제어를 위한 NavMeshAgent
-        private Transform target;                         // 적의 공격 대상(플레이어)
-        private EnemyMemoryPool enemyMemoryPool;                // 적 메모리 풀(적 오브젝트 비활성화에 사용)
+        private EnemyStatus status;                              // 이동속도 등의 정보
+        private NavMeshAgent navMeshAgent;                  // 이동 제어를 위한 NavMeshAgent
+        private Transform target;                           // 적의 공격 대상(플레이어)
+
+        private void Awake()
+        {
+            status = GetComponent<EnemyStatus>();
+            navMeshAgent = GetComponent<NavMeshAgent>();
+        }
+
+        public void Setup(Transform target)
+        {
+            this.target = target;
+
+            /// NavMeshAgent 컴포넌트에서 회전을 업데이트하지 않도록 설정
+            navMeshAgent.updateRotation = false;
+        }
 
         public void Setup(Transform target, EnemyMemoryPool enemyMemoryPool)
         {
-            status = GetComponent<Status>();
-            navMeshAgent = GetComponent<NavMeshAgent>();
             this.target = target;
-            this.enemyMemoryPool = enemyMemoryPool;
+            //this.enemyMemoryPool = enemyMemoryPool;
 
             /// NavMeshAgent 컴포넌트에서 회전을 업데이트하지 않도록 설정
             navMeshAgent.updateRotation = false;
@@ -60,6 +73,10 @@ namespace WhalePark18.Character.Enemy
             enemyState = EnemyState.None;
         }
 
+        /// <summary>
+        /// 상태를 변경 인터페이스
+        /// </summary>
+        /// <param name="newState"></param>
         public void ChangeState(EnemyState newState)
         {
             if (enemyState == newState) return;
@@ -71,6 +88,10 @@ namespace WhalePark18.Character.Enemy
             StartCoroutine(enemyState.ToString());
         }
 
+        /// <summary>
+        /// 대기 상태 메소드
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator Idle()
         {
             /// n초 후에 "배회" 상태로 변경하는 코루틴 실행
@@ -86,6 +107,10 @@ namespace WhalePark18.Character.Enemy
             }
         }
 
+        /// <summary>
+        /// 자동으로 대기 상태에서 탐색 상태로 전환하는 메소드
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator AutoChangeFormIdleToWander()
         {
             /// 1~4초 대기 후,
@@ -95,6 +120,10 @@ namespace WhalePark18.Character.Enemy
             ChangeState(EnemyState.Wander);
         }
 
+        /// <summary>
+        /// 탐색 상태 메소드
+        /// </summary>
+        /// <returns>코루틴</returns>
         private IEnumerator Wander()
         {
             float currentTime = 0;
@@ -132,6 +161,10 @@ namespace WhalePark18.Character.Enemy
             }
         }
 
+        /// <summary>
+        /// 탐색할 위치를 계산하는 메소드
+        /// </summary>
+        /// <returns>탐색 위치</returns>
         private Vector3 CalculateWanderPosition()
         {
             float wanderRadius = 10f;   // 현재 위치를 원점으로 하는 원의 반지름
@@ -156,6 +189,12 @@ namespace WhalePark18.Character.Enemy
             return targetPosition;
         }
 
+        /// <summary>
+        /// 각도에 따른 반지름 거리의 위치를 반환하는 메소드
+        /// </summary>
+        /// <param name="radius">반지름</param>
+        /// <param name="angle">각도</param>
+        /// <returns>각도에 따른 반지름 거리의 위치</returns>
         private Vector3 SetAngle(float radius, int angle)
         {
             Vector3 position = Vector3.zero;
@@ -166,6 +205,10 @@ namespace WhalePark18.Character.Enemy
             return position;
         }
 
+        /// <summary>
+        /// 추적 상태 메소드
+        /// </summary>
+        /// <returns>코루틴</returns>
         private IEnumerator Pursuit()
         {
             while (true)
@@ -184,6 +227,10 @@ namespace WhalePark18.Character.Enemy
             }
         }
 
+        /// <summary>
+        /// 공격 상태 메소드
+        /// </summary>
+        /// <returns>코루틴</returns>
         private IEnumerator Attack()
         {
             navMeshAgent.ResetPath();
@@ -206,6 +253,9 @@ namespace WhalePark18.Character.Enemy
             }
         }
 
+        /// <summary>
+        /// 타겟을 향해 바라보게 회전시키는 메소드
+        /// </summary>
         private void LookRotationToTarget()
         {
             Vector3 to = new Vector3(target.position.x, 0, target.position.z);
@@ -218,6 +268,9 @@ namespace WhalePark18.Character.Enemy
             //rotation = Quaternion.Slerp(transform.rotation, rotation, 0.01f);
         }
 
+        /// <summary>
+        /// 타겟과의 거리와 선택할 상태를 계산하는 메소드
+        /// </summary>
         private void CalculateDistanceToTargetAndSelectState()
         {
             if (target == null)
@@ -261,11 +314,19 @@ namespace WhalePark18.Character.Enemy
 
         public void TakeDamage(int damage)
         {
-            bool isDie = status.DecreaseHP(damage);
+            UnityEngine.Debug.LogFormat("<color=green>{0}\n피해량:</color> {1}", MethodBase.GetCurrentMethod().Name, damage);
+
+            bool isDie = status.DecreaseHp(damage);
 
             if (isDie == true)
             {
-                enemyMemoryPool.DeactiveEnemy(gameObject);
+                GameObject createItem = ItemManager.Instance.GetRandomItem();
+                if(createItem != null)
+                {
+                    Instantiate(createItem, transform.position, transform.rotation);
+                }
+
+                EnemyManager.Instance.ReturnEnemy(this);
             }
         }
     }

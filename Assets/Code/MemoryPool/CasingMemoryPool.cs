@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace WhalePark18.MemoryPool
+namespace WhalePark18
 {
     public class CasingMemoryPool : MonoBehaviour
     {
@@ -19,7 +19,7 @@ namespace WhalePark18.MemoryPool
             GameObject item = memoryPool.ActivePoolItem();
             item.transform.position = position;
             item.transform.rotation = Random.rotation;
-            item.GetComponent<Casing>().Setup(memoryPool, direction);
+            item.GetComponent<Casing>().Setup(direction);
         }
     }
 }

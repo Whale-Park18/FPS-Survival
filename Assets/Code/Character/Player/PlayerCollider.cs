@@ -8,6 +8,8 @@ namespace WhalePark18.Character.Player
     {
         private void OnTriggerEnter(Collider other)
         {
+            print(other.name); ;
+
             if (other.CompareTag("Item"))
             {
                 other.GetComponent<ItemBase>().Use(transform.parent.gameObject);

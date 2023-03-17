@@ -2,6 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 using WhalePark18.Character.Player;
+using WhalePark18.HUD;
 
 namespace WhalePark18.Weapon
 {
@@ -25,6 +26,7 @@ namespace WhalePark18.Weapon
         /// Property
         /// </summary>
         public WeaponBase[] Weapons => weapons;
+
         private void Awake()
         {
             /// 무기 정보 출력을 위해 현재 소지중인 모든 무기 이벤트 등록

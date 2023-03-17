@@ -1,6 +1,6 @@
 using UnityEngine;
 
-using WhalePark18.Character;
+using WhalePark18.Character.Player;
 
 namespace WhalePark18.Item.Kit
 {
@@ -13,7 +13,7 @@ namespace WhalePark18.Item.Kit
 
         public override void Use(GameObject entity)
         {
-            entity.GetComponent<Status>().IncreaseHP(increaseHP);
+            entity.GetComponent<PlayerStatus>().IncreaseHp(increaseHP);
 
             Instantiate(hpEffectPrefab, transform.position, Quaternion.identity);
 

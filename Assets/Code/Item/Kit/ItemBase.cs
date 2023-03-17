@@ -12,6 +12,8 @@ namespace WhalePark18.Item.Kit
         private float pingpongSpeed = 0.5f;
         [SerializeField]
         private float rotateSpeed = 50;
+        [SerializeField, Tooltip("아이템 가중치")]
+        private int weight;                     // 아이템 가중치
 
         private IEnumerator Start()
         {

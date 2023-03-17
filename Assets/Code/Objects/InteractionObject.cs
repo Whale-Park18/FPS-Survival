@@ -9,7 +9,7 @@ namespace WhalePark18.Objects
         protected int maxHP = 100;
         protected int currentHP;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             currentHP = maxHP;
         }
