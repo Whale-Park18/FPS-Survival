@@ -60,9 +60,11 @@ namespace WhalePark18.HUD.Window
 
         public void OnClickGameExit()
         {
-            //GameManager.Instance.GameExit();
-            GameManager.Instance.GameReset();
-            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            GameManager.Instance.GameExit();
+            
+            /// 임시 코드(재시작)
+            //GameManager.Instance.GameReset();
+            //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
     }
 }
