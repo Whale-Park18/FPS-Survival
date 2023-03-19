@@ -82,9 +82,9 @@ namespace WhalePark18.Manager
                 /// 단, maxEnemyCount를 넘을 수는 없다.
                 for (int i = 0; i < numberOfEnemiesSpawnedAtOnce && currentEnemyCount < maxEnemyCount; i++)
                 {
+                    currentEnemyCount++;
                     EnemySpawnPoint spawnPoint = enemySpawnTileObjectPool.GetObject(GetRandomSpawnPoint());
                     StartCoroutine(SpawnEnemy(spawnPoint));
-                    currentEnemyCount++;
                 }
 
                 /// 적 소환 주기 시간까지 대기
@@ -112,7 +112,7 @@ namespace WhalePark18.Manager
             if (IsOverlapOnPillar(randomSpawnPosition))
                 randomSpawnPosition = CalculateAvoidOverlapPosition(randomSpawnPosition);
 
-            WhalePark18.Debug.Log(DebugCategory.Debug, MethodBase.GetCurrentMethod().Name, 
+            WhalePark18.Debug.Log(DebugCategory.Debug, "Spawn Tile Position",
                 "Enemy{0} SpawnPosition: {1}", currentEnemyCount, randomSpawnPosition);
 
             return randomSpawnPosition;
@@ -165,7 +165,9 @@ namespace WhalePark18.Manager
 
             /// enemySpawnPoint 위치에 적 소환
             Vector3 spawnPosition = enemySpawnPoint.transform.position;
-            spawnPosition.y = 0;
+            //spawnPosition.y = 0;
+            WhalePark18.Debug.Log(DebugCategory.Debug, "Spawn Enemy Position",
+                "Enemy{0} SpawnPosition: {1}", currentEnemyCount, spawnPosition);
 
             EnemyFSM enemyFSM = enemyObjectPool.GetObject(spawnPosition);
             enemyFSM.Setup(target);
