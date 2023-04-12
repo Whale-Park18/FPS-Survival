@@ -2,16 +2,25 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using UnityEngine.SceneManagement;
+
 using WhalePark18.Character.Player;
+using WhalePark18.FSM;
+using WhalePark18.FSM.State;
+using WhalePark18.FSM.State.GameManagerState;
+using WhalePark18.Objects;
 
 namespace WhalePark18.Manager
 {
+    /// TODO: Main -> Game 전환 변경 방식 변경에 따른 삭제 예정
     public struct SceneName
     {
         public static string Start => "StartScene";
         public static string Game => "GameScene";
     }
+
+    public enum Tag { Target, Metal, ExplosiveBarrel, ImpactNormal, ImpactObstacle, ImpactEnemy, InteractionObejct, Item }
+
+    public enum GameManagerStates { Main = 0, Game, }
 
     [System.Serializable]
     public class GameOverEvent : UnityEngine.Events.UnityEvent<int, string, int> { }
@@ -21,73 +30,114 @@ namespace WhalePark18.Manager
         [HideInInspector]
         public GameOverEvent gameOverEvent;
 
-        /// <summary>
-        /// Pause
-        /// </summary>
-        private bool isPause;       // [플래그] 게임이 일시정지 됬는지 확인
-        private int pauseStack = 0; // 일시 정지 요청이 왔을 때 증가시키는 스택
+        /****************************************
+         * GameManager Base
+         ****************************************/
+        private StateBase<GameManager>[]    states;
+        private StateMachine<GameManager>   stateMachine;
 
-        /// <summary>
-        /// Game Play
-        /// </summary>
-        private GameObject player;
-
-        private Timer timer;
+        /****************************************
+         * Main
+         ****************************************/
         [SerializeField]
-        private int killGoals = 1000;
+        private GameObject                  canvasMain;
+
+        /****************************************
+         * Game
+         ****************************************/
+        [SerializeField]
+        private GameObject                  canvasGame;
+
+        private bool                        isPause;            // [플래그] 게임이 일시정지 됬는지 확인
+        private int                         pauseStack = 0;     // 일시 정지 요청이 왔을 때 증가시키는 스택
+        private Timer                       timer;
+        [SerializeField]
+        private int                         goalNumberOfKill = 1000;
+        private ScoreSystem                 scoreSystem;
+
+        private GameObject                  player;
+        private List<DestructiblePillar>    pillarList;
+        [SerializeField]
+        private LayerMask                   pillarLayerMask;
+
+        /****************************************
+         * 프로퍼티
+         ****************************************/
+        public bool IsPause => isPause;
+        public int GoalNumberOfKill => goalNumberOfKill;
+        public Timer Timer => timer;
+        public GameObject Player => player;
 
         /// <summary>
-        /// 프로퍼티
+        /// GameManager가 인스턴스화 된 직후, 호출되는 초기화 메소드
         /// </summary>
-        public bool IsPause => isPause;
-        public int KillGoals => killGoals;
-
         private void Awake()
         {
+            /// 1. 싱글톤 작업
             if(Instance != null && Instance != this)
             {
                 Destroy(this.gameObject);
             }
 
-            /// SceneManager를 통해 씬 로드 시 작동할 함수 추가
-            SceneManager.sceneLoaded += OnSceneLoaded;
-
-            /// 컴포넌트 초기화
+            /// 2. 컴포넌트 및 변수 초기화
             timer = GetComponent<Timer>();
+            scoreSystem = new ScoreSystem();
+
+            /// 3. 상태 초기화
+            /// 3.1. 상태 컴포넌트를 붙일 오브젝트 생성 및 초기화
+            GameObject stateObject = new GameObject("States");
+            stateObject.transform.parent = this.transform;
+            stateObject.transform.localScale = Vector3.zero;
+
+            /// 3.2. 상태 컴포넌트 부착 및 초기화
+            states = new StateBase<GameManager>[4];
+            states[(int)GameManagerStates.Main] = stateObject.AddComponent<Main>();
+            states[(int)GameManagerStates.Game] = stateObject.AddComponent<Game>();
         }
 
-        void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+        /// <summary>
+        /// 첫 프레임 직전, 호출되는 초기화 메소드
+        /// </summary>
+        private void Start()
         {
-            if(scene.name == SceneName.Game)
-                GameStart();
+            /// StateMachine의 owner를 싱글톤 객체로, 초기 상태로 Main으로 설정한다.
+            stateMachine = new StateMachine<GameManager>();
+            stateMachine.Setup(Instance, states[(int)GameManagerStates.Main]);
+
+            /// 1. 관리 오브젝트 초기화
+            /// 1.1. 플레이어 초기화
+            player = GameObject.Find("Player");
+            
+            /// 1.2. 기둥 초기화
+            pillarList = new List<DestructiblePillar>();
+            Collider[] colliders = Physics.OverlapSphere(Vector3.zero, 150f, pillarLayerMask);
+            foreach(Collider collider in colliders)
+            {
+                DestructiblePillar pillar = collider.GetComponent<DestructiblePillar>();
+                if(pillar != null ) pillarList.Add(pillar);
+            }
         }
 
+        /// <summary>
+        /// 상태를 변경하는 메소드
+        /// </summary>
+        /// <param name="newState">변경할 새로운 상태</param>
+        private void ChangeState(GameManagerStates newState)
+        {
+            stateMachine.ChangeState(states[(int)newState]);
+        }
+
+        /// <summary>
+        /// 게임 시작 메소드
+        /// </summary>
         private void GameStart()
         {
-            WhalePark18.Debug.Log(DebugCategory.Debug, MethodBase.GetCurrentMethod().Name);
-
-            player = GameObject.Find("Player");
-
-            EnemyManager.Instance.Target = player.transform;
-            EnemyManager.Instance.Run();
-
+            /// TODO: Game(StateBase).Execute()에서 실행될 로직
+            EnemyManager.Instance.Setup(player.transform);
+            //EnemyManager.Instance.SpawnBackgroundEnemy();
             timer.Run();
-        }
 
-        /// <summary>
-        /// 게임 종료 메소드
-        /// </summary>
-        public void GameExit()
-        {
-            Application.Quit();
-        }
-
-        /// <summary>
-        /// 게임 초기화 메소드
-        /// </summary>
-        public void GameReset()
-        {
-            player.GetComponent<PlayerController>().enabled = true;
+            ChangeState(GameManagerStates.Game);
         }
 
         /// <summary>
@@ -105,19 +155,37 @@ namespace WhalePark18.Manager
             timer.Stop();
             player.GetComponent<PlayerController>().enabled = false;
 
-            /// 점수 계산 후, WindowScore에 반영한다.
-            /// 최종 점수 = 시간 점수 + 적 처치 점수
-            /// 시간 점수 = (3600 - 생존 시간) * 적 저치 수 / 목표 적 처치 수
-            ///     * 3600: 1시간을 초로 변환한 숫자
-            ///         * 3600에 생존 시간을 빼면서 더 적은 시간에 목표를 달성했을 시 높은 점수를 얻는다.
-            ///         * 단, 점수 계산시 생존 시간은 3600을 넘을 수 없다.
-            ///     * 적 처치 수 / 목표 적 처치 수: 적 처치 백분율
-            ///         * 적 처치 백분율을 곱해 적을 처치하지 않고 빨리 사망해 높은 시간 점수를 얻는 것을 방지한다.
-            int killScore = EnemyManager.Instance.KillCount;
-            int timeScore = (3600 - (int)timer.Time) > 0 ? 3600 - (int)timer.Time : 0;
-            timeScore *= (killScore / killGoals);
-            int totalScore = timeScore + killScore;
-            gameOverEvent.Invoke(totalScore, timer.ToString(), killScore);
+            scoreSystem.CalculateScore(EnemyManager.Instance.KillCountInfo, timer.Time);
+            gameOverEvent.Invoke(scoreSystem.TotalScore, timer.ToString(), scoreSystem.KillScore);
+        }
+
+        /// <summary>
+        /// 게임 초기화 메소드
+        /// </summary>
+        public void GameReset()
+        {
+            /// 1. 플레이어 초기화
+            //player.GetComponent<PlayerController>().enabled = true;
+            var playerController = player.GetComponent<PlayerController>();
+            playerController.SetActive(false);
+            playerController.Reset();
+
+            /// 2. 적 초기화
+            EnemyManager.Instance.Reset();
+            
+            /// 3. 기둥 초기화
+            foreach(var pillar in pillarList)
+            {
+                pillar.Reset();
+            }
+        }
+
+        /// <summary>
+        /// 게임 종료 메소드
+        /// </summary>
+        public void GameExit()
+        {
+            Application.Quit();
         }
 
         /// <summary>
@@ -128,7 +196,6 @@ namespace WhalePark18.Manager
             /// 일시 정지 스택을 1 증가시킨다.
             pauseStack++;
             isPause = pauseStack > 0;
-            //print("<color=green>" + MethodBase.GetCurrentMethod().Name + "</color> pauseStack: " + pauseStack);
 
             if (isPause)
                 Time.timeScale = 0f;
@@ -142,7 +209,6 @@ namespace WhalePark18.Manager
             /// 일시 정지 스택을 1 감소시킨다(단, 음수로 내려가진 않는다).
             pauseStack = pauseStack - 1 <= 0 ? 0 : pauseStack - 1;
             isPause = pauseStack > 0;
-            //print("<color=green>" + MethodBase.GetCurrentMethod().Name + "</color> pauseStack: " + pauseStack);
 
             if (isPause == false)
                 Time.timeScale = 1f;
@@ -154,8 +220,6 @@ namespace WhalePark18.Manager
         /// <param name="active">활성화 여부</param>
         public void SetCursorActive(bool active)
         {
-            //print("<color=green>" + MethodBase.GetCurrentMethod().Name + "</color> active: " + active);
-
             if (active)
             {
                 Cursor.visible = true;
@@ -168,6 +232,10 @@ namespace WhalePark18.Manager
             }
         }
 
+        /// <summary>
+        /// 플레이 시간을 문자열로 반환하는 메소드
+        /// </summary>
+        /// <returns></returns>
         public string TimeToString()
         {
             return timer.ToString();
