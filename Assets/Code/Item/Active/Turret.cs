@@ -151,7 +151,7 @@ namespace WhalePark18.Item.Active
                 if(Time.time - lastAttackTime > attackDelay)
                 {
                     GameObject clone = Instantiate(bulletPrefab, bulletSpawnPoint.position, bulletSpawnPoint.rotation);
-                    clone.GetComponent<ProjectileBase>().Move();
+                    clone.GetComponent<ProjectileBase>().Fire(targetPosition);
 
                     AudioPlay(shootCilp);
 
