@@ -6,8 +6,23 @@ using WhalePark18.Character.Enemy;
 
 namespace WhalePark18.ObjectPool
 {
+    /// <summary>
+    /// 적 소환 알림 타일 오브젝트풀
+    /// </summary>
+    /// <remarks>
+    /// 오브젝트 추적
+    /// </remarks>
     public class EnemySpawnTileObjectPool : MonoObjectPool<EnemySpawnPoint>
     {
+        protected override EnemySpawnPoint CreateObject()
+        {
+            GameObject instance = GameObject.Instantiate(prefab);
+            EnemySpawnPoint spawnPoint = instance.GetComponent<EnemySpawnPoint>();
+            spawnPoint.Setup(idToAssignToTheObject++);
+
+            return spawnPoint;
+        }
+
         /// <summary>
         /// 오브젝트 반환 인터페이스
         /// </summary>
@@ -36,7 +51,24 @@ namespace WhalePark18.ObjectPool
             EnemySpawnPoint enemySpawnPoint = objectPool.Dequeue();
             EnableObject(enemySpawnPoint, position);
 
+            if(isTrackActiveObject)
+            {
+                activeObjects.Add(enemySpawnPoint.ID, enemySpawnPoint);
+            }
+
             return enemySpawnPoint;
+        }
+
+        public override void ReturnObject(EnemySpawnPoint returnObject)
+        {
+            /// 반환된 오브젝트를 비활성화 한 후, 오브젝트풀에 넣는다.
+            base.ReturnObject(returnObject);
+
+            /// trackActiveObject가 활성화 되었을 때, 활성화 오브젝트 추적 자료형에서 제거한다.
+            if (isTrackActiveObject)
+            {
+                activeObjects.Remove(returnObject.ID);
+            }
         }
     }
 }
