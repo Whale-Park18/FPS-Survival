@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 7822904539311600818}
   - component: {fileID: 9149292009371325536}
   - component: {fileID: 9176085673667678771}
-  - component: {fileID: 6513946749736607396}
+  - component: {fileID: 481662875031665257}
   m_Layer: 0
   m_Name: TurretProjectile
   m_TagString: Untagged
@@ -174,7 +174,7 @@ TrailRenderer:
   m_MinVertexDistance: 0.1
   m_Autodestruct: 0
   m_Emitting: 1
---- !u!114 &6513946749736607396
+--- !u!114 &481662875031665257
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -183,9 +183,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 2593775262155995335}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7778c6d8244cfd345897e36ba121213c, type: 3}
+  m_Script: {fileID: 11500000, guid: 4881f1650e7d7a8418891a73e7080bf0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  projectileSpeed: 20
+  projectileSpeed: 5
   projectileDistance: 30
   damage: 10
+  baseName: ProjectileTurret

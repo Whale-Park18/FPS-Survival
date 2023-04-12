@@ -141,8 +141,8 @@ GameObject:
   m_Component:
   - component: {fileID: 5392403058390643328}
   - component: {fileID: 7135576456723674290}
-  - component: {fileID: 2826987724402591496}
   - component: {fileID: 6243679032189565812}
+  - component: {fileID: 2826987724402591496}
   m_Layer: 11
   m_Name: Destructible Pillar
   m_TagString: InteractionObject
@@ -180,22 +180,6 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 1.05, y: 3, z: 1.05}
   m_Center: {x: 0, y: 1.5, z: 0}
---- !u!114 &2826987724402591496
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5392403058390643331}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0812d12e9b72a244bb032889df247e71, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  maxHP: 100
-  destructiblePillar: {fileID: 2062863051249746174}
-  destructiblePillarPieces: {fileID: 5942157728423308395}
-  repairTime: 20
 --- !u!54 &6243679032189565812
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -212,6 +196,22 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 126
   m_CollisionDetection: 0
+--- !u!114 &2826987724402591496
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5392403058390643331}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0812d12e9b72a244bb032889df247e71, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  maxHP: 100
+  destructiblePillar: {fileID: 2062863051249746174}
+  destructiblePillarPieces: {fileID: 5942157728423308395}
+  repairTime: 20
 --- !u!1 &5392403058455763948
 GameObject:
   m_ObjectHideFlags: 0
