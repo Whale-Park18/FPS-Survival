@@ -5,21 +5,22 @@ namespace WhalePark18.Character
     [System.Serializable]
     public struct Ability
     {
-        public bool isCurrentAbilityEqualMaxAbility;    // 현재 능력치와 최대 능력치가 동일시 됨을 나타내는 플래그
-        public float baseAbility;                       // 기본 능력치(시작 능력치로 사용할 것)
-        public float maxAbility;                        // 최대 능력치
-        public float currentAbility;                    // 현재 능력치
+        public bool     isCurrentAbilityEqualMaxAbility;   // 현재 능력치와 최대 능력치가 동일시 됨을 나타내는 플래그
+        public float    baseAbility;                       // 기본 능력치(시작 능력치로 사용할 것)
+        public float    maxAbility;                        // 최대 능력치
+        public float    currentAbility;                    // 현재 능력치
 
-        public int maxTraitLevel;                       // 최대 강화 레벨
-        public int currentTraitLevel;                   // 현재 강화 레벨
+        public int      maxTraitLevel;                     // 최대 강화 레벨
+        public int      currentTraitLevel;                 // 현재 강화 레벨
 
-        public bool isOperationMultiplication;          // 연산이 곱연산인지 나타내는 플래그
-        public bool isIncrementFactorPercentage;        // 증가 계수가 백분율임을 나타내는 플래그
-        public float incrementFactor;                   // 증가 계수
+        public bool     isOperationMultiplication;         // 연산이 곱연산인지 나타내는 플래그
+        public bool     isIncrementFactorPercentage;       // 증가 계수가 백분율임을 나타내는 플래그
+        public float    incrementFactor;                   // 증가 계수
 
-        public void Initialize()
+        public void Reset()
         {
             maxAbility = currentAbility = baseAbility;
+            currentTraitLevel = 0;
         }
 
         /// <summary>
