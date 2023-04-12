@@ -46,20 +46,15 @@ namespace WhalePark18.Weapon
         private PlayerStatus status;                      // 플레이어 스테이터스
         private Camera mainCamera;                  // 광선 발사
 
-        private void Awake()
+        protected override void Awake()
         {
-            base.Setup();
-
+            /// 1. 컴포넌트 초기화
+            base.Awake();
             status = GetComponentInParent<PlayerStatus>();
-            //casingMemoryPool = GetComponent<CasingMemoryPool>();
-            //impactMemoryPool = GetComponentInParent<ImpactMemoryPool>();
             mainCamera = Camera.main;
 
-            /// 처음 탄창 수 최대로 설정
-            weaponSetting.currentMagazine = weaponSetting.maxMagazine;
-
-            /// 처음 탄 수 최대로 설정
-            weaponSetting.currentAmmo = weaponSetting.maxAmmo;
+            /// 2. 탄창, 탄약 초기화
+            ///     * 아이템에 의해 활성화 되는 무기이기 때문에 따로 초기화하지 않는다.
         }
 
         private void OnEnable()
@@ -70,16 +65,24 @@ namespace WhalePark18.Weapon
             /// 총구 이펙트 오브젝트 비활성화
             muzzleFlashEffect.SetActive(false);
 
-            /// 이벤트 클래스에 등록된 외부 메소드가 호출되는 시점은
-            /// 이벤트 클래스의 Invoke() 메소드가 호출될 때이다.
-
-            /// 무기가 활성화될 떄 해당 무기의 탄창 정보를 갱신
+            /// 무기 활성화될 때 해당 무기 탄창과 탄 수  정보 갱신
             onMagazineEvent.Invoke(weaponSetting.currentMagazine);
-
-            /// 무기가 활성화될 때 해당 무기의 총알 수 정보를 갱신
             onAmmoEvent.Invoke(weaponSetting.currentAmmo, weaponSetting.maxAmmo);
 
-            ResetVariables();
+            ResetAttackVariables();
+        }
+
+        public override void Reset()
+        {
+            /// TODO:
+            /// * lock 초기화
+            /// * 탄약 초기화
+            /// * 무기 강제 변경 -> PlayerController에서 하면 될듯
+            WeaponLock = true;
+            weaponSetting.currentMagazine = 0;
+            weaponSetting.currentAmmo = 0;
+
+            ResetAttackVariables();
         }
 
         public override void StartWeaponAction(int type = 0)
@@ -398,7 +401,10 @@ namespace WhalePark18.Weapon
             isAimModeChaing = false;
         }
 
-        private void ResetVariables()
+        /// <summary>
+        /// 공격에 사용되는 멤버 변수를 초기화하는 메소드
+        /// </summary>
+        private void ResetAttackVariables()
         {
             isReload = false;
             isAttack = false;
