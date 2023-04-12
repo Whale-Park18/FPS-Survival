@@ -55,40 +55,28 @@ namespace WhalePark18.Weapon
         [HideInInspector]
         public MagazineEvent onMagazineEvent = new MagazineEvent(); // 탄창 관련 이벤트 관리
 
-        /// <summary>
-        /// 외부에서 필요한 정보를 수정 및 열람하기 위해 정의한 Set Get 프로퍼티
-        /// </summary>
+
+        /****************************************
+         * 프로퍼티
+         ****************************************/
         public bool WeaponLock
         {
             set => weaponLock = value;
             get => weaponLock;
         }
-
-        /// <summary>
-        /// 외부에서 필요한 정보를 열람하기 위해 정의한 Get 프로퍼티
-        /// </summary>
         public PlayerAnimatorController Animator => animator;
         public WeaponName WeaponName => weaponSetting.weaponName;
         public int CurrentMagazine => weaponSetting.currentMagazine;
         public int MaxMagazine => weaponSetting.maxMagazine;
 
-        /// <summary>
-        /// 무기 사용 인터페이스
-        /// </summary>
-        /// <param name="type">마우스 버튼 타입</param>
-        public abstract void StartWeaponAction(int type = 0);
+        protected virtual void Awake()
+        {
+            audioSource = GetComponent<AudioSource>();
+            animator    = GetComponent<PlayerAnimatorController>();
+        }
 
-        /// <summary>
-        /// 무기 사용 중지 인터페이스
-        /// </summary>
-        /// <param name="type">마우스 버튼 타입</param>
-        public abstract void StopWeaponAction(int type = 0);
-
-        /// <summary>
-        /// 재장전 인터페이스
-        /// </summary>
-        public abstract void StartReload();
-
+        public abstract void Reset();
+        
         /// <summary>
         /// 무기 잠금 메소드
         /// </summary>
@@ -109,24 +97,21 @@ namespace WhalePark18.Weapon
         }
 
         /// <summary>
-        /// 무기 관련 사운드 플레이 메소드
+        /// 무기 사용 인터페이스
         /// </summary>
-        /// <param name="clip">재생할 클립</param>
-        protected void PlaySound(AudioClip clip)
-        {
-            // 기존에 재생중인 사운드 정지
-            // 새로운 사운드 clip으로 교체
-            // 사운드 재생
-            audioSource.Stop();
-            audioSource.clip = clip;
-            audioSource.Play();
-        }
+        /// <param name="type">마우스 버튼 타입</param>
+        public abstract void StartWeaponAction(int type = 0);
 
-        protected void Setup()
-        {
-            audioSource = GetComponent<AudioSource>();
-            animator = GetComponent<PlayerAnimatorController>();
-        }
+        /// <summary>
+        /// 무기 사용 중지 인터페이스
+        /// </summary>
+        /// <param name="type">마우스 버튼 타입</param>
+        public abstract void StopWeaponAction(int type = 0);
+
+        /// <summary>
+        /// 재장전 인터페이스
+        /// </summary>
+        public abstract void StartReload();
 
         /// <summary>
         /// 탄창 증가 메소드
@@ -140,6 +125,20 @@ namespace WhalePark18.Weapon
             weaponSetting.currentMagazine = CurrentMagazine + magazine > MaxMagazine ? MaxMagazine : CurrentMagazine + magazine;
 
             onMagazineEvent.Invoke(CurrentMagazine);
+        }
+
+        /// <summary>
+        /// 무기 관련 사운드 플레이 메소드
+        /// </summary>
+        /// <param name="clip">재생할 클립</param>
+        protected void PlaySound(AudioClip clip)
+        {
+            // 기존에 재생중인 사운드 정지
+            // 새로운 사운드 clip으로 교체
+            // 사운드 재생
+            audioSource.Stop();
+            audioSource.clip = clip;
+            audioSource.Play();
         }
     }
 }
