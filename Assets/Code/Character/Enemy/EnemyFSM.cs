@@ -11,6 +11,9 @@ namespace WhalePark18.Character.Enemy
 {
     public enum EnemyState { None = -1, Idle = 0, Wander, Pursuit, Attack, }
 
+    /// <summary>
+    /// Test용 Dumy에 사용할 클래스
+    /// </summary>
     public class EnemyFSM : MonoBehaviour
     {
         [Header("Pursuit")]
@@ -326,7 +329,7 @@ namespace WhalePark18.Character.Enemy
                     Instantiate(createItem, transform.position, transform.rotation);
                 }
 
-                EnemyManager.Instance.ReturnEnemy(this);
+                //EnemyManager.Instance.ReturnEnemy(this);
             }
         }
     }
