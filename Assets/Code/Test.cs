@@ -1,21 +1,34 @@
 using System.Collections;
+using System.Runtime.InteropServices;
 using UnityEngine;
+using WhalePark18.Manager;
+using static UnityEngine.UI.GridLayoutGroup;
+using WhalePark18.Projectile;
 
 public class Test : MonoBehaviour
 {
-    public Vector3 offset;
-    public float radius;
-    public LayerMask mask;
+    public Transform projectileSpawnPoint;
+    public Transform target;
+    private WaitForSeconds attackDelay = new WaitForSeconds(0.15f);
 
-    private void Update()
+    private Animator animator;
+
+    private void Awake()
     {
-        Vector3 point0 = transform.position;
-        Vector3 point1 = transform.position + offset;
-        Collider[] overlap = Physics.OverlapCapsule(point0, point1, radius, mask);
+        animator = GetComponent<Animator>();
+    }
 
-        foreach(Collider elelment in overlap)
-        {
-            print(elelment.name);
-        }
+    public void Fire()
+    {
+        StartCoroutine(OnFire());
+    }
+
+    private IEnumerator OnFire()
+    {
+        ProjectileBase projectile = EnemyProjectileManager.Instance.GetEnemyNormalMissile(
+            projectileSpawnPoint.position, projectileSpawnPoint.rotation
+        );
+        yield return attackDelay;
+        projectile.Fire(target.position);
     }
 }
