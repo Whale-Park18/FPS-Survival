@@ -12,19 +12,19 @@ namespace WhalePark18.Weapon
     public class WeaponSwitchSystem : MonoBehaviour
     {
         [SerializeField]
-        private PlayerController playerContoller;
+        private PlayerController    playerContoller;
         [SerializeField]
-        private PlayerHUD playerHUD;
+        private PlayerHUD           playerHUD;
 
         [SerializeField]
-        private WeaponBase[] weapons;           // 소지중인 무기 4종류
+        private WeaponBase[]        weapons;        // 소지중인 무기 4종류
 
-        private WeaponBase currentWeapon;       // 현재 사용중인 무기
-        private WeaponBase previousWeapon;      // 직전에 사용했던 무기
+        private WeaponBase          currentWeapon;  // 현재 사용중인 무기
+        private WeaponBase          previousWeapon; // 직전에 사용했던 무기
 
-        /// <summary>
-        /// Property
-        /// </summary>
+        /****************************************
+         * 프로퍼티
+         ****************************************/
         public WeaponBase[] Weapons => weapons;
 
         private void Awake()
@@ -54,6 +54,14 @@ namespace WhalePark18.Weapon
             ForcedSwitchngWeapon();
         }
 
+        public void Reset()
+        {
+            foreach(var weapon in weapons)
+                weapon.Reset();
+
+            SwitchingWeapon(WeaponType.Sub);
+        }
+
         private void UpdateSwitch()
         {
             /// 모든 키가 눌리지 않았으면 종료
@@ -71,6 +79,9 @@ namespace WhalePark18.Weapon
             }
         }
 
+        /// <summary>
+        /// 강제로 무기를 교체하는 메소드
+        /// </summary>
         private void ForcedSwitchngWeapon()
         {
             if(currentWeapon.WeaponLock)
