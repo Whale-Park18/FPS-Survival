@@ -11,23 +11,28 @@ namespace WhalePark18.Weapon
         [SerializeField]
         WeaponKnifeCollider weaponKnifeCollider;    // 칼 콜라이더 제어
 
+        protected override void Awake()
+        {
+            /// 1. 컴포넌트 초기화
+            base.Awake();
+
+            /// 2. 탄창, 탄약 초기화
+            weaponSetting.currentMagazine = weaponSetting.maxMagazine;
+            weaponSetting.currentAmmo = weaponSetting.maxAmmo;
+        }
+
         private void OnEnable()
         {
             isAttack = false;
 
-            /// 무기 활성화될 때 해당 무기 탄창 정보 갱신
+            /// 무기 활성화될 때 해당 무기 탄창과 탄 수  정보 갱신
             onMagazineEvent.Invoke(weaponSetting.currentMagazine);
-
-            /// 무기가 활성화 될 때 해당 무기의 탄 수 정보 갱신
             onAmmoEvent.Invoke(weaponSetting.currentAmmo, weaponSetting.maxAmmo);
         }
 
-        private void Awake()
+        public override void Reset()
         {
-            base.Setup();
-
-            /// 처음 탄창, 탄 수는 최대로 설정
-            weaponSetting.currentMagazine = weaponSetting.maxMagazine;
+            WeaponLock = false;
             weaponSetting.currentAmmo = weaponSetting.maxAmmo;
         }
 
