@@ -1,11 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using WhalePark18.Character.Enemy;
 
 namespace WhalePark18.ObjectPool
 {
+    /// <summary>
+    /// 피격 임팩트 오브젝트풀
+    /// </summary>
+    /// <remarks>
+    /// 오브젝트 추적하지 않음
+    /// </remarks>
     public class ImpactObjectPool : MonoObjectPool<Impact>
     {
+        protected override Impact CreateObject()
+        {
+            GameObject instance = GameObject.Instantiate(prefab);
+            Impact impact = instance.GetComponent<Impact>();
+
+            return impact;
+        }
+
         /// <summary>
         /// 오브젝트 반환 인터페이스
         /// </summary>
