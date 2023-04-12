@@ -96,23 +96,28 @@ namespace WhalePark18.Character.Player
 
         override protected void Awake()
         {
-            /// 생명력
             base.Awake();
-            hpTick.Initialize();
-
-            /// 보호막
-            shield.Initialize();
-            shieldTick.Initialize();
-
-            /// 공격
-            attackDamage.Initialize();
-            attackSpeed.Initialize();
-            attackNumberOfPiercing.Initialize();
-
-            /// 아이템
-            itemEfficiency.Initialize();
+            Reset();
         }
 
+        public override void Reset()
+        {
+            /// 생명력
+            base.Reset();
+            hpTick.Reset();
+
+            /// 보호막
+            shield.Reset();
+            shieldTick.Reset();
+
+            /// 공격
+            attackDamage.Reset();
+            attackSpeed.Reset();
+            attackNumberOfPiercing.Reset();
+
+            /// 아이템
+            itemEfficiency.Reset();
+        }
 
         /// <summary>
         /// [인터페이스] 생명력 증가 메소드
