@@ -5,13 +5,34 @@ namespace WhalePark18.Character.Enemy
 {
     public class EnemySpawnPoint : MonoBehaviour
     {
+        /****************************************
+         * EnemySpawnPoint
+         ****************************************/
         [SerializeField]
         private float fadeSpeed = 4f;
         private MeshRenderer meshRenderer;
 
+        /****************************************
+         * EnemySpawnPoint 관리용
+         ****************************************/
+        private int id;
+        [SerializeField]
+        private string baseName;
+
+        /****************************************
+         * 프로퍼티
+         ****************************************/
+        public int ID => id;
+
         private void Awake()
         {
             meshRenderer = GetComponent<MeshRenderer>();
+        }
+
+        public void Setup(int id)
+        {
+            this.id = id;
+            gameObject.name = $"{baseName}_{id}";
         }
 
         private void OnEnable()
