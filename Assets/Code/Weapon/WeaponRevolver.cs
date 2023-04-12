@@ -26,6 +26,8 @@ namespace WhalePark18.Weapon
 
         [Header("Audio Clip")]
         [SerializeField]
+        private AudioClip audioClipTakeOutWeapon;   // 무기 장착 사운드
+        [SerializeField]
         private AudioClip audioclipFire;            // 공격 사운드
         [SerializeField]
         private AudioClip audioClipReload;          // 재장전 사운드
@@ -33,33 +35,42 @@ namespace WhalePark18.Weapon
         private PlayerStatus status;                // 플레이어 스테이터스
         private Camera mainCamera;                  // 광선 발사
 
-        private void Awake()
+        protected override void Awake()
         {
-            base.Setup();
+            /// 1. 컴포넌트 초기화
+            base.Awake();
+            status      = GetComponentInParent<PlayerStatus>();
+            mainCamera  = Camera.main;
 
-            status = GetComponentInParent<PlayerStatus>();
-            //impactMemoryPool = GetComponent<ImpactMemoryPool>();
-            mainCamera = Camera.main;
-
-            /// 게임 설정으로 인해 탄창 무제한으로 설정
-            //weaponSetting.currentMagazine = weaponSetting.maxMagazine;
-
-            /// 총알 수 최대로 설정
+            /// 2. 탄창, 탄약 초기화
+            ///     * 게임 설정상 보조 무기의 탄창 무제한이므로 초기화하지 않는다.
             weaponSetting.currentAmmo = weaponSetting.maxAmmo;
         }
 
         private void OnEnable()
         {
+            /// 무기 장착 사운드 재생
+            PlaySound(audioClipTakeOutWeapon);
+
             /// 총구 이펙트 오브젝트 비활성화
             muzzleFlashEffect.SetActive(false);
 
-            /// 무기 활성화될 때 해당 무기 탄창 정보 갱신
+            /// 무기 활성화될 때 해당 무기 탄창과 탄 수  정보 갱신
             onMagazineEvent.Invoke(weaponSetting.currentMagazine);
-
-            /// 무기가 활성화 될 때 해당 무기의 탄 수 정보 갱신
             onAmmoEvent.Invoke(weaponSetting.currentAmmo, weaponSetting.maxAmmo);
 
-            ResetVariables();
+            ResetAttackVariables();
+        }
+
+        public override void Reset()
+        {
+            /// TODO:
+            /// * lock 초기화
+            /// * 탄약 초기화
+            WeaponLock = false;
+            weaponSetting.currentAmmo = weaponSetting.maxAmmo;
+
+            ResetAttackVariables();
         }
 
         public override void StartWeaponAction(int type = 0)
@@ -303,7 +314,7 @@ namespace WhalePark18.Weapon
             }
         }
 
-        private void ResetVariables()
+        private void ResetAttackVariables()
         {
             isReload = false;
             isAttack = false;
