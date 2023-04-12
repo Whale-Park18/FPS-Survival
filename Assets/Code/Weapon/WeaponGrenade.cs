@@ -18,18 +18,34 @@ namespace WhalePark18.Weapon
         [SerializeField]
         private Transform grenadeSpawnPoint;    // 수류탄 생성 위치
 
-        private void OnEnable()
+        protected override void Awake()
         {
-            onMagazineEvent.Invoke(weaponSetting.currentMagazine);
-            onAmmoEvent.Invoke(weaponSetting.currentAmmo, weaponSetting.maxAmmo);
-        }
+            /// 1. 컴포넌트 초기화
+            base.Awake();
 
-        private void Awake()
-        {
-            base.Setup();
-
+            /// 2. 탄창, 탄약 초기화
             weaponSetting.currentMagazine = weaponSetting.maxMagazine;
             weaponSetting.currentAmmo = weaponSetting.maxAmmo;
+        }
+
+        private void OnEnable()
+        {
+            /// 무기 변경시, 공격 사운드가 재생되는 현상 제어하기 위해 오디오 출력을 정지함
+            audioSource.Stop();
+
+            /// 무기 활성화될 때 해당 무기 탄창과 탄 수  정보 갱신
+            onMagazineEvent.Invoke(weaponSetting.currentMagazine);
+            onAmmoEvent.Invoke(weaponSetting.currentAmmo, weaponSetting.maxAmmo);
+
+            ResetAttackVariables();
+        }
+
+        public override void Reset()
+        {
+            WeaponLock = true;
+            weaponSetting.currentAmmo = weaponSetting.maxAmmo;
+
+            ResetAttackVariables();
         }
 
         public override void StartWeaponAction(int type = 0)
@@ -101,6 +117,13 @@ namespace WhalePark18.Weapon
             weaponSetting.currentAmmo = weaponSetting.currentAmmo + ammo > weaponSetting.maxAmmo ? weaponSetting.maxAmmo : weaponSetting.currentAmmo + ammo;
 
             onAmmoEvent.Invoke(weaponSetting.currentAmmo, weaponSetting.maxAmmo);
+        }
+
+        private void ResetAttackVariables()
+        {
+            isReload = false;
+            isAttack = false;
+            isAimMode = false;
         }
     }
 }
