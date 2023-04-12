@@ -10,48 +10,73 @@ namespace WhalePark18.ObjectPool
     /// <typeparam name="T">MonoBehaviour</typeparam>
     public abstract class MonoObjectPool<T> : MonoBehaviour where T : MonoBehaviour
     {
+        /****************************************
+         * ObjectPool
+         ****************************************/
         [SerializeField, Tooltip("관리할 프리팹")]
-        protected GameObject prefab;
-        protected Queue<T> objectPool;
-
+        protected GameObject    prefab;
+        protected Queue<T>      objectPool;
         [SerializeField,Tooltip("증가 갯수")]
-        protected int increase = 5;
-        protected int maxObjectCount;
-        protected int activeObjectCount;
+        protected int           increase = 5;
+
+        /****************************************
+         * 관리용
+         ****************************************/
+        protected bool                  isTrackActiveObject;      // 오브젝트를 추적할 것인지
+        protected int                   idToAssignToTheObject;  // 오브젝트에 부여할 ID
+        protected Dictionary<int, T>    activeObjects;          // 활성화된 오브젝트
+        //protected int maxObjectCount;
+        //protected int activeObjectCount;
 
         protected void Awake()
         {
-            OnInitialized();
-        }
-
-        /// <summary>
-        /// 초기화 메소드
-        /// </summary>
-        protected void OnInitialized()
-        {
+            /// 오브젝트풀 초기화
             objectPool = new Queue<T>();
             CreateObjects();
         }
 
         /// <summary>
-        /// 오브젝트 생성 메소드
+        /// 초기화 메소드
+        /// </summary>
+        /// <remarks>
+        /// 오브젝트를 추적하지 않는다면 별도의 작업을 하지 않는다.
+        /// 오브젝트를 추적할 경우 활성화된 모든 오브젝트를 오브젝트풀에 반환한다.
+        /// </remarks>
+        public virtual void Reset()
+        {
+            if (isTrackActiveObject == false) return;
+
+            foreach (var activeEnemyInfo in activeObjects)
+            {
+                ReturnObject(activeEnemyInfo.Value);
+            }
+        }
+
+        /// <summary>
+        /// 오브젝트를 increase만큼 생성 메소드
         /// </summary>
         protected void CreateObjects()
         {
-            /// 최대 오브젝트 갯수 갱신
-            maxObjectCount += increase;
-
             /// increase 만큼 오브젝트 생성
             for (int i = 0; i < increase; i++)
             {
-                GameObject instacePrefab = GameObject.Instantiate(prefab);
-                T newObject = instacePrefab.GetComponent<T>();
+                T newObject = CreateObject();
 
                 DisableObject(newObject);
 
                 objectPool.Enqueue(newObject);
             }
         }
+
+        /// <summary>
+        /// 오브젝트를 생성하는 메소드
+        /// </summary>
+        /// <returns>T 타입 오브젝트</returns>
+        /// <remarks>
+        /// 활성화 오브젝트 관리 여부에 따라 오브젝트 생성 방식이 다르기 때문에
+        /// 오브젝트를 생성하는 메소드를 추상 메소드로 선언한다.
+        /// </remarks>
+        protected abstract T CreateObject();
 
         /// <summary>
         /// 오브젝트 획득 인터페이스
@@ -63,9 +88,12 @@ namespace WhalePark18.ObjectPool
         /// 오브젝트 반환 인터페이스
         /// </summary>
         /// <param name="returnObject">반환할 T 타입 오브젝트</param>
-        public void ReturnObject(T returnObject)
+        /// <remarks>
+        /// 반환된 오브젝트를 비활성화 한 후, 오브젝트풀에 넣는다.
+        /// trackActiveObject 활성화 되었을 때, 필요한 과정은 오버라이딩으로 작성한다.
+        /// </remarks>
+        public virtual void ReturnObject(T returnObject)
         {
-            /// 반환된 오브젝트를 비활성화 한 후, 오브젝트풀에 넣는다.
             DisableObject(returnObject);
             objectPool.Enqueue(returnObject);
         }
