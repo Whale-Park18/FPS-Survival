@@ -21,7 +21,6 @@ namespace WhalePark18.Objects
         protected override void Awake()
         {
             base.Awake();
-
             boxCollider = GetComponent<BoxCollider>();
         }
 
@@ -45,20 +44,27 @@ namespace WhalePark18.Objects
             }
         }
 
+        /// <summary>
+        /// 기둥 상태를 복구하는 메소드
+        /// </summary>
+        /// <returns></returns>
         private IEnumerator Repair()
         {
             yield return new WaitForSeconds(repairTime);
 
-            ResetVariable();
+            Reset();
+        }
+
+        public void Reset()
+        {
+            /// 멤버 변수 초기화
+            currentHP = maxHP;
+            isDestroyed = false;
+            
+            /// 오브젝트 상태 초기화
             destructiblePillarPieces.SetActive(false);
             destructiblePillar.SetActive(true);
             boxCollider.enabled = true;
-        }
-
-        private void ResetVariable()
-        {
-            currentHP = maxHP;
-            isDestroyed = false;
         }
     }
 }
