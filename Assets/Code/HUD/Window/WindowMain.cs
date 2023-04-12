@@ -35,18 +35,9 @@ namespace WhalePark18.HUD.Window
             ButtonBinding();
         }
 
-        private void Start()
-        {
-            WhalePark18.Debug.Log(DebugCategory.Debug, typeof(WindowMain).Name, 
-                "Start()");
-
-            StartCoroutine("OnActive");
-        }
-
         private void OnEnable()
         {
-            WhalePark18.Debug.Log(DebugCategory.Debug, typeof(WindowMain).Name,
-                "OnEnable()");
+            StartCoroutine("OnActive");
         }
 
         /// <summary>
@@ -64,7 +55,7 @@ namespace WhalePark18.HUD.Window
         /// </summary>
         public void OnClickGameStart()
         {
-            SceneManager.LoadScene(SceneName.Game);
+            //SceneManager.LoadScene(SceneName.Game);
         }
 
         /// <summary>
