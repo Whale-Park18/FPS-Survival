@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Dynamic;
 using System.Reflection;
 using UnityEngine;
 
@@ -29,8 +30,13 @@ namespace WhalePark18.Character
 
         virtual protected void Awake()
         {
+            Reset();
+        }
+
+        public virtual void Reset()
+        {
             /// ปýธํทย
-            hp.Initialize();
+            hp.Reset();
         }
 
         /// <summary>
