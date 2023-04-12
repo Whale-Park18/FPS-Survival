@@ -12,37 +12,38 @@ namespace WhalePark18.Character.Player
     /// </summary>
     public class PlayerController : MonoBehaviour
     {
+        /****************************************
+         * PlayerController
+         ****************************************/
+        private PlayerStatus                status;             // 이동속도 등의 플레이어 정보
+        private RotateToMouse               rotateToMouse;      // 마우스 이동으로 카메라 회전
+        private MovementCharacterController movement;           // 키보드 입력으로 플레이어 이동, 점프
+        private WeaponSwitchSystem          weaponSwitchSystem; // 무기 변경 시스템
+        private AudioSource                 audioSource;        // 사운드 재생 제어
+        private WeaponBase                  weapon;             // 무기 최상위 클래스를 이용항 공격 제어
+        private HUDController               hudController;
+
         [Header("Input KeyCodes")]
         [SerializeField]
-        private KeyCode keyCodeRun = KeyCode.LeftShift;                 // 달리기 키
+        private KeyCode keyCodeRun                  = KeyCode.LeftShift;    // 달리기 키
         [SerializeField]
-        private KeyCode keyCodeJump = KeyCode.Space;                    // 점프 키
+        private KeyCode keyCodeJump                 = KeyCode.Space;        // 점프 키
         [SerializeField]
-        private KeyCode keyCodeReload = KeyCode.R;                      // 탄 재장전 키
+        private KeyCode keyCodeReload               = KeyCode.R;            // 탄 재장전 키
         [SerializeField]
-        private KeyCode keyCodeWindowTrait = KeyCode.Tab;               // 특성 창 키
+        private KeyCode keyCodeWindowTrait          = KeyCode.Tab;          // 특성 창 키
         [SerializeField]
-        private KeyCode keyCodeWindowTemporaryMenu = KeyCode.Escape;    // 메뉴 창 키
+        private KeyCode keyCodeWindowTemporaryMenu  = KeyCode.Escape;       // 메뉴 창 키
 
         [Header("Audio Clips")]
         [SerializeField]
-        private AudioClip audioClipWalk;                                // 걷기 사운드
+        private AudioClip audioClipWalk;    // 걷기 사운드
         [SerializeField]
-        private AudioClip audioClipRun;                                 // 달리기 사운드
+        private AudioClip audioClipRun;     // 달리기 사운드
 
         [Header("HUD")]
         [SerializeField]
-        private PlayerHUD playerHUD;                                    // 플레이어 HUD
-
-        /// <summary>
-        /// 컨트롤러 관련 컴포넌트
-        /// </summary>
-        private RotateToMouse rotateToMouse;                            // 마우스 이동으로 카메라 회전
-        private MovementCharacterController movement;                   // 키보드 입력으로 플레이어 이동, 점프
-        private PlayerStatus status;                                    // 이동속도 등의 플레이어 정보
-        private AudioSource audioSource;                                // 사운드 재생 제어
-        private WeaponBase weapon;                                      // 무기 최상위 클래스를 이용항 공격 제어
-        private HUDController hudController;
+        private PlayerHUD playerHUD;        // 플레이어 HUD
 
         private void Awake()
         {
@@ -51,11 +52,12 @@ namespace WhalePark18.Character.Player
             /// 즉, 커서 표시를 비활성화 하고, 현재 위치에 고정시킨다.
             GameManager.Instance.SetCursorActive(false);
 
-            rotateToMouse = GetComponent<RotateToMouse>();
-            movement = GetComponent<MovementCharacterController>();
-            status = GetComponent<PlayerStatus>();
-            audioSource = GetComponent<AudioSource>();
-            hudController = GetComponent<HUDController>();
+            /// 컴포넌트 초기화
+            rotateToMouse   = GetComponent<RotateToMouse>();
+            movement        = GetComponent<MovementCharacterController>();
+            status          = GetComponent<PlayerStatus>();
+            audioSource     = GetComponent<AudioSource>();
+            hudController   = GetComponent<HUDController>();
         }
 
         private void Update()
@@ -64,14 +66,34 @@ namespace WhalePark18.Character.Player
             UpdateMove();
             UpdateJump();
             UpdateWeaponAction();
-            UpdateWindowTrait();
-            UpdateWindowTemporaryMenu();
+            UpdateWindow();
+        }
+
+        /// <summary>
+        /// PlayerController의 작동 여부를 설정하는 메소드
+        /// </summary>
+        /// <param name="active">작동 여부</param>
+        /// <remarks>
+        /// PlayerController 오브젝트의 Active를 설정하는 것이 아닌 
+        /// PlayerController가 추상적으로 활동을 멈춘 것을 의미함
+        /// </remarks>
+        public void SetActive(bool active)
+        {
+            /// 플레이어의 움직임을 담당하는 컴포넌트를 비활성화 한다.
+            movement.enabled        = active;
+            rotateToMouse.enabled   = active;
+            audioSource.Stop();
+        }
+
+        public void Reset()
+        {
+            transform.position = new Vector3(0, 1, 0);
+            status.Reset();
+            weaponSwitchSystem.Reset();
         }
 
         private void UpdateRotate()
         {
-            //if (playerHUD.PanelTraitsActive) return;
-
             float mouseX = Input.GetAxis("Mouse X");
             float mouseY = Input.GetAxis("Mouse Y");
 
@@ -79,9 +101,7 @@ namespace WhalePark18.Character.Player
         }
 
         private void UpdateMove()
-        {
-            //if (playerHUD.PanelTraitsActive) return;
-            
+        {            
             float x = Input.GetAxisRaw("Horizontal");
             float z = Input.GetAxisRaw("Vertical");
 
@@ -123,8 +143,6 @@ namespace WhalePark18.Character.Player
 
         private void UpdateJump()
         {
-            //if (playerHUD.PanelTraitsActive) return;
-
             if (Input.GetKeyDown(keyCodeJump))
             {
                 movement.Jump();
@@ -159,16 +177,13 @@ namespace WhalePark18.Character.Player
             }
         }
 
-        private void UpdateWindowTrait()
+        private void UpdateWindow()
         {
             if (Input.GetKeyDown(keyCodeWindowTrait))
             {
                 hudController.OnWindowTraitPower();
             }
-        }
 
-        private void UpdateWindowTemporaryMenu()
-        {
             if (Input.GetKeyDown(keyCodeWindowTemporaryMenu))
             {
                 hudController.OnWindowTemporaryMenuPower();
