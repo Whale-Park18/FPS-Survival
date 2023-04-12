@@ -1,11 +1,26 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using WhalePark18.Character.Enemy;
 
 namespace WhalePark18.ObjectPool
 {
+    /// <summary>
+    /// 탄피 오브젝트풀
+    /// </summary>
+    /// <remarks>
+    /// 오브젝트 추적하지 않음
+    /// </remarks>
     public class CasingObjectPool : MonoObjectPool<Casing>
     {
+        protected override Casing CreateObject()
+        {
+            GameObject instance = GameObject.Instantiate(prefab);
+            Casing casing = instance.GetComponent<Casing>();
+
+            return casing;
+        }
+
         /// <summary>
         /// 오브젝트 반환 인터페이스
         /// </summary>
