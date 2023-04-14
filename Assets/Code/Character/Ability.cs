@@ -69,7 +69,7 @@ namespace WhalePark18.Character
                 /// 연산이 곱연산이 아닐 때(합연산)
                 else
                 {
-                    maxAbility = baseAbility + CalculateIncrementForTraitLevel(nextLevel);
+                    maxAbility = baseAbility + nextIncrement;
                 }
 
                 /// 현재 능력치와 최대 능력치가 같아야 한다면
