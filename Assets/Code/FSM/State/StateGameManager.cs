@@ -62,6 +62,7 @@ namespace WhalePark18.FSM.State.GameManagerState
         {
             /// TODO:
             /// 1. CanvasGame 비활성화
+            /// 2. 실행중인 모든 SpawnEnemyBackground를 멈춘다.
         }
     }
 }
