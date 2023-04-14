@@ -51,7 +51,6 @@ namespace WhalePark18.Character
             /// 특성에 의한 능력치 향상 처리
             if(nextLevel <= maxTraitLevel)
             {
-                float currentIncrement = CalculateIncrementForTraitLevel(currentTraitLevel);
                 float nextIncrement = CalculateIncrementForTraitLevel(nextLevel);
 
                 /// 연산이 곱연산일 때
@@ -61,10 +60,6 @@ namespace WhalePark18.Character
                     /// 백분율이 아니라면 증가 계수로 계산해야 한다.
                     /// Ex) 기본 능력치 10일 때, 10% 증가하는 곱연산
                     ///     증가량 = 10 * (1.1) = 11
-                    //if(currentIncrement != 0)
-                    //    maxAbility /= isIncrementFactorPercentage ? (1 + currentIncrement) : currentIncrement;
-                    //maxAbility *= isIncrementFactorPercentage ? (1 + nextIncrement) : nextIncrement;
-
                     float increment = isIncrementFactorPercentage ? (1 + nextIncrement) : nextIncrement;
                     maxAbility = baseAbility * increment;
 
