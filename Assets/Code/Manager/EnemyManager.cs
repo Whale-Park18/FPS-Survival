@@ -35,7 +35,9 @@ namespace WhalePark18.Manager
         private EnemyObjectPool[]           enemyObjectPools;
         [SerializeField]
         private EnemySpawnTileObjectPool[]  enemySpawnTileObjectPools;
-        private Transform                   target;                     // Enemy 공격 목표
+        private Transform                   target;                             // Enemy 공격 목표
+        private Queue<Coroutine>            spawnEnemyBackgroundHandleQueue;    // SpawnEnemyBackground에 코루틴 핸들을
+                                                                                // 관리하는 큐
 
         [Header("Enemy Spawn")]
         [SerializeField, Tooltip("Normal, Elite, Boss 순")]
@@ -79,6 +81,7 @@ namespace WhalePark18.Manager
             /// 2. 컴포넌트 및 변수 초기화
             //enemySpawnInfos = new EnemySpawnInfo[3];
             killCountInfo = new KillCountInfo();
+            spawnEnemyBackgroundHandleQueue = new Queue<Coroutine>();
         }
 
         public void Setup(Transform target)
@@ -105,8 +108,17 @@ namespace WhalePark18.Manager
         /// 지속적으로 Enemy를 소환해야 할 때, 사용하는 메소드
         /// </summary>
         /// <param name="spawnEnemyClass">소환할 적의 등급</param>
+        public void SpawnEnemyBackground(EnemyClass spawnEnemyClass)
+        {
+            spawnEnemyBackgroundHandleQueue.Enqueue(StartCoroutine(OnSpawnEnemyBackground(spawnEnemyClass)));
+        }
+
+        /// <summary>
+        /// 지속적으로 Enemy를 소환하는 메소드
+        /// </summary>
+        /// <param name="spawnEnemyClass">소환할 적의 등급</param>
         /// <returns>코루틴</returns>
-        public IEnumerator SpawnEnemyBackground(EnemyClass spawnEnemyClass)
+        private IEnumerator OnSpawnEnemyBackground(EnemyClass spawnEnemyClass)
         {
             WaitForSeconds waitSpawnEnemyCycleTime = new WaitForSeconds(enemySpawnInfos[(int)spawnEnemyClass].spawnCycleTime);
 
@@ -126,6 +138,15 @@ namespace WhalePark18.Manager
 
                 yield return waitSpawnEnemyCycleTime;
             }
+        }
+
+        /// <summary>
+        /// SpawnEnemyBackground 작동을 멈추는 메소드
+        /// (단, 작동한 순서대로 멈춘다.)
+        /// </summary>
+        public void StopSpawnEnemyBackground()
+        {
+            StopCoroutine(spawnEnemyBackgroundHandleQueue.Dequeue());
         }
 
         /// <summary>
