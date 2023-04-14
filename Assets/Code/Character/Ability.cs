@@ -29,11 +29,11 @@ namespace WhalePark18.Character
         /// <param name="level">구하고 싶은 레벨</param>
         /// <returns>특성의 레벨이 level일 때, 증가하는 수치</returns>
         /// <remarks>
-        /// level 값이 maxTraitLevel을 초과한다면 0을 반환한다.
+        /// level 값이 옳바른 범위을 넘어간다면 0을 반환한다.
         /// </remarks>
         public float CalculateIncrementForTraitLevel(int level)
         {
-            int inputLevel = level <= maxTraitLevel ? level : maxTraitLevel;
+            int inputLevel = 0 <= level && level <= maxTraitLevel ? level : 0;
 
             return incrementFactor * inputLevel;
         }
