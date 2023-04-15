@@ -296,16 +296,12 @@ namespace WhalePark18.Weapon
 
                 if (hitInfo.transform.CompareTag("ImpactEnemy"))
                 {
-                    UnityEngine.Debug.LogFormat("<color=red>{0} - {1}</color>\n" +
-                    "hitPoint: {2}\n" + 
-                    "피해량 = 피해증폭({3}%) x 공격력({4}) = {5}"
-                    , MethodBase.GetCurrentMethod().Name, hitInfo.collider.name, hitInfo.point
-                    , status.AttackDamage.currentAbility * 100, weaponSetting.damage, damage);
-                    WhalePark18.Debug.Log(DebugCategory.Debug, MethodBase.GetCurrentMethod().Name,
-                        ""
+                    LogManager.ConsoleDebugLog($"{typeof(WeaponAssultRifle)} - HitScan",
+                        $"hitObjectName: {hitInfo.collider.name}, hitPoint: {hitInfo.point}, " +
+                        $"damage = increment({status.AttackDamage.currentAbility * 100}%) x baseDamage({weaponSetting.damage}) = {damage}"
                     );
 
-                    hitInfo.transform.GetComponent<EnemyFSM>().TakeDamage(damage);
+                    hitInfo.transform.GetComponent<EnemyBase>().TakeDamage(damage);
                 }
                 else if(hitInfo.transform.CompareTag("InteractionObject"))
                 {
