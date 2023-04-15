@@ -55,7 +55,7 @@ namespace WhalePark18.Character.Enemy
             this.target = target;
         }
 
-        public virtual void TakeDamge(int damage)
+        public virtual void TakeDamage(int damage)
         {
             bool isDie = status.DecreaseHp(damage);
 
