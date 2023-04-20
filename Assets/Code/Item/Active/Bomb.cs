@@ -47,7 +47,7 @@ namespace WhalePark18.Item.Active
             foreach (Collider hit in colliders)
             {
                 /// 폭발 범위에 부딪힌 오브젝트가 적 캐릭터일 때 처리
-                EnemyFSM enemy = hit.GetComponent<EnemyFSM>();
+                EnemyBase enemy = hit.GetComponent<EnemyBase>();
                 if (enemy != null)
                 {
                     enemy.TakeDamage(explosionDamage);
