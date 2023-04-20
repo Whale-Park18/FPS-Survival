@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using WhalePark18.Character.Enemy;
 using WhalePark18.Character.Player;
 using WhalePark18.Manager;
 using WhalePark18.Objects;
@@ -18,7 +19,7 @@ namespace WhalePark18.Projectile
         {
             if (other.CompareTag(Tag.ImpactEnemy.ToString()))
             {
-                other.GetComponent<PlayerController>().TakeDamage(damage);
+                other.GetComponent<EnemyBase>().TakeDamage(damage);
             }
             else if (other.CompareTag(Tag.InteractionObejct.ToString()))
             {
