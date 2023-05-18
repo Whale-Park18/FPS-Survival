@@ -14,22 +14,13 @@ namespace WhalePark18.Manager
         [SerializeField, Tooltip("임펙트 오브젝트풀 순서: Normal, Obstacle, Enemy, InteractionObject")]
         ImpactObjectPool[] impactObjectPoolGroup;
 
-        private void Awake()
-        {
-            if (Instance != null && Instance != this)
-            {
-                Destroy(this.gameObject);
-            }
-        }
-
         /// <summary>
         /// 임펙트 생성 인터페이스(광선 전용)
         /// </summary>
         /// <param name="hit">Raycast 정보</param>
         public void SpawnImpact(RaycastHit hit)
         {
-            WhalePark18.Debug.Log(DebugCategory.Debug, MethodBase.GetCurrentMethod().Name,
-                "HitInfo - Name: {0}, Tag: {1}", hit.transform.name, hit.transform.tag);
+            LogManager.ConsoleDebugLog("SpawnImpact", $"HitInfo Name{hit.transform.name}, Tag{hit.transform.tag}");
 
             Impact impact;
 
