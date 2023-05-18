@@ -9,27 +9,25 @@ namespace WhalePark18.Projectile
     [RequireComponent(typeof(CapsuleCollider))]
     public abstract class ProjectileBase : MonoBehaviour
     {
-        /****************************************
-         * ProjectieBase
-         ****************************************/
+        [Header("Projectile Info")]       
+        protected int id;
+        [SerializeField]
+        private string baseName;
+
+        [Header("Projectile Attack Info")]
         [SerializeField]
         protected float projectileSpeed = 5f;
         [SerializeField]
         protected float projectileDistance = 30f;
         [SerializeField]
         protected int damage = 10;
-
-        /****************************************
-         * ProjectileBase 관리용
-         ****************************************/
-        protected int id;
-        [SerializeField]
-        private string baseName;
+        protected bool isFired = false;
 
         /****************************************
          * 프로퍼티
          ****************************************/
         public int ID => id;
+        public bool IsFired => isFired;
 
         public virtual void Setup(int id)
         {
@@ -40,6 +38,7 @@ namespace WhalePark18.Projectile
         public virtual void Fire(Vector3 targetPosition)
         {
             StartCoroutine(OnMove(targetPosition));
+            isFired = true;
         }
 
         /// <summary>
@@ -70,6 +69,9 @@ namespace WhalePark18.Projectile
         /// <summary>
         /// 투사체가 작동을 멈췄을 때, 작동
         /// </summary>
-        protected abstract void Stop();
+        public virtual void Stop()
+        {
+            isFired = false;
+        }
     }
 }
