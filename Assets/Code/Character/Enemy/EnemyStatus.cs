@@ -6,6 +6,11 @@ namespace WhalePark18.Character.Enemy
 {
     public class EnemyStatus : Status
     {
+        public void Reset()
+        {
+            hp.Reset();
+        }
+
         /// <summary>
         /// [인터페이스] 생명력 증가 메소드
         /// </summary>
