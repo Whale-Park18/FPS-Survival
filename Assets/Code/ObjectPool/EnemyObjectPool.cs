@@ -21,18 +21,11 @@ namespace WhalePark18.ObjectPool
         {
             GameObject instance = GameObject.Instantiate(prefab);
             EnemyBase enemy = instance.GetComponent<EnemyBase>();
-            enemy.Setup(idToAssignToTheObject++, target);
+            enemy.Setup(idToAssignToTheObject++);
 
             return enemy;
         }
 
-        /// <summary>
-        /// 오브젝트 반환 인터페이스
-        /// </summary>
-        /// <returns>오브젝트</returns>
-        /// <remarks>
-        /// Vector3(0, 0, 0) 위치 오브젝트
-        /// </remarks>
         public override EnemyBase GetObject()
         {
             return GetObject(Vector3.zero);
@@ -59,7 +52,7 @@ namespace WhalePark18.ObjectPool
             /// 3. trackActiveObject가 활성화 되었을 때, 오브젝트를 활성화 오브젝트 자료형에 추가한다.
             if (isTrackActiveObject)
             {
-                activeObjects.Add(enemy.ID, enemy);
+                activeObjectDictionary.Add(enemy.ID, enemy);
             }
 
             return enemy;
@@ -73,7 +66,7 @@ namespace WhalePark18.ObjectPool
             /// trackActiveObject가 활성화 되었을 때, 활성화 오브젝트 추적 자료형에서 제거한다.
             if(isTrackActiveObject)
             {
-                activeObjects.Remove(returnObject.ID);
+                activeObjectDictionary.Remove(returnObject.ID);
             }
         }
     }
