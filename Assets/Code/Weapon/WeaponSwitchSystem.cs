@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 
 using WhalePark18.Character.Player;
-using WhalePark18.HUD;
+using WhalePark18.UI;
 
 namespace WhalePark18.Weapon
 {
@@ -52,14 +52,6 @@ namespace WhalePark18.Weapon
         private void LateUpdate()
         {
             ForcedSwitchngWeapon();
-        }
-
-        public void Reset()
-        {
-            foreach(var weapon in weapons)
-                weapon.Reset();
-
-            SwitchingWeapon(WeaponType.Sub);
         }
 
         private void UpdateSwitch()
