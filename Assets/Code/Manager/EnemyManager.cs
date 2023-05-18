@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Reflection;
 using UnityEngine;
 using WhalePark18.Character.Enemy;
 using WhalePark18.ObjectPool;
@@ -21,11 +20,16 @@ namespace WhalePark18.Manager
         [System.Serializable]
         private struct EnemySpawnInfo
         {
-            public int      maxSpawnCount;          // 최대 소환 수
-            public int      currentSpawnCount;      // 현재 소환 수
-            public int      numberOfSpawnAtOnce;    // 한 번에 소환되는 수
-            public float    spawnCycleTime;         // 적 소환 주기
-            public float    spawnDelayTime;         // 타일 생성 후, 소혼되기까지 대기 시간
+            [Tooltip("최대 소환 수")]
+            public int      maxSpawnCount;
+            [Tooltip("현재 소환 수")]
+            public int      currentSpawnCount;
+            [Tooltip("한 번에 소환되는 수")]
+            public int      numberOfSpawnAtOnce;
+            [Tooltip("적 소환 주기")]
+            public float    spawnCycleTime;
+            [Tooltip("타일 생성 후, 소혼되기까지 대기 시간")]
+            public float    spawnDelayTime;
         }
 
         /****************************************
@@ -70,16 +74,12 @@ namespace WhalePark18.Manager
         /// <summary>
         /// EnemyManager가 인스턴스화 된 직후, 호출되는 초기호 메소드
         /// </summary>
-        private void Awake()
+        protected override void Awake()
         {
             /// 1. 싱글톤 작업
-            if (Instance != null && Instance != this)
-            {
-                Destroy(this.gameObject);
-            }
+            base.Awake();
 
             /// 2. 컴포넌트 및 변수 초기화
-            //enemySpawnInfos = new EnemySpawnInfo[3];
             killCountInfo = new KillCountInfo();
             spawnEnemyBackgroundHandleQueue = new Queue<Coroutine>();
         }
@@ -92,16 +92,6 @@ namespace WhalePark18.Manager
             {
                 enemyObjectPools[i].Target = target;
             }
-        }
-
-        public void Reset()
-        {
-            /// 1. 소환된 모든 적 오브젝트풀에 반환
-            foreach (var objectPool in enemyObjectPools)
-                objectPool.Reset();
-
-            /// 2. 발사된 모든 투사체 오브젝트 풀에 반환
-            /// (지속 시간을 생각해 볼 때, 안해도될 것 같음)
         }
 
         /// <summary>
@@ -130,10 +120,7 @@ namespace WhalePark18.Manager
                 /// (단, 두 조건 모두 만족할 때 적을 소환한다.)
                 for (int spawnCount = 0; spawnCount < enemySpawnInfos[(int)spawnEnemyClass].numberOfSpawnAtOnce && enemySpawnInfos[(int)spawnEnemyClass].currentSpawnCount < enemySpawnInfos[(int)spawnEnemyClass].maxSpawnCount; spawnCount++)
                 {
-                    if (spawnEnemyClass == EnemyClass.Normal)
-                        enemySpawnInfos[(int)EnemyClass.Normal].currentSpawnCount++;
-
-                    SpawnTile(spawnEnemyClass);
+                    SpawnEnemyEvent(spawnEnemyClass);
                 }
 
                 yield return waitSpawnEnemyCycleTime;
@@ -150,11 +137,23 @@ namespace WhalePark18.Manager
         }
 
         /// <summary>
+        /// 작동 중인 모든 SpawnEnemyBackground를 멈추는 메소드
+        /// </summary>
+        public void StopSpawnEnemyBackgroundAll()
+        {
+            for(int i = 0; i < spawnEnemyBackgroundHandleQueue.Count; i++)
+            {
+                StopSpawnEnemyBackground();
+            }
+        }
+
+        /// <summary>
         /// 트리거에 의해 Enemy이 소환되야 할 때, 사용하는 메소드
         /// </summary>
         /// <param name="spawnEnemyClass">소환할 적의 등급</param>
         public void SpawnEnemyEvent(EnemyClass spawnEnemyClass)
         {
+            enemySpawnInfos[(int)spawnEnemyClass].currentSpawnCount++;
             SpawnTile(spawnEnemyClass);
         }
 
@@ -240,7 +239,10 @@ namespace WhalePark18.Manager
 
             /// 2. spawnPoint 위치에 적 소환
             Vector3 spawnPosition = spawnPoint.transform.position;
+            spawnPosition.y = 0;
             EnemyBase enemy = enemyObjectPools[(int)spawnEnemyClass].GetObject(spawnPosition);
+            enemy.Target = target;
+            enemy.Run();
 
             /// 3. enemySpawnTile 오브젝트풀에 반환
             enemySpawnTileObjectPools[(int)spawnEnemyClass].ReturnObject(spawnPoint);
@@ -253,6 +255,8 @@ namespace WhalePark18.Manager
         public void ReturnEnemy(EnemyBase returnEnemy)
         {
             /// 1. 적의 등급에 맞게 반환하고 처치 수 정보를 갱신한다.
+            returnEnemy.Reset();
+            enemySpawnInfos[(int)returnEnemy.Class].currentSpawnCount--;
             enemyObjectPools[(int)returnEnemy.Class].ReturnObject(returnEnemy);
 
             switch(returnEnemy.Class)
@@ -271,15 +275,25 @@ namespace WhalePark18.Manager
             }
 
             /// 2. Normal 등급 처치 수 >= 목표 처치수 이라면 게임을 종료한다.
+            ///     * old: GameOver
+            ///     * new: Spawn - EnemyBoss
             if (killCountInfo.normal >= GameManager.Instance.GoalNumberOfKill)
-                GameManager.Instance.GameOver();
-
-            /// 3. killCount가 10의 배수일 때마다
-            if (killCountInfo.normal % 10 == 0)
             {
-                enemySpawnInfos[(int)EnemyClass.Normal].numberOfSpawnAtOnce++;
-                SpawnEnemyEvent(EnemyClass.Elite);
+                /// 목표 처치 수를 달성했을 때, 보스를 소환.
+                /// 보스가 죽을 때, 게임 오버 호출.
+                //SpawnEnemyEvent(EnemyClass.Boss);
+
+                // #ONLY_BETA
+                GameManager.Instance.GameOver();
             }
+
+            /// 3. killCount가 10의 배수일 때마다 생성.
+            ///     * 아직 Elite 개발 중
+            //if (killCountInfo.normal > 0 && killCountInfo.normal % 10 == 0)
+            //{
+            //    enemySpawnInfos[(int)EnemyClass.Normal].numberOfSpawnAtOnce++;
+            //    SpawnEnemyEvent(EnemyClass.Elite);
+            //}
         }
     }
 }
