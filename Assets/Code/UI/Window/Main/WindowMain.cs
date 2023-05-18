@@ -6,14 +6,17 @@ using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 
 using WhalePark18.Manager;
+using System.Dynamic;
 
-namespace WhalePark18.HUD.Window
+namespace WhalePark18.UI.Window.Main
 {
     public enum MainMenu { Start, Explain, Exit }
     public enum MainMenuAlpha { ImageBackground, ImageButton, Text }
 
     public class WindowMain : WindowBase
     {
+        private Coroutine coroutineHandle;
+
         [Header("Panel Main Menu")]
         [SerializeField]
         private TextMeshProUGUI textTitle;
@@ -37,7 +40,16 @@ namespace WhalePark18.HUD.Window
 
         private void OnEnable()
         {
-            StartCoroutine("OnActive");
+            coroutineHandle = StartCoroutine(OnActive());
+        }
+
+        private void OnDisable()
+        {
+            StopCoroutine(coroutineHandle);
+            coroutineHandle = null;
+
+            // #DEBUG
+            //Reset();
         }
 
         /// <summary>
@@ -55,7 +67,26 @@ namespace WhalePark18.HUD.Window
         /// </summary>
         public void OnClickGameStart()
         {
-            //SceneManager.LoadScene(SceneName.Game);
+            GameManager.Instance.GameStart();
+        }
+
+        public override void Reset()
+        {
+            Color colorImageBackground = imageBackground.color;
+            colorImageBackground.a = 0f;
+            imageBackground.color = colorImageBackground;
+
+            Color colorText = textTitle.color;
+            colorText.a = 0f;
+            textTitle.color = colorText;
+
+            Color colorImageButton = buttonMainMenuGroup[0].image.color;
+            colorImageButton.a = 0f;
+            foreach (Button button in buttonMainMenuGroup)
+            {
+                button.image.color = colorImageButton;
+                button.GetComponentInChildren<TextMeshProUGUI>().color = colorText;
+            }
         }
 
         /// <summary>
@@ -63,7 +94,6 @@ namespace WhalePark18.HUD.Window
         /// </summary>
         public void OnClickGameExplain()
         {
-            panelMainMenu.SetActive(false);
             windowGameExplain.SetActive(true);
         }
 
@@ -77,6 +107,8 @@ namespace WhalePark18.HUD.Window
 
         protected override IEnumerator OnActive()
         {
+            LogManager.ConsoleDebugLog("WindowMain", "OnActive Run");
+
             yield return new WaitForSeconds(2f);
 
             Color colorImageBackground = imageBackground.color;
@@ -85,6 +117,8 @@ namespace WhalePark18.HUD.Window
 
             for (float runTime = 0, percent = 0; runTime < windowMoveTime; runTime += Time.unscaledDeltaTime, percent = runTime / windowMoveTime)
             {
+                //LogManager.ConsoleDebugLog("WindowMain", $"OnActive - percent: {percent}");
+
                 float currentImageBackgroundAlpha = Mathf.Lerp(0, maxAlphaValues[(int)MainMenuAlpha.ImageBackground], percent);
                 colorImageBackground.a = currentImageBackgroundAlpha;
                 imageBackground.color = colorImageBackground;

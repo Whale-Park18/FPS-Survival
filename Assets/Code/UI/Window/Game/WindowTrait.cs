@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using WhalePark18.Character.Player;
 
-namespace WhalePark18.HUD.Window
+namespace WhalePark18.UI.Window.Game
 {
     public enum Trait
     {
@@ -46,6 +46,12 @@ namespace WhalePark18.HUD.Window
         private void Start()
         {
             ButtonBinding();
+        }
+
+        private void OnDisable()
+        {
+            // #DEBUG
+            //Reset();
         }
 
         /// <summary>
@@ -106,7 +112,7 @@ namespace WhalePark18.HUD.Window
             selectTrait = Trait.ShieldUp;
             
             textTitle.text = "보호막 증가";
-            textExplation.text = "체력이 " + status.Shield.CalculateIncrementForTraitLevel(status.Shield.currentTraitLevel) + " 증가합니다.";
+            textExplation.text = "보호막이 " + status.Shield.CalculateIncrementForTraitLevel(status.Shield.currentTraitLevel) + " 증가합니다.";
             textLevel.text = "LV. " + status.Shield.currentTraitLevel + " / " + status.Shield.maxTraitLevel;
             textCoinUsage.text = status.CalculateCoinUsage(selectTrait).ToString();
         }

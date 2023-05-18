@@ -1,39 +1,58 @@
+using System;
 using System.Collections;
+using UnityEditor.PackageManager.Requests;
 using UnityEngine;
 
 using WhalePark18.Manager;
 
-namespace WhalePark18.HUD.Window
+namespace WhalePark18.UI.Window
 {
     public class WindowBase : MonoBehaviour
     {
         [SerializeField]
         protected float windowMoveTime = 1f;
-        protected bool windowActive = false;
+        protected bool active = false;
+
+        public virtual void Reset()
+        {
+            transform.position = new Vector3(Camera.main.pixelWidth / 2, -Camera.main.pixelHeight, 0);
+        }
 
         /// <summary>
         /// window 사용 인터페이스
         /// </summary>
         public virtual void OnWindowPower()
         {
-            windowActive = !windowActive;
+            active = !active;
 
-            if (windowActive)
-            {
-                GameManager.Instance.Pause();
-                GameManager.Instance.SetCursorActive(GameManager.Instance.IsPause);
-
-                StopCoroutine("OnDisactive");
-                StartCoroutine("OnActive");
-            }
+            if (active)
+                Active();
             else
-            {
-                GameManager.Instance.Resume();
-                GameManager.Instance.SetCursorActive(GameManager.Instance.IsPause);
+                DisActive();
+        }
 
-                StopCoroutine("OnActive");
-                StartCoroutine("OnDisactive");
-            }
+        /// <summary>
+        /// 윈도우 활성화 메소드
+        /// </summary>
+        protected void Active()
+        {
+            GameManager.Instance.Pause();
+            GameManager.Instance.SetCursorActive(GameManager.Instance.IsPause);
+
+            StopCoroutine("OnDisactive");
+            StartCoroutine("OnActive");
+        }
+
+        /// <summary>
+        /// 윈도우 비활성화 메소드
+        /// </summary>
+        protected void DisActive()
+        {
+            GameManager.Instance.Resume();
+            GameManager.Instance.SetCursorActive(GameManager.Instance.IsPause);
+
+            StopCoroutine("OnActive");
+            StartCoroutine("OnDisactive");
         }
 
         /// <summary>

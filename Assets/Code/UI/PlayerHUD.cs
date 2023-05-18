@@ -6,10 +6,10 @@ using TMPro;
 
 using WhalePark18.Character.Player;
 using WhalePark18.Weapon;
-using WhalePark18.HUD.Window;
+using WhalePark18.UI.Window;
 using WhalePark18.Manager;
 
-namespace WhalePark18.HUD
+namespace WhalePark18.UI
 {
     public class PlayerHUD : MonoBehaviour
     {

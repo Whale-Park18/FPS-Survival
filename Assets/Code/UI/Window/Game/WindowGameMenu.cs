@@ -4,14 +4,14 @@ using UnityEngine.SceneManagement;
 
 using WhalePark18.Manager;
 
-namespace WhalePark18.HUD.Window
+namespace WhalePark18.UI.Window.Game
 {
     public enum TemporaryMenu
     {
         GameExit
     }
 
-    public class WindowTemporaryMenu : WindowBase
+    public class WindowGameMenu : WindowBase
     {
         [SerializeField]
         private Button[] buttonMenu;
@@ -21,12 +21,27 @@ namespace WhalePark18.HUD.Window
             ButtonBinding();
         }
 
+        private void OnDisable()
+        {
+            // #DEBUG
+            //Reset();
+        }
+
         /// <summary>
         /// 버튼 바인딩 메소드 
         /// </summary>
         private void ButtonBinding()
         {
+            buttonMenu[(int)TemporaryMenu.GameExit].onClick.AddListener(OnClickReturnMain);
             buttonMenu[(int)TemporaryMenu.GameExit].onClick.AddListener(OnClickGameExit);
+        }
+
+        /// <summary>
+        /// 메인 버튼 메소드
+        /// </summary>
+        public void OnClickReturnMain()
+        {
+            GameManager.Instance.ReturnMain();
         }
 
         /// <summary>

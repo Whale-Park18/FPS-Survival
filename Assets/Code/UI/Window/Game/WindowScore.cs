@@ -1,4 +1,3 @@
-using Newtonsoft.Json.Converters;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -7,15 +6,17 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using WhalePark18.Manager;
 
-namespace WhalePark18.HUD.Window
+namespace WhalePark18.UI.Window.Game
 {
     public class WindowScore : WindowBase
     {
+        [Header("패널 관련")]
         [SerializeField]
         private GameObject background;
         [SerializeField]
         private GameObject PanelScore;
 
+        [Header("점수 관련")]
         [SerializeField]
         private TextMeshProUGUI textTotalScore;
         [SerializeField]
@@ -29,6 +30,18 @@ namespace WhalePark18.HUD.Window
         {
             buttonGameExit.onClick.AddListener(OnClickGameExit);
             GameManager.Instance.gameOverEvent.AddListener(OnActive);
+        }
+
+        private void OnDisable()
+        {
+            // #DEBUG
+            //Reset();
+        }
+
+        public override void Reset()
+        {
+            background.SetActive(false);
+            PanelScore.transform.position = new Vector2(Camera.main.pixelWidth / 2, -Camera.main.pixelHeight);
         }
 
         private void OnActive(int totalScore, string timeString, int killScore)
@@ -60,11 +73,7 @@ namespace WhalePark18.HUD.Window
 
         public void OnClickGameExit()
         {
-            GameManager.Instance.GameExit();
-            
-            /// 임시 코드(재시작)
-            //GameManager.Instance.GameReset();
-            //SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+            GameManager.Instance.ReturnMain();
         }
     }
 }

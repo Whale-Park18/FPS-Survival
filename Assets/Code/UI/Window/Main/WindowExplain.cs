@@ -3,17 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace WhalePark18.HUD.Window
+namespace WhalePark18.UI.Window.Main
 {
     public class WindowExplain : WindowBase
     {
         [SerializeField]
         Button buttonReturn;
 
-        [SerializeField]
-        GameObject panelMainMenu;
-
-        private void Start()
+        private void Awake()
         {
             ButtonBinding();
         }
@@ -31,7 +28,6 @@ namespace WhalePark18.HUD.Window
         /// </summary>
         public void OnClickReturn()
         {
-            panelMainMenu.SetActive(true);
             gameObject.SetActive(false);
         }
     }

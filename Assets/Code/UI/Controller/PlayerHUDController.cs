@@ -1,18 +1,18 @@
 using UnityEngine;
 
-using WhalePark18.HUD;
-using WhalePark18.HUD.Window;
+using WhalePark18.UI;
+using WhalePark18.UI.Window;
 
 namespace WhalePark18.Character.Player
 {
-    public enum Window { TemporaryMenu, Trait}
+    public enum Window { TemporaryMenu, Trait }
 
-    public class HUDController : MonoBehaviour
+    public class PlayerHUDController : MonoBehaviour
     {
         [SerializeField, Tooltip("임시 메뉴, 특성창")]
         private WindowBase[] windowGroup;
 
-        public void OnWindowTemporaryMenuPower()
+        public void OnWindowGameMenuPower()
         {
             windowGroup[(int)Window.TemporaryMenu].OnWindowPower();
         }
