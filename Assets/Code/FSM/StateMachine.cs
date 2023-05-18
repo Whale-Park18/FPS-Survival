@@ -19,14 +19,18 @@ namespace WhalePark18.FSM
         public void Setup(T owner, StateBase<T> entryState)
         {
             Setup(owner);
-
             ChangeState(entryState);
         }
 
         public void Setup(T owner)
         {
             this.owner = owner;
-            currentState = null;
+        }
+
+        public void Reset()
+        {
+            currentState.Exit(owner);
+            currentState = previousState = null;
         }
 
         public void Execute()
@@ -45,8 +49,8 @@ namespace WhalePark18.FSM
                 if(newState == null)
                     LogManager.ConsoleErrorLog("StateMachine", $"{typeof(StateBase<T>)} is null");
 
-                if(currentState == newState)
-                    LogManager.ConsoleDebugLog("StateMachine", $"currentState == newState ({newState.GetType().Name})");
+                //if(currentState == newState)
+                //    LogManager.ConsoleDebugLog("StateMachine", $"currentState == newState ({newState.GetType().Name})");
 
                 return;
             }

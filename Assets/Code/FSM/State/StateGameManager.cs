@@ -1,6 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+#define DEBUG
+
+using TMPro;
+using UnityEngine.Assertions.Must;
 using WhalePark18.Manager;
 
 namespace WhalePark18.FSM.State.GameManagerState
@@ -9,19 +10,24 @@ namespace WhalePark18.FSM.State.GameManagerState
     {
         public override void Enter(GameManager owner)
         {
-            /// TODO:
-            /// 1. CanvasMain 활성화
+            LogManager.ConsoleDebugLog("Main<GameManager>", "Enter");
+
+            owner.Resume();
+            owner.SetCursorActive(true);
+            owner.WindowMain.SetActive(true);
+            owner.Player.SetActive(false);
         }
 
         public override void Execute(GameManager owner)
         {
-            
+            LogManager.ConsoleDebugLog("Main<GameManager>", "Execute");
         }
 
         public override void Exit(GameManager owner)
         {
-            /// TODO:
-            /// 1. CanvasMain 비활성화
+            LogManager.ConsoleDebugLog("Main<GameManager>", "Exit");
+
+            owner.WindowMain.SetActive(false);
         }
     }
 
@@ -29,40 +35,106 @@ namespace WhalePark18.FSM.State.GameManagerState
     {
         public override void Enter(GameManager owner)
         {
-            /// TODO:
-            /// 1. 초기화 작업
-            ///     * 플레이어 초기화
-            ///         * 플레이어 위치
-            ///         * 스탯(+ 특성)
-            ///         * 무기
-            ///     * 적 초기화
-            ///         * 현재 맵에 적이 있다면 오브젝트풀에 반환
-            ///     * 기둥 초기화
-            ///         * 파괴된 기둥이 있다면 복구
-            ///     * 게임 스코어 초기화
-            ///         * 게임 스코어 0으로 초기화
-            /// 
-            /// 2. CanvasGame 활성화
+            LogManager.ConsoleDebugLog("Game<GameManager>", "Enter");
+      
+            owner.SetCursorActive(false);
+            owner.Player.SetActive(true);
+            owner.WindowPlayerHUD.SetActive(true);
+
+            Execute(owner);
         }
 
         public override void Execute(GameManager owner)
         {
-            /// TODO: 게임 플레이에 필요한 활성화
-            /// * EnemyManager
-            ///     * target 초기화
-            ///     * ObjectPool 활성화
-            /// * Timer 활성화
-            EnemyManager.Instance.Setup(owner.Player.transform);
-            EnemyManager.Instance.SpawnEnemyBackground(EnemyClass.Normal);
+            LogManager.ConsoleDebugLog("Game<GameManager>", "Execute");
 
             owner.Timer.Run();
+            EnemyManager.Instance.Setup(owner.Player.transform);
+            EnemyManager.Instance.SpawnEnemyBackground(EnemyClass.Normal);
         }
 
         public override void Exit(GameManager owner)
         {
-            /// TODO:
-            /// 1. CanvasGame 비활성화
-            /// 2. 실행중인 모든 SpawnEnemyBackground를 멈춘다.
+#if DEBUG
+            LogManager.ConsoleDebugLog("Game<GameManager>", "Exit");
+#endif
+            owner.WindowPlayerHUD.SetActive(false);
+        }
+    }
+
+    /// <summary>
+    /// Debug용 상태
+    /// </summary>
+    public class StateDebug : StateBase<GameManager>
+    {
+        public override void Enter(GameManager owner)
+        {
+            LogManager.ConsoleDebugLog("StateDebug<GameManager>", "Enter");
+
+            if(owner.startState.Equals(GameManagerStates.Main))
+            {
+                owner.Resume();
+                owner.SetCursorActive(true);
+                owner.WindowMain.SetActive(true);
+                owner.Player.SetActive(false);
+            }
+            else if(owner.startState.Equals(GameManagerStates.Game))
+            {
+                owner.SetCursorActive(false);
+                owner.Player.SetActive(true);
+                owner.WindowPlayerHUD.SetActive(true);
+            }
+            else if(owner.startState.Equals(GameManagerStates.Debug))
+            {
+                if (owner.isDisablePlayer)
+                {
+                    owner.SetCursorActive(true);
+                    owner.Player.SetActive(false);
+                }
+                else
+                {
+                    owner.SetCursorActive(false);
+                    owner.Player.SetActive(true);
+                }
+                owner.windowDebug.SetActive(true);
+            }
+
+            Execute(owner);
+        }
+
+        public override void Execute(GameManager owner)
+        {
+            if (owner.startState.Equals(GameManagerStates.Main))
+            {
+
+            }
+            else if (owner.startState.Equals(GameManagerStates.Game))
+            {
+                owner.Timer.Run();
+                EnemyManager.Instance.Setup(owner.Player.transform);
+                if(owner.isStopSpawnEnemyBackground == false)
+                    EnemyManager.Instance.SpawnEnemyBackground(EnemyClass.Normal);
+            }
+            else if (owner.startState.Equals(GameManagerStates.Debug))
+            {
+                
+            }
+        }
+
+        public override void Exit(GameManager owner)
+        {
+            if (owner.startState.Equals(GameManagerStates.Main))
+            {
+                owner.WindowMain.SetActive(false);
+            }
+            else if (owner.startState.Equals(GameManagerStates.Game))
+            {
+                owner.WindowPlayerHUD.SetActive(false);
+            }
+            else if (owner.startState.Equals(GameManagerStates.Debug))
+            {
+
+            }
         }
     }
 }
