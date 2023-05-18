@@ -23,14 +23,7 @@ namespace WhalePark18.ObjectPool
             return spawnPoint;
         }
 
-        /// <summary>
-        /// 오브젝트 반환 인터페이스
-        /// </summary>
-        /// <returns>오브젝트</returns>
-        /// <remarks>
-        /// Vector3(0, 0, 0) 위치 오브젝트
-        /// </remarks>
-        public override EnemySpawnPoint GetObject()
+       public override EnemySpawnPoint GetObject()
         {
             return GetObject(Vector3.zero);
         }
@@ -53,7 +46,7 @@ namespace WhalePark18.ObjectPool
 
             if(isTrackActiveObject)
             {
-                activeObjects.Add(enemySpawnPoint.ID, enemySpawnPoint);
+                activeObjectDictionary.Add(enemySpawnPoint.ID, enemySpawnPoint);
             }
 
             return enemySpawnPoint;
@@ -67,7 +60,7 @@ namespace WhalePark18.ObjectPool
             /// trackActiveObject가 활성화 되었을 때, 활성화 오브젝트 추적 자료형에서 제거한다.
             if (isTrackActiveObject)
             {
-                activeObjects.Remove(returnObject.ID);
+                activeObjectDictionary.Remove(returnObject.ID);
             }
         }
     }

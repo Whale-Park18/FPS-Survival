@@ -48,7 +48,7 @@ namespace WhalePark18.ObjectPool
             /// 3. trackActiveObject가 활성화 되었을 때, 오브젝트를 활성화 오브젝트 자료형에 추가한다.
             if (isTrackActiveObject)
             {
-                activeObjects.Add(projectile.ID, projectile);
+                activeObjectDictionary.Add(projectile.ID, projectile);
             }
 
             return projectile;
@@ -76,7 +76,7 @@ namespace WhalePark18.ObjectPool
             /// trackActiveObject가 활성화 되었을 때, 활성화 오브젝트 추적 자료형에서 제거한다.
             if (isTrackActiveObject)
             {
-                activeObjects.Remove(returnObject.ID);
+                activeObjectDictionary.Remove(returnObject.ID);
             }
         }
     }
