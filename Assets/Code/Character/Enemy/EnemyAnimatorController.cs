@@ -10,12 +10,16 @@ namespace WhalePark18.Character.Enemy
 
     public class EnemyAnimatorController : MonoBehaviour
     {
-        public static string Movement = "isMovement";
-        public static string Attack = "isAttack";
-
         private Animator animator;
 
-        public float NormalizedTime => animator.GetCurrentAnimatorStateInfo(0).normalizedTime;
+        /****************************************
+         * 프로퍼티
+         ****************************************/
+        public float AnimatorSpeed
+        {
+            set => animator.speed = value;
+            get => animator.speed;
+        }
 
         private void Awake()
         {
@@ -23,13 +27,23 @@ namespace WhalePark18.Character.Enemy
         }
 
         /// <summary>
-        /// 애니메이션 파라이미터를 설정하는 메소드
+        /// name 이름의 애니메이션 파라이미터의 값을 설정하는 메소드
         /// </summary>
         /// <param name="name"></param>
         /// <param name="value"></param>
         public void SetBool(string name, bool value)
         {
             animator.SetBool(name, value);
+        }
+
+        /// <summary>
+        /// name 이름의 애니메이션 파라미터를 반환하는 메소드
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public bool GetBool(string name)
+        {
+            return animator.GetBool(name);
         }
 
         /// <summary>
@@ -41,29 +55,29 @@ namespace WhalePark18.Character.Enemy
         }
 
         /// <summary>
-        /// Attack 애니메이션이 종료되었는지 확인하는 메소드
+        /// 현재 재생 중인 애니메이션의 normailizedTime을 반환하는 메소드
         /// </summary>
-        /// <returns>Attack 애니메이션 종료 여부</returns>
-        public bool IsAttackAnimEnd()
-        {
-            /// 현재 진행중인 애니메이션 상태
-            AnimatorStateInfo currentAnimInfo = animator.GetCurrentAnimatorStateInfo(0);
-
-            /// 현재 진행중인 애니메이션이 "Attack" 애니메이션인지?
-            bool isAttackAnim = currentAnimInfo.IsName("Attack");
-
-            /// 애니메이션 진행률이 90 ~ 100% 사이인지?
-            float currentAnimNormalizedTime = currentAnimInfo.normalizedTime - (int)currentAnimInfo.normalizedTime;
-            bool isCurrentAnimNormalizedTimeValidRange = 0.98f <= currentAnimNormalizedTime && currentAnimNormalizedTime <= 1f;
-
-            return isAttackAnim && isCurrentAnimNormalizedTimeValidRange;
-        }
-
+        /// <returns></returns>
         public float CurrentAnimNormalizedTime()
         {
             /// 현재 진행중인 애니메이션 상태
             AnimatorStateInfo currentAnimInfo = animator.GetCurrentAnimatorStateInfo(0);
             return currentAnimInfo.normalizedTime;
+        }
+
+
+        public AnimationClip GetAnimationClip(string animName)
+        {
+            var animClipArray = animator.GetCurrentAnimatorClipInfo(0);
+            AnimationClip clip = null;
+
+            foreach(var animClip in animClipArray)
+            {
+                if (animClip.clip.name.Equals(animName))
+                    clip = animClip.clip;
+            }
+
+            return clip;
         }
     }
 }
