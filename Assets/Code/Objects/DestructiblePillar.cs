@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Reflection;
 using UnityEngine;
+using WhalePark18.Manager;
 
 namespace WhalePark18.Objects
 {
@@ -26,7 +27,7 @@ namespace WhalePark18.Objects
 
         public override void TakeDamage(int damage)
         {
-            WhalePark18.Debug.Log(DebugCategory.Debug, MethodBase.GetCurrentMethod().Name, "현재 생명력: {0} / 피해량: {1} / 피격후 생명령: {2}", currentHP, damage, currentHP - damage);
+            LogManager.ConsoleDebugLog("DestructiblePillar.TakeDamage", $"현재 생명력: {currentHP} / 피해량: {damage} / 피격후 생명령: {currentHP - damage}");
 
             currentHP = currentHP - damage < 0 ? 0 : currentHP - damage;
 

@@ -63,6 +63,9 @@ namespace WhalePark18.Objects
             Explosion();
         }
 
+        /// <summary>
+        /// 조각 위치를 초기화 시키는 메소드
+        /// </summary>
         private void ResetPieces()
         {
             pieces1.transform.localPosition = pieces1Position;
