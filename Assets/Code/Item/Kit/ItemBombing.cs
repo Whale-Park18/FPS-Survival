@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Reflection;
 using WhalePark18.Character.Player;
 using WhalePark18.Item.Active;
+using WhalePark18.Manager;
 
 namespace WhalePark18.Item.Kit
 {
@@ -36,7 +37,9 @@ namespace WhalePark18.Item.Kit
         {
             int bombIncrease = (int)((status.ItemEfficiency.currentAbility - 1f) * 10);
             
-            Debug.Log(DebugCategory.Debug, MethodBase.GetCurrentMethod().Name, "아이템 효율: {0}, 증가된 폭탄: {1}", (status.ItemEfficiency.currentAbility - 1f), bombIncrease);
+            LogManager.ConsoleDebugLog("CalculateBombIncrease",
+                $"아이템 효율: {status.ItemEfficiency.currentAbility - 1f}, 증가된 폭탄: {bombIncrease}"
+            );
 
             return bombIncrease;
         }
