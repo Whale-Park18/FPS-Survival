@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
-using WhalePark18.HUD.Window;
+
+using WhalePark18.UI.Window.Game;
 
 namespace WhalePark18.Character.Player
 {
@@ -97,26 +98,26 @@ namespace WhalePark18.Character.Player
         override protected void Awake()
         {
             base.Awake();
-            Reset();
+            OnInitialized();
         }
 
-        public override void Reset()
+        public override void OnInitialized()
         {
             /// 생명력
-            base.Reset();
-            hpTick.Reset();
+            base.OnInitialized();
+            hpTick.OnInitialized();
 
             /// 보호막
-            shield.Reset();
-            shieldTick.Reset();
+            shield.OnInitialized();
+            shieldTick.OnInitialized();
 
             /// 공격
-            attackDamage.Reset();
-            attackSpeed.Reset();
-            attackNumberOfPiercing.Reset();
+            attackDamage.OnInitialized();
+            attackSpeed.OnInitialized();
+            attackNumberOfPiercing.OnInitialized();
 
             /// 아이템
-            itemEfficiency.Reset();
+            itemEfficiency.OnInitialized();
         }
 
         /// <summary>
@@ -162,8 +163,9 @@ namespace WhalePark18.Character.Player
         /// </summary>
         private void EnableHPTick()
         {
-            //print("<Color=green>" + MethodBase.GetCurrentMethod().Name + "</Color>)");
-            StartCoroutine("OnHPTick");
+            /// 현재 "체력 자연 회복" 능력치가 0 초과할 때만 작동하도록 함.
+            if (hpTick.currentAbility > 0)
+                StartCoroutine("OnHPTick");
         }
 
         /// <summary>
@@ -171,8 +173,9 @@ namespace WhalePark18.Character.Player
         /// </summary>
         private void DisableHPTick()
         {
-            //print("<Color=green>" + MethodBase.GetCurrentMethod().Name + "</Color>)");
-            StopCoroutine("OnHPTick");
+            /// 현재 "체력 자연 회복" 능력치가 0 초과할 때만 작동하도록 함.
+            if(hpTick.currentAbility > 0)
+                StopCoroutine("OnHPTick");
         }
 
         /// <summary>
@@ -196,7 +199,7 @@ namespace WhalePark18.Character.Player
         }
 
         /// <summary>
-        /// [인터페이스] 실드 증가 메소드
+        /// 실드 증가 메소드
         /// </summary>
         /// <param name="incrementValue">회복량</param>
         public void IncreaseShield(int incrementValue)
@@ -209,7 +212,7 @@ namespace WhalePark18.Character.Player
         }
 
         /// <summary>
-        /// [인터페이스] 실드 감소 메소드
+        /// 실드 감소 메소드
         /// </summary>
         /// <param name="lossValue">피해량</param>
         /// <returns>보호막의 크기를 초과한 피해량</returns>
@@ -269,7 +272,7 @@ namespace WhalePark18.Character.Player
         }
 
         /// <summary>
-        /// [인터페이스] 공격 속도 증가 메소드
+        /// 공격 속도 증가 메소드
         /// </summary>
         /// <param name="increaseAttackSpeed">공격 속도 증가량</param>
         public void IncreaseAttackSpeed(float increaseAttackSpeed)
@@ -287,7 +290,7 @@ namespace WhalePark18.Character.Player
         }
 
         /// <summary>
-        /// [인터페이스] 공격 속도 감소 메소드
+        /// 공격 속도 감소 메소드
         /// </summary>
         /// <param name="disincreaseAttackSpeed">공격 속도 감소량</param>
         public void DisincreaseAttackSpeed(float disincreaseAttackSpeed)
@@ -301,6 +304,11 @@ namespace WhalePark18.Character.Player
             attackSpeed.DisIncreaseAbility((float)Math.Round(disincreaseAttackSpeed * itemEfficiency.currentAbility * 100) / 100);
         }
 
+        /// <summary>
+        /// 특성 강화에 필요한 코인 사용량을 계산하는 메소드
+        /// </summary>
+        /// <param name="trait">특성 종류</param>
+        /// <returns>코인 사용량</returns>
         public int CalculateCoinUsage(Trait trait)
         {
             int coinUsage = 0;
@@ -347,7 +355,7 @@ namespace WhalePark18.Character.Player
         }
 
         /// <summary>
-        /// [인터페이스] 코인 증가 메소드
+        /// 코인 증가 메소드
         /// </summary>
         /// <param name="coin">획득 코인</param>
         public void IncreaseCoin(int coin)
@@ -357,7 +365,7 @@ namespace WhalePark18.Character.Player
         }
 
         /// <summary>
-        /// [인터페이스] 코인 감소 메소드
+        /// 코인 감소 메소드
         /// </summary>
         /// <param name="coin">감소 코인</param>
         /// <returns>감소 성공 여부</returns>
