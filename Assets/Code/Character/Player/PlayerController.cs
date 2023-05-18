@@ -1,7 +1,7 @@
 using UnityEngine;
 
-using WhalePark18.HUD;
-using WhalePark18.HUD.Window;
+using WhalePark18.UI;
+using WhalePark18.UI.Window;
 using WhalePark18.Weapon;
 using WhalePark18.Manager;
 
@@ -18,10 +18,10 @@ namespace WhalePark18.Character.Player
         private PlayerStatus                status;             // 이동속도 등의 플레이어 정보
         private RotateToMouse               rotateToMouse;      // 마우스 이동으로 카메라 회전
         private MovementCharacterController movement;           // 키보드 입력으로 플레이어 이동, 점프
-        private WeaponSwitchSystem          weaponSwitchSystem; // 무기 변경 시스템
         private AudioSource                 audioSource;        // 사운드 재생 제어
         private WeaponBase                  weapon;             // 무기 최상위 클래스를 이용항 공격 제어
-        private HUDController               hudController;
+        private PlayerHUDController         hudController;
+        private bool                        active = true;
 
         [Header("Input KeyCodes")]
         [SerializeField]
@@ -50,18 +50,25 @@ namespace WhalePark18.Character.Player
             /// 마우스 커서 설정
             /// FPS 게임 실행 환경에선 커서 조준점이 사용되며 조준점은 항상 화면 정중앙이다.
             /// 즉, 커서 표시를 비활성화 하고, 현재 위치에 고정시킨다.
-            GameManager.Instance.SetCursorActive(false);
+            /// 
+            /// * 게임 매니저에서 상태를 변경하며 관리할 것이기 떄문에 삭제 예정
+            //GameManager.Instance.SetCursorActive(false);
 
             /// 컴포넌트 초기화
-            rotateToMouse   = GetComponent<RotateToMouse>();
-            movement        = GetComponent<MovementCharacterController>();
-            status          = GetComponent<PlayerStatus>();
-            audioSource     = GetComponent<AudioSource>();
-            hudController   = GetComponent<HUDController>();
+            status              = GetComponent<PlayerStatus>();
+            rotateToMouse       = GetComponent<RotateToMouse>();
+            movement            = GetComponent<MovementCharacterController>();
+            audioSource         = GetComponent<AudioSource>();
+            hudController       = GetComponent<PlayerHUDController>();
+
+            //SetActive(false);
         }
 
         private void Update()
         {
+            if (active == false)
+                return;
+
             UpdateRotate();
             UpdateMove();
             UpdateJump();
@@ -79,17 +86,13 @@ namespace WhalePark18.Character.Player
         /// </remarks>
         public void SetActive(bool active)
         {
+            this.active = active; 
+
             /// 플레이어의 움직임을 담당하는 컴포넌트를 비활성화 한다.
             movement.enabled        = active;
             rotateToMouse.enabled   = active;
+            
             audioSource.Stop();
-        }
-
-        public void Reset()
-        {
-            transform.position = new Vector3(0, 1, 0);
-            status.Reset();
-            weaponSwitchSystem.Reset();
         }
 
         private void UpdateRotate()
@@ -151,7 +154,7 @@ namespace WhalePark18.Character.Player
 
         private void UpdateWeaponAction()
         {
-            if (GameManager.Instance.IsPause) return;
+            if (GameManager.Instance.IsPause || active == false) return;
 
             if (Input.GetMouseButtonDown(0))
             {
@@ -186,7 +189,7 @@ namespace WhalePark18.Character.Player
 
             if (Input.GetKeyDown(keyCodeWindowTemporaryMenu))
             {
-                hudController.OnWindowTemporaryMenuPower();
+                hudController.OnWindowGameMenuPower();
             }
         }
 
@@ -212,7 +215,6 @@ namespace WhalePark18.Character.Player
 
                 if (isDie == true)
                 {
-                    print("Game Over");
                     GameManager.Instance.GameOver();
                     StopAllCoroutines();
                 }
