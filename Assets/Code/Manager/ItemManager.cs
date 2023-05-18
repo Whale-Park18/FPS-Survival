@@ -1,19 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 using WhalePark18.Item.Kit;
 using WhalePark18.Manager;
 
 namespace WhalePark18.Item
 {
-    /// <summary>
-    /// 생성해야 할 아이템 정보를 담은 구조체
-    /// </summary>
-    [System.Serializable]
-    public struct ItemInfo
+    public enum ItemCategory { None = -1, Survial, Heal, Active, }
+
+    [System.Serializable, Tooltip("아이템 확률 정보")]
+    public struct ItemProbabilityInfo
     {
-        public GameObject itemPrefab;
-        [Range(1, 100), Tooltip("아이템 확률(%)")]
+        public ItemCategory category;
         public int weight;
     }
 
@@ -27,12 +27,36 @@ namespace WhalePark18.Item
     /// </remarks>
     public class ItemManager : MonoSingleton<ItemManager>
     {
+        [Header("Item Info")]
         [SerializeField]
-        private  ItemInfo[] itemList;
+        private List<ItemProbabilityInfo> itemProbabilityInfoList;
 
-        private void Awake()
+        private List<List<GameObject>> listByItemCategory;  // 모든 아이템 리스트를 관리하는 루트 리스트
+        [SerializeField]
+        private List<GameObject> survivalItemList;          // 생존 관련 아이템 리스트
+        [SerializeField]
+        private List<GameObject> healItemList;              // 힐 관련 아이템 리스트
+        [SerializeField]
+        private List<GameObject> activeItemList;            // 활성화 아이템 리스트
+
+        [Header("DEBUG")]
+        public TMP_InputField inputSimulationCount;
+        public Button buttonExecute;
+        public List<TextMeshProUGUI> textResultList;
+
+        protected override void Awake()
         {
-            CreateInstance();
+            /// 1. 싱글톤 작업
+            base.Awake();
+
+            /// 아이템 리스트들을 관리하기 쉽게 listByItemCategory 변수에 저장
+            listByItemCategory = new List<List<GameObject>>();
+            listByItemCategory.Add(survivalItemList);
+            listByItemCategory.Add(healItemList);
+            listByItemCategory.Add(activeItemList);
+
+            // #DEBUG
+            //buttonExecute.onClick.AddListener(OnClickDebugSimulation);
         }
 
         /// <summary>
@@ -43,26 +67,98 @@ namespace WhalePark18.Item
         {
             float total = 0;
         
-            foreach(ItemInfo element in itemList)
+            foreach(var element in itemProbabilityInfoList)
             {
                 total += element.weight;
             }
         
             float randomPoint = Random.value * total;
-        
-            for(int i = 0; i < itemList.Length; i++)
+
+            for(int i = 0; i < itemProbabilityInfoList.Count; i++)
             {
-                if(randomPoint < itemList[i].weight)
+                if(randomPoint < itemProbabilityInfoList[i].weight)
                 {
-                    return itemList[i].itemPrefab;
+                    return ReturnItem(itemProbabilityInfoList[i].category);
                 }
                 else
                 {
-                    randomPoint -= itemList[i].weight;
+                    randomPoint -= itemProbabilityInfoList[i].weight;
                 }
             }
         
-            return itemList[itemList.Length - 1].itemPrefab;
+            return ReturnItem(itemProbabilityInfoList[itemProbabilityInfoList.Count - 1].category);
+        }
+
+        private GameObject ReturnItem(ItemCategory category)
+        {
+            LogManager.ConsoleDebugLog("ItemManagerReturnItem()", $"category: {category}");
+
+            /// category가 ItemCategory.None일 경우 null을 반환하지만
+            /// 아닐 경우 category의 속한 아이템 중 하나를 선택해 반환.
+            if (category.Equals(ItemCategory.None))
+            {
+                return null;
+            }
+            else
+            {
+                int randomIndex = Random.Range(0, listByItemCategory[(int)category].Count - 1);
+                return listByItemCategory[(int)category][randomIndex];
+            }
+        }
+
+        /// <summary>
+        /// 시뮬레이션용 메소드
+        /// </summary>
+        public void OnClickDebugSimulation()
+        {
+            LogManager.ConsoleDebugLog("ItemManager", "OnClickDebugSimulation");
+
+            int[] simulationResult = new int[4];
+            
+
+            for(int count = 0; count < int.Parse(inputSimulationCount.text); count++)
+            {
+                float total = 0;
+                foreach (var element in itemProbabilityInfoList)
+                {
+                    total += element.weight;
+                }
+
+                float randomPoint = Random.value * total;
+                for (int i = 0; i < itemProbabilityInfoList.Count; i++)
+                {
+                    if (randomPoint < itemProbabilityInfoList[i].weight)
+                    {
+                        LogManager.ConsoleDebugLog("ItemManager", $"category: {itemProbabilityInfoList[i].category}");
+                        simulationResult[(int)itemProbabilityInfoList[i].category]++;
+                        break;
+                    }
+                    else
+                    {
+                        randomPoint -= itemProbabilityInfoList[i].weight;
+                    }
+                }
+
+                //simulationResult[itemProbabilityInfoList.Count - 1]++;
+            }
+
+            DebugEditSimulationResult(
+                simulationResult[(int)ItemCategory.None + 1],
+                simulationResult[(int)ItemCategory.Survial + 1],
+                simulationResult[(int)ItemCategory.Heal + 1],
+                simulationResult[(int)ItemCategory.Active + 1]
+            );
+        }
+
+        /// <summary>
+        /// 시뮬레이션 결과 확인용 메소드
+        /// </summary>
+        private void DebugEditSimulationResult(int none, int survival, int heal, int active)
+        {
+            textResultList[(int)ItemCategory.None + 1].text = none.ToString();
+            textResultList[(int)ItemCategory.Survial + 1].text = survival.ToString();
+            textResultList[(int)ItemCategory.Heal + 1].text = heal.ToString();
+            textResultList[(int)ItemCategory.Active + 1].text = active.ToString();
         }
     }
 }
