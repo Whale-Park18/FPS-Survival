@@ -145,7 +145,7 @@ MonoBehaviour:
   moveDistance: 0.2
   pingpongSpeed: 0.5
   rotateSpeed: 50
-  weight: 0
+  category: 2
   turretPrefab: {fileID: 5056785167077092454, guid: 2da7f684d4a50724e9cf7d512ea6d23d, type: 3}
   turretDestroyTime: 30
 --- !u!1 &1422940608470640790

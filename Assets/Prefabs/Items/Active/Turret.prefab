@@ -252,6 +252,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1024
   guardRotationSpeed: 45
+  destroyTime: 0
   lockOnTime: 0.8
   bulletPrefab: {fileID: 2593775262155995335, guid: bde5c0101addc40499770ff469289c5d, type: 3}
   bulletSpawnPoint: {fileID: 1508361962}

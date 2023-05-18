@@ -147,7 +147,7 @@ MonoBehaviour:
   moveDistance: 0.2
   pingpongSpeed: 0.5
   rotateSpeed: 50
-  weight: 0
+  category: 2
   time: 5
   attackSpeedIncrease: 0.15
 --- !u!135 &4628959059139306647

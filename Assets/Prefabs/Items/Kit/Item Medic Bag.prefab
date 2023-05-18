@@ -62,7 +62,7 @@ MonoBehaviour:
   moveDistance: 0.2
   pingpongSpeed: 0.5
   rotateSpeed: 50
-  weight: 0
+  category: 1
   hpEffectPrefab: {fileID: 2269825101496747631, guid: 2c133061823c3594e9416e4bf4a758bf, type: 3}
   increaseHP: 10
 --- !u!1 &6539149822818312300

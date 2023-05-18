@@ -375,7 +375,7 @@ MonoBehaviour:
   moveDistance: 0.2
   pingpongSpeed: 0.5
   rotateSpeed: 50
-  weight: 0
+  category: 2
   Bomber: {fileID: 1204320689982802495, guid: e2c82040be55c6a4c9e55f82733f8df5, type: 3}
   minHorizontalRange: 100
   maxHorizontalRange: 150
