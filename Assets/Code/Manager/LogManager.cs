@@ -110,7 +110,7 @@ namespace WhalePark18.Manager
         /// <param name="msg">로그 상세 메시지</param>
         public static void ConsoleDebugLog(string title, string msg)
         {
-            UnityEngine.Debug.Log($"<color=green><b>[{title}]</b></color> {msg}");
+            Debug.Log($"<color=green><b>[{title}]</b></color> {msg}");
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace WhalePark18.Manager
         /// <param name="msg">로그 상세 메시지</param>
         public static void ConsoleErrorLog(string title, string msg)
         {
-            UnityEngine.Debug.Log($"<color=yellow><b>[{title}]</b></color> {msg}");
+            Debug.LogError($"<color=yellow><b>[{title}]</b></color> {msg}");
         }
 
         /// <summary>
@@ -130,7 +130,7 @@ namespace WhalePark18.Manager
         /// <param name="msg">로그 상세 메시지</param>
         public static void ConsoleWarningLog(string title, string msg)
         {
-            UnityEngine.Debug.Log($"<color=red><b>[{title}]</b></color> {msg}");
+            Debug.LogWarning($"<color=red><b>[{title}]</b></color> {msg}");
         }
     }
 }
