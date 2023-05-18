@@ -8,19 +8,20 @@ using WhalePark18.FSM;
 using WhalePark18.FSM.State;
 using WhalePark18.FSM.State.GameManagerState;
 using WhalePark18.Objects;
+using UnityEngine.SceneManagement;
 
 namespace WhalePark18.Manager
 {
     /// TODO: Main -> Game 전환 변경 방식 변경에 따른 삭제 예정
     public struct SceneName
     {
-        public static string Start => "StartScene";
-        public static string Game => "GameScene";
+        public static string Start => "Start";
+        public static string Game => "Game";
     }
 
     public enum Tag { Target, Metal, ExplosiveBarrel, ImpactNormal, ImpactObstacle, ImpactEnemy, InteractionObejct, Item }
 
-    public enum GameManagerStates { Main = 0, Game, }
+    public enum GameManagerStates { Main = 0, Game, Debug}
 
     [System.Serializable]
     public class GameOverEvent : UnityEngine.Events.UnityEvent<int, string, int> { }
@@ -36,17 +37,13 @@ namespace WhalePark18.Manager
         private StateBase<GameManager>[]    states;
         private StateMachine<GameManager>   stateMachine;
 
-        /****************************************
-         * Main
-         ****************************************/
+        [Header("Main")]
         [SerializeField]
-        private GameObject                  canvasMain;
+        private GameObject                  windowMain;
 
-        /****************************************
-         * Game
-         ****************************************/
+        [Header("Game")]
         [SerializeField]
-        private GameObject                  canvasGame;
+        private GameObject                  windowPlayerHUD;
 
         private bool                        isPause;            // [플래그] 게임이 일시정지 됬는지 확인
         private int                         pauseStack = 0;     // 일시 정지 요청이 왔을 때 증가시키는 스택
@@ -55,44 +52,45 @@ namespace WhalePark18.Manager
         private int                         goalNumberOfKill = 1000;
         private ScoreSystem                 scoreSystem;
 
-        private GameObject                  player;
+        private PlayerController            player;
+
         private List<DestructiblePillar>    pillarList;
         [SerializeField]
         private LayerMask                   pillarLayerMask;
 
+        [Header("DEBUG")]
+        public GameObject windowDebug;
+
+        public bool isOnDebugMode;
+        public GameManagerStates startState;
+        public bool isStopSpawnEnemyBackground;
+        public bool isDisablePlayer;
+        public bool isDisplayLog;
+
         /****************************************
          * 프로퍼티
          ****************************************/
-        public bool IsPause => isPause;
-        public int GoalNumberOfKill => goalNumberOfKill;
-        public Timer Timer => timer;
-        public GameObject Player => player;
+        public GameObject       WindowMain => windowMain;
+        public GameObject       WindowPlayerHUD => windowPlayerHUD;
+        public bool             IsPause => isPause;
+        public Timer            Timer => timer;
+        public int              GoalNumberOfKill => goalNumberOfKill;
+        public PlayerController Player => player;
+        public ScoreSystem      ScoreSystem => scoreSystem;
 
         /// <summary>
         /// GameManager가 인스턴스화 된 직후, 호출되는 초기화 메소드
         /// </summary>
-        private void Awake()
+        protected override void Awake()
         {
             /// 1. 싱글톤 작업
-            if(Instance != null && Instance != this)
-            {
-                Destroy(this.gameObject);
-            }
+            base.Awake();
 
             /// 2. 컴포넌트 및 변수 초기화
-            timer = GetComponent<Timer>();
-            scoreSystem = new ScoreSystem();
+            OnVariableInitialized();
 
-            /// 3. 상태 초기화
-            /// 3.1. 상태 컴포넌트를 붙일 오브젝트 생성 및 초기화
-            GameObject stateObject = new GameObject("States");
-            stateObject.transform.parent = this.transform;
-            stateObject.transform.localScale = Vector3.zero;
-
-            /// 3.2. 상태 컴포넌트 부착 및 초기화
-            states = new StateBase<GameManager>[4];
-            states[(int)GameManagerStates.Main] = stateObject.AddComponent<Main>();
-            states[(int)GameManagerStates.Game] = stateObject.AddComponent<Game>();
+            /// 3. 상태 관련 초기화
+            OnStateInitialized();
         }
 
         /// <summary>
@@ -100,22 +98,44 @@ namespace WhalePark18.Manager
         /// </summary>
         private void Start()
         {
-            /// StateMachine의 owner를 싱글톤 객체로, 초기 상태로 Main으로 설정한다.
-            stateMachine = new StateMachine<GameManager>();
-            stateMachine.Setup(Instance, states[(int)GameManagerStates.Main]);
-
-            /// 1. 관리 오브젝트 초기화
-            /// 1.1. 플레이어 초기화
-            player = GameObject.Find("Player");
-            
-            /// 1.2. 기둥 초기화
-            pillarList = new List<DestructiblePillar>();
-            Collider[] colliders = Physics.OverlapSphere(Vector3.zero, 150f, pillarLayerMask);
-            foreach(Collider collider in colliders)
+            // #DEBUG
+            if(isOnDebugMode)
             {
-                DestructiblePillar pillar = collider.GetComponent<DestructiblePillar>();
-                if(pillar != null ) pillarList.Add(pillar);
+                stateMachine.Setup(Instance, states[(int)GameManagerStates.Debug]);
+                return;
             }
+
+            /// StateMachine의 owner를 싱글톤 객체로, 초기 상태로 Main으로 설정한다.
+            stateMachine.Setup(Instance, states[(int)GameManagerStates.Main]);
+        }
+
+        public void OnVariableInitialized()
+        {
+            timer = GetComponent<Timer>();
+            scoreSystem = new ScoreSystem();
+            player = GameObject.Find("Player").GetComponent<PlayerController>();
+        }
+
+        private void OnStateInitialized()
+        {
+            /// 3. 상태 관련 초기화
+            /// 3.1. 상태 초기화
+            /// 3.1.1. 상태 컴포넌트를 붙일 오브젝트 생성 및 초기화
+            GameObject stateObject = new GameObject("States");
+            stateObject.transform.parent = this.transform;
+            stateObject.transform.localScale = Vector3.zero;
+
+            /// 3.1.2. 상태 컴포넌트 부착 및 초기화
+            states = new StateBase<GameManager>[3];
+            states[(int)GameManagerStates.Main] = stateObject.AddComponent<Main>();
+            states[(int)GameManagerStates.Game] = stateObject.AddComponent<Game>();
+            
+            // #DEBUG
+            if(isOnDebugMode)
+                states[(int)GameManagerStates.Debug] = stateObject.AddComponent<StateDebug>();
+
+            /// 3.2. 상태 머신 초기화
+            stateMachine = new StateMachine<GameManager>();
         }
 
         /// <summary>
@@ -130,13 +150,8 @@ namespace WhalePark18.Manager
         /// <summary>
         /// 게임 시작 메소드
         /// </summary>
-        private void GameStart()
+        public void GameStart()
         {
-            /// TODO: Game(StateBase).Execute()에서 실행될 로직
-            EnemyManager.Instance.Setup(player.transform);
-            //EnemyManager.Instance.SpawnBackgroundEnemy();
-            timer.Run();
-
             ChangeState(GameManagerStates.Game);
         }
 
@@ -154,30 +169,18 @@ namespace WhalePark18.Manager
             Pause();
             timer.Stop();
             player.GetComponent<PlayerController>().enabled = false;
-
-            scoreSystem.CalculateScore(EnemyManager.Instance.KillCountInfo, timer.Time);
+            
+            scoreSystem.CalculateScore(goalNumberOfKill, EnemyManager.Instance.KillCountInfo, timer.Time);
             gameOverEvent.Invoke(scoreSystem.TotalScore, timer.ToString(), scoreSystem.KillScore);
         }
 
         /// <summary>
-        /// 게임 초기화 메소드
+        /// 메인으로 복귀하는 메소드
         /// </summary>
-        public void GameReset()
+        public void ReturnMain()
         {
-            /// 1. 플레이어 초기화
-            //player.GetComponent<PlayerController>().enabled = true;
-            var playerController = player.GetComponent<PlayerController>();
-            playerController.SetActive(false);
-            playerController.Reset();
-
-            /// 2. 적 초기화
-            EnemyManager.Instance.Reset();
-            
-            /// 3. 기둥 초기화
-            foreach(var pillar in pillarList)
-            {
-                pillar.Reset();
-            }
+            /// 씬을 다시 로딩해 메인으로 복귀한다.
+            SceneManager.LoadScene(SceneName.Game.ToString());
         }
 
         /// <summary>
