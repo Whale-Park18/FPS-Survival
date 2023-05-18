@@ -30,13 +30,13 @@ namespace WhalePark18.Character
 
         virtual protected void Awake()
         {
-            Reset();
+            OnInitialized();
         }
 
-        public virtual void Reset()
+        public virtual void OnInitialized()
         {
             /// ปýธํทย
-            hp.Reset();
+            hp.OnInitialized();
         }
 
         /// <summary>
