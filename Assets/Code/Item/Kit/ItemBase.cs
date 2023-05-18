@@ -5,6 +5,10 @@ namespace WhalePark18.Item.Kit
 {
     public abstract class ItemBase : MonoBehaviour
     {
+        [Header("Item Info")]
+        [SerializeField]
+        private ItemCategory category;
+
         [Header("Item Animation")]
         [SerializeField]
         private float moveDistance = 0.2f;
@@ -12,8 +16,8 @@ namespace WhalePark18.Item.Kit
         private float pingpongSpeed = 0.5f;
         [SerializeField]
         private float rotateSpeed = 50;
-        [SerializeField, Tooltip("아이템 가중치")]
-        private int weight;                     // 아이템 가중치
+
+        public ItemCategory Category => category;
 
         private IEnumerator Start()
         {
