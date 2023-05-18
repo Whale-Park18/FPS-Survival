@@ -1,8 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using WhalePark18.Character.Enemy;
-using WhalePark18.Character.Player;
 using WhalePark18.Manager;
 using WhalePark18.Objects;
 
@@ -10,18 +7,21 @@ namespace WhalePark18.Projectile
 {
     public class ProjectileTurret : ProjectileBase
     {
-        protected override void Stop()
+        public override void Stop()
         {
+            base.Stop();
             Destroy(this);
         }
 
         private void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag(Tag.ImpactEnemy.ToString()))
+            LogManager.ConsoleDebugLog("ProjectileTurret", $"other.tag: {other.tag}");
+
+            if (other.CompareTag("ImpactEnemy"))
             {
                 other.GetComponent<EnemyBase>().TakeDamage(damage);
             }
-            else if (other.CompareTag(Tag.InteractionObejct.ToString()))
+            else if (other.CompareTag("InteractionObject"))
             {
                 var interactionObject = other.GetComponent<InteractionObject>();
                 if (interactionObject != null)
