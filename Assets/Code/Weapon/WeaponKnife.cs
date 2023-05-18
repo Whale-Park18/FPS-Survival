@@ -30,12 +30,6 @@ namespace WhalePark18.Weapon
             onAmmoEvent.Invoke(weaponSetting.currentAmmo, weaponSetting.maxAmmo);
         }
 
-        public override void Reset()
-        {
-            WeaponLock = false;
-            weaponSetting.currentAmmo = weaponSetting.maxAmmo;
-        }
-
         public override void StartWeaponAction(int type = 0)
         {
             if (isAttack) return;

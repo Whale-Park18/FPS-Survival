@@ -62,17 +62,6 @@ namespace WhalePark18.Weapon
             ResetAttackVariables();
         }
 
-        public override void Reset()
-        {
-            /// TODO:
-            /// * lock 초기화
-            /// * 탄약 초기화
-            WeaponLock = false;
-            weaponSetting.currentAmmo = weaponSetting.maxAmmo;
-
-            ResetAttackVariables();
-        }
-
         public override void StartWeaponAction(int type = 0)
         {
             if (type == 0 && isAttack == false && isReload == false)
@@ -297,8 +286,8 @@ namespace WhalePark18.Weapon
                 if (hitInfo.transform.CompareTag("ImpactEnemy"))
                 {
                     LogManager.ConsoleDebugLog($"{typeof(WeaponAssultRifle)} - HitScan",
-                        $"hitObjectName: {hitInfo.collider.name}, hitPoint: {hitInfo.point}, " +
-                        $"damage = increment({status.AttackDamage.currentAbility * 100}%) x baseDamage({weaponSetting.damage}) = {damage}"
+                        $"피격 객체: {hitInfo.collider.name}, 피격 위치: {hitInfo.point}, " +
+                        $"damage = {status.AttackDamage.currentAbility}({status.AttackDamage.currentAbility * 100}%) x {weaponSetting.damage} = {damage}"
                     );
 
                     hitInfo.transform.GetComponent<EnemyBase>().TakeDamage(damage);

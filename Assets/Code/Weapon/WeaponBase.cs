@@ -75,8 +75,6 @@ namespace WhalePark18.Weapon
             animator    = GetComponent<PlayerAnimatorController>();
         }
 
-        public abstract void Reset();
-        
         /// <summary>
         /// 무기 잠금 메소드
         /// </summary>

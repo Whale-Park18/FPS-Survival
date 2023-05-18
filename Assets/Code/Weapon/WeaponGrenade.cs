@@ -40,14 +40,6 @@ namespace WhalePark18.Weapon
             ResetAttackVariables();
         }
 
-        public override void Reset()
-        {
-            WeaponLock = true;
-            weaponSetting.currentAmmo = weaponSetting.maxAmmo;
-
-            ResetAttackVariables();
-        }
-
         public override void StartWeaponAction(int type = 0)
         {
             if (type == 0 && isAttack == false && weaponSetting.currentAmmo > 0)

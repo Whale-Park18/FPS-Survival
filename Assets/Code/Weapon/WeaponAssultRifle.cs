@@ -39,11 +39,11 @@ namespace WhalePark18.Weapon
         [SerializeField]
         private Image imageAim;                     // default/aim 모드에 따라 Aim 이미지 활성/비활성
 
-        //private bool isModeChange = false;          // 모드 전환 여부 체크용
+        //private bool isModeChange = false;        // 모드 전환 여부 체크용
         private float defaultModeFOV = 60f;         // 기본모드에서의 카메라 FOV
         private float aimModeFOV = 30f;             // Aim모드에서의 카메라 FOV(시야각)
 
-        private PlayerStatus status;                      // 플레이어 스테이터스
+        private PlayerStatus status;                // 플레이어 스테이터스
         private Camera mainCamera;                  // 광선 발사
 
         protected override void Awake()
@@ -52,9 +52,6 @@ namespace WhalePark18.Weapon
             base.Awake();
             status = GetComponentInParent<PlayerStatus>();
             mainCamera = Camera.main;
-
-            /// 2. 탄창, 탄약 초기화
-            ///     * 아이템에 의해 활성화 되는 무기이기 때문에 따로 초기화하지 않는다.
         }
 
         private void OnEnable()
@@ -68,19 +65,6 @@ namespace WhalePark18.Weapon
             /// 무기 활성화될 때 해당 무기 탄창과 탄 수  정보 갱신
             onMagazineEvent.Invoke(weaponSetting.currentMagazine);
             onAmmoEvent.Invoke(weaponSetting.currentAmmo, weaponSetting.maxAmmo);
-
-            ResetAttackVariables();
-        }
-
-        public override void Reset()
-        {
-            /// TODO:
-            /// * lock 초기화
-            /// * 탄약 초기화
-            /// * 무기 강제 변경 -> PlayerController에서 하면 될듯
-            WeaponLock = true;
-            weaponSetting.currentMagazine = 0;
-            weaponSetting.currentAmmo = 0;
 
             ResetAttackVariables();
         }
@@ -311,11 +295,10 @@ namespace WhalePark18.Weapon
 
                 if (hitInfo.transform.CompareTag("ImpactEnemy"))
                 {
-                    WhalePark18.Debug.Log(DebugCategory.Debug, MethodBase.GetCurrentMethod().Name, 
-                        "공격력 증가값: {0}%\n" +
-                        "적용값: {1}\n" +
-                        "반올림: {2}",
-                        status.AttackDamage.currentAbility * 100, weaponSetting.damage * status.AttackDamage.currentAbility, Math.Round(weaponSetting.damage * status.AttackDamage.currentAbility)
+                    LogManager.ConsoleDebugLog("AssultRifle.TwoStepRaycast", 
+                        $"공격력 증가값: {status.AttackDamage.currentAbility * 100}\n" +
+                        $"적용값: {weaponSetting.damage * status.AttackDamage.currentAbility}\n"+
+                        $"반올림: {Math.Round(weaponSetting.damage * status.AttackDamage.currentAbility)}"
                     );
 
                     hitInfo.transform.GetComponent<EnemyFSM>().TakeDamage((int)Math.Round(weaponSetting.damage * status.AttackDamage.currentAbility));
