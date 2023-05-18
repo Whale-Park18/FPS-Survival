@@ -1,30 +1,46 @@
 ﻿using System;
+using UnityEngine;
 
 namespace WhalePark18.Character
 {
     [System.Serializable]
     public struct Ability
     {
-        public bool     isCurrentAbilityEqualMaxAbility;   // 현재 능력치와 최대 능력치가 동일시 됨을 나타내는 플래그
-        public float    baseAbility;                       // 기본 능력치(시작 능력치로 사용할 것)
-        public float    maxAbility;                        // 최대 능력치
-        public float    currentAbility;                    // 현재 능력치
+        [Tooltip("현재 능력치와 최대 능력치가 동일시 됨을 나타내는 플래그")]
+        public bool     isCurrentAbilityEqualMaxAbility;
+        [Tooltip("기본 능력치")]
+        public float    baseAbility;
+        [Tooltip("최대 능력치")]
+        public float    maxAbility;
+        [Tooltip("현재 능력치")]
+        public float    currentAbility;
 
-        public int      maxTraitLevel;                     // 최대 강화 레벨
-        public int      currentTraitLevel;                 // 현재 강화 레벨
+        [Tooltip("최대 특성 레벨")]
+        public int      maxTraitLevel;
+        [Tooltip("현재 특성 레벨")]
+        public int      currentTraitLevel;
 
+        [Tooltip("능력치 증가 연산 방식")]
         public bool     isOperationMultiplication;         // 연산이 곱연산인지 나타내는 플래그
+        [Tooltip("능력치 증가 계수 표현 방식")]
         public bool     isIncrementFactorPercentage;       // 증가 계수가 백분율임을 나타내는 플래그
+        [Tooltip("증가 계수")]
         public float    incrementFactor;                   // 증가 계수
 
         public void Reset()
+        {
+            /// 현재 능력치를 특성 레벨에 맞게 초기화 시킨다.
+            currentAbility = baseAbility + CalculateIncrementForTraitLevel(currentTraitLevel);
+        }
+
+        public void OnInitialized()
         {
             maxAbility = currentAbility = baseAbility;
             currentTraitLevel = 0;
         }
 
         /// <summary>
-        /// [인터페이스] 특성 레벨에 대한 증가량을 계산하는 메소드
+        /// 특성 레벨에 대한 증가량을 계산하는 메소드
         /// </summary>
         /// <param name="level">구하고 싶은 레벨</param>
         /// <returns>특성의 레벨이 level일 때, 증가하는 수치</returns>
@@ -39,7 +55,7 @@ namespace WhalePark18.Character
         }
 
         /// <summary>
-        /// [인터페이스] 특성 레벨 업 메소드
+        /// 특성 레벨 업 메소드
         /// </summary>
         /// <remarks>
         /// 특성 레벨에 따라 능력치가 상승한다.
@@ -82,7 +98,7 @@ namespace WhalePark18.Character
         }
 
         /// <summary>
-        /// [인터페이스] 능력치 향상 메소드
+        /// 능력치 향상 메소드
         /// </summary>
         /// <param name="inrementValue"></param>
         public void IncreaseAbility(float inrementValue)
