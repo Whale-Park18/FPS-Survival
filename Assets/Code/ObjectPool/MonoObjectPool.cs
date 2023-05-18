@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace WhalePark18.ObjectPool
@@ -22,34 +24,19 @@ namespace WhalePark18.ObjectPool
         /****************************************
          * 관리용
          ****************************************/
-        protected bool                  isTrackActiveObject;      // 오브젝트를 추적할 것인지
+        [SerializeField]
+        protected bool                  isTrackActiveObject;    // 오브젝트를 추적할 것인지
         protected int                   idToAssignToTheObject;  // 오브젝트에 부여할 ID
-        protected Dictionary<int, T>    activeObjects;          // 활성화된 오브젝트
+        protected Dictionary<int, T>    activeObjectDictionary; // 활성화된 오브젝트
         //protected int maxObjectCount;
         //protected int activeObjectCount;
 
         protected void Awake()
         {
-            /// 오브젝트풀 초기화
             objectPool = new Queue<T>();
+            activeObjectDictionary = new Dictionary<int, T>();
+
             CreateObjects();
-        }
-
-        /// <summary>
-        /// 초기화 메소드
-        /// </summary>
-        /// <remarks>
-        /// 오브젝트를 추적하지 않는다면 별도의 작업을 하지 않는다.
-        /// 오브젝트를 추적할 경우 활성화된 모든 오브젝트를 오브젝트풀에 반환한다.
-        /// </remarks>
-        public virtual void Reset()
-        {
-            if (isTrackActiveObject == false) return;
-
-            foreach (var activeEnemyInfo in activeObjects)
-            {
-                ReturnObject(activeEnemyInfo.Value);
-            }
         }
 
         /// <summary>
@@ -115,8 +102,8 @@ namespace WhalePark18.ObjectPool
         /// <param name="position">활성화할 오브젝트의 위치</param>
         protected void EnableObject(T enableObject, Vector3 position)
         {
-            EnableObject(enableObject);
             enableObject.transform.position = position;
+            EnableObject(enableObject);
         }
 
         /// <summary>
