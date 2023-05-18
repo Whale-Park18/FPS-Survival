@@ -28,7 +28,7 @@ namespace WhalePark18
                 return;
 
             isRunning = true;
-            OnInitialized();
+            Setup();
             coroutineHandle = StartCoroutine(OnTimer());
         }
 
@@ -48,7 +48,7 @@ namespace WhalePark18
         /// <summary>
         /// 초기화 메소드
         /// </summary>
-        private void OnInitialized()
+        private void Setup()
         {
             time = 0;
         }

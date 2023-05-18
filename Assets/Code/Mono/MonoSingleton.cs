@@ -17,22 +17,11 @@ namespace WhalePark18
         private static object lockObject = new object();  // 공유 데이터 동기화에 사용되는 lock 오브젝트
         private static bool applicationQuit = false;      // 응용 프로그램 종료 상태
 
-        public static T Instance
+        public static T Instance => instance;
+
+        protected virtual void Awake()
         {
-            get
-            {
-                /// 중복 생성되어 메모리 누수가 발생하는 것을 방지한다.
-                if (applicationQuit)
-                    return null;
-
-                /// lock을 이용해 공유 데이터인 instance의 단독 접근을 보장한다.
-                lock (lockObject)
-                {
-                    CreateInstance();
-                }
-
-                return instance;
-            }
+            CreateInstance();
         }
 
         protected static void CreateInstance()
@@ -66,7 +55,7 @@ namespace WhalePark18
         /// </summary>
         protected virtual void OnApplicationQuit()
         {
-            applicationQuit = true;
+            //applicationQuit = true;
         }
 
         /// <summary>
@@ -74,7 +63,7 @@ namespace WhalePark18
         /// </summary>
         protected virtual void OnDestroy()
         {
-            applicationQuit = true;
+            //applicationQuit = true;
         }
     }
 }
