@@ -11,8 +11,11 @@ namespace WhalePark18.Manager
     {
         private CasingObjectPool casingObjectPool;
 
-        private void Awake()
+        protected override void Awake()
         {
+            /// ½Ì±ÛÅæ ÀÛ¾÷
+            base.Awake();
+
             casingObjectPool = GetComponentInChildren<CasingObjectPool>();
         }
 
