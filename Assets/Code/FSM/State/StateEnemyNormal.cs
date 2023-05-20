@@ -301,6 +301,10 @@ namespace WhalePark18.FSM.State.StateEnemyNormal
             }
         }
 
+        /// <summary>
+        /// 미사일 발사 유무를 반환하는 메소드
+        /// </summary>
+        /// <returns>미사일 반사 유무</returns>
         public bool IsBeforeMissileFired()
         {
             return missile != null && missile.IsFired == false;
