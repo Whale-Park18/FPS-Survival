@@ -8,7 +8,7 @@ namespace WhalePark18.UI.Window.Game
 {
     public enum TemporaryMenu
     {
-        GameExit
+        ReturnMain = 0, GameExit
     }
 
     public class WindowGameMenu : WindowBase
@@ -32,7 +32,7 @@ namespace WhalePark18.UI.Window.Game
         /// </summary>
         private void ButtonBinding()
         {
-            buttonMenu[(int)TemporaryMenu.GameExit].onClick.AddListener(OnClickReturnMain);
+            buttonMenu[(int)TemporaryMenu.ReturnMain].onClick.AddListener(OnClickReturnMain);
             buttonMenu[(int)TemporaryMenu.GameExit].onClick.AddListener(OnClickGameExit);
         }
 
