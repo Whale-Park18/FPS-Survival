@@ -55,9 +55,8 @@ namespace WhalePark18.FSM.State.GameManagerState
 
         public override void Exit(GameManager owner)
         {
-#if DEBUG
             LogManager.ConsoleDebugLog("Game<GameManager>", "Exit");
-#endif
+      
             owner.WindowPlayerHUD.SetActive(false);
         }
     }
