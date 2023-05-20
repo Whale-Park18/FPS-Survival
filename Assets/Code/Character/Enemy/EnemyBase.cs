@@ -20,7 +20,7 @@ namespace WhalePark18.Character.Enemy
         [SerializeField]
         protected EnemyClass                    enemyClass;             // Enemy µî±Þ
         [SerializeField]
-        protected Transform target;                 // °ø°Ý Å¸°Ù
+        protected Transform                     target;                 // °ø°Ý Å¸°Ù
 
         protected EnemyStatus                   status;
         protected EnemyAnimatorController       animatorController;
