@@ -18,7 +18,7 @@ GameObject:
   m_Layer: 10
   m_Name: EnemyNormal
   m_TagString: ImpactEnemy
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 5132851093641282708, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -136,11 +136,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   baseName: EnemyNormal
   enemyClass: 0
+  target: {fileID: 0}
   minIdleTime: 1
   maxIdleTime: 5
   wanderDistance: 10
   pursuitDistance: 8
-  target: {fileID: 0}
   projectilePrefab: {fileID: 6248708617232221475, guid: bbfbc66a893c31f4498ace88c1bb87f4, type: 3}
   projectileSpawnPoint: {fileID: 8780040937919284974}
   attackDistance: 5

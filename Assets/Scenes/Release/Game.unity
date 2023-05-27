@@ -727,6 +727,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 259997988}
     - target: {fileID: 2873974831652984619, guid: b25fc118ee54f5b4f9275edbec5a6c00, type: 3}
+      propertyPath: itemWeightInfoList.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2873974831652984619, guid: b25fc118ee54f5b4f9275edbec5a6c00, type: 3}
       propertyPath: survivalItemList.Array.data[0]
       value: 
       objectReference: {fileID: 2371085274353239244, guid: 3a291fb8cda469c4fbd8e6209fbae41d, type: 3}
@@ -741,6 +745,34 @@ PrefabInstance:
     - target: {fileID: 2873974831652984619, guid: b25fc118ee54f5b4f9275edbec5a6c00, type: 3}
       propertyPath: itemProbabilityInfoList.Array.size
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2873974831652984619, guid: b25fc118ee54f5b4f9275edbec5a6c00, type: 3}
+      propertyPath: itemWeightInfoList.Array.data[0].weight
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 2873974831652984619, guid: b25fc118ee54f5b4f9275edbec5a6c00, type: 3}
+      propertyPath: itemWeightInfoList.Array.data[1].weight
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 2873974831652984619, guid: b25fc118ee54f5b4f9275edbec5a6c00, type: 3}
+      propertyPath: itemWeightInfoList.Array.data[2].weight
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2873974831652984619, guid: b25fc118ee54f5b4f9275edbec5a6c00, type: 3}
+      propertyPath: itemWeightInfoList.Array.data[3].weight
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 2873974831652984619, guid: b25fc118ee54f5b4f9275edbec5a6c00, type: 3}
+      propertyPath: itemWeightInfoList.Array.data[0].category
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2873974831652984619, guid: b25fc118ee54f5b4f9275edbec5a6c00, type: 3}
+      propertyPath: itemWeightInfoList.Array.data[2].category
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2873974831652984619, guid: b25fc118ee54f5b4f9275edbec5a6c00, type: 3}
+      propertyPath: itemWeightInfoList.Array.data[3].category
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2873974831652984619, guid: b25fc118ee54f5b4f9275edbec5a6c00, type: 3}
       propertyPath: itemProbabilityInfoList.Array.data[0].weight
@@ -22810,7 +22842,7 @@ PrefabInstance:
       objectReference: {fileID: 721707007}
     - target: {fileID: 1251303180, guid: 27002af692b45074b99361789b5c79e2, type: 3}
       propertyPath: isOnDebugMode
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1251303180, guid: 27002af692b45074b99361789b5c79e2, type: 3}
       propertyPath: isDisablePlayer
@@ -23193,11 +23225,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3047943983973847601, guid: 84fea3a80c91041498d74eabfe0757c9, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5141383811371257564, guid: 84fea3a80c91041498d74eabfe0757c9, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 84fea3a80c91041498d74eabfe0757c9, type: 3}
@@ -36340,7 +36372,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2328196844904342082, guid: 3a291fb8cda469c4fbd8e6209fbae41d, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2371085274353239244, guid: 3a291fb8cda469c4fbd8e6209fbae41d, type: 3}
       propertyPath: m_Name
@@ -36348,7 +36380,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2371085274353239244, guid: 3a291fb8cda469c4fbd8e6209fbae41d, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4394356357368226035, guid: 3a291fb8cda469c4fbd8e6209fbae41d, type: 3}
       propertyPath: m_RootOrder
@@ -39471,7 +39503,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1410816242715290051, guid: 3a1f21e1b3380ca4c8b8fe4d239784e2, type: 3}
       propertyPath: enemySpawnInfos.Array.data[0].maxSpawnCount
-      value: 1000
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 1410816242715290172, guid: 3a1f21e1b3380ca4c8b8fe4d239784e2, type: 3}
       propertyPath: m_RootOrder
