@@ -10,7 +10,7 @@ namespace WhalePark18.Item
 {
     public enum ItemCategory { None = -1, Survial, Heal, Active, }
 
-    [System.Serializable, Tooltip("아이템 확률 정보")]
+    [System.Serializable, Tooltip("아이템 가중치 정보")]
     public struct ItemProbabilityInfo
     {
         public ItemCategory category;
@@ -29,7 +29,7 @@ namespace WhalePark18.Item
     {
         [Header("Item Info")]
         [SerializeField]
-        private List<ItemProbabilityInfo> itemProbabilityInfoList;
+        private List<ItemProbabilityInfo> itemWeightInfoList;
 
         private List<List<GameObject>> listByItemCategory;  // 모든 아이템 리스트를 관리하는 루트 리스트
         [SerializeField]
@@ -56,7 +56,7 @@ namespace WhalePark18.Item
             listByItemCategory.Add(activeItemList);
 
             // #DEBUG
-            //buttonExecute.onClick.AddListener(OnClickDebugSimulation);
+            buttonExecute.onClick.AddListener(OnClickDebugSimulation);
         }
 
         /// <summary>
@@ -67,26 +67,30 @@ namespace WhalePark18.Item
         {
             float total = 0;
         
-            foreach(var element in itemProbabilityInfoList)
+            foreach(var element in itemWeightInfoList)
             {
                 total += element.weight;
             }
         
             float randomPoint = Random.value * total;
 
-            for(int i = 0; i < itemProbabilityInfoList.Count; i++)
+            /// 1. 아이템 가중치 정보 리스트의 개수만큼 반복
+            /// 2.1. randomPoint가 i번째 아이템의 가중치 미만이라면 i번째 아이템을 반환한다.
+            /// 2.2. 아니라면 randomPoint에서 i번째 아이템의 가중치만큼 뺀다.
+            /// 3. 리스트를 모두 살펴본 후에도 반환되지 않았다면 리스트의 마지막 아이템을 반환한다.
+            for(int i = 0; i < itemWeightInfoList.Count; i++)
             {
-                if(randomPoint < itemProbabilityInfoList[i].weight)
+                if(randomPoint < itemWeightInfoList[i].weight)
                 {
-                    return ReturnItem(itemProbabilityInfoList[i].category);
+                    return ReturnItem(itemWeightInfoList[i].category);
                 }
                 else
                 {
-                    randomPoint -= itemProbabilityInfoList[i].weight;
+                    randomPoint -= itemWeightInfoList[i].weight;
                 }
             }
         
-            return ReturnItem(itemProbabilityInfoList[itemProbabilityInfoList.Count - 1].category);
+            return ReturnItem(itemWeightInfoList[itemWeightInfoList.Count - 1].category);
         }
 
         private GameObject ReturnItem(ItemCategory category)
@@ -101,7 +105,7 @@ namespace WhalePark18.Item
             }
             else
             {
-                int randomIndex = Random.Range(0, listByItemCategory[(int)category].Count - 1);
+                int randomIndex = Random.Range(0, listByItemCategory[(int)category].Count);
                 return listByItemCategory[(int)category][randomIndex];
             }
         }
@@ -113,33 +117,37 @@ namespace WhalePark18.Item
         {
             LogManager.ConsoleDebugLog("ItemManager", "OnClickDebugSimulation");
 
-            int[] simulationResult = new int[4];
-            
+            int[] simulationResult = new int[itemWeightInfoList.Count];
+            for(int i = 0; i < simulationResult.Length; i++)
+            {
+                simulationResult[i] = 0;
+            }
 
             for(int count = 0; count < int.Parse(inputSimulationCount.text); count++)
             {
                 float total = 0;
-                foreach (var element in itemProbabilityInfoList)
+
+                foreach (var element in itemWeightInfoList)
                 {
                     total += element.weight;
                 }
 
                 float randomPoint = Random.value * total;
-                for (int i = 0; i < itemProbabilityInfoList.Count; i++)
+
+                for (int i = 0; i < itemWeightInfoList.Count; i++)
                 {
-                    if (randomPoint < itemProbabilityInfoList[i].weight)
+                    if (randomPoint < itemWeightInfoList[i].weight)
                     {
-                        LogManager.ConsoleDebugLog("ItemManager", $"category: {itemProbabilityInfoList[i].category}");
-                        simulationResult[(int)itemProbabilityInfoList[i].category]++;
+                        simulationResult[(int)itemWeightInfoList[i].category + 1]++;
                         break;
                     }
                     else
                     {
-                        randomPoint -= itemProbabilityInfoList[i].weight;
+                        randomPoint -= itemWeightInfoList[i].weight;
                     }
                 }
 
-                //simulationResult[itemProbabilityInfoList.Count - 1]++;
+                //simulationResult[(int)itemWeightInfoList[itemWeightInfoList.Count - 1].category + 1]++;
             }
 
             DebugEditSimulationResult(
