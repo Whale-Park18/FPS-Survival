@@ -147,9 +147,9 @@ namespace WhalePark18.Character.Enemy
             }
             if (canChangeState == false)
             {
-                LogManager.ConsoleDebugLog("CalculateDistanceToTargetAndSelectState", 
-                    $"CurrentState: {stateMachine.CurrentState}" + $"CanChangeState: {canChangeState}"
-                );
+                //LogManager.ConsoleDebugLog("CalculateDistanceToTargetAndSelectState", 
+                //    $"{name}_CurrentState: {stateMachine.CurrentState}" + $" CanChangeState: {canChangeState}"
+                //);
                 return;
             }
 
