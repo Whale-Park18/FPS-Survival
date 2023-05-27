@@ -36,7 +36,7 @@ namespace WhalePark18.Projectile
             LogManager.ConsoleDebugLog(gameObject.name, $"피격 시간: {Time.time}, 이전 피격 시간과의 차이: {Time.time - lastAttckTime}");
             lastAttckTime = Time.time;
 
-            if (other.CompareTag("Player"))
+            if (other.CompareTag("Player") && other.name.Equals("PlayerCollider"))
             {
                 var player = other.transform.parent.GetComponent<PlayerController>();
                 if (player != null) player.TakeDamage(damage);
