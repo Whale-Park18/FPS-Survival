@@ -241,7 +241,8 @@ namespace WhalePark18.Manager
             Vector3 spawnPosition = spawnPoint.transform.position;
             spawnPosition.y = 0;
             EnemyBase enemy = enemyObjectPools[(int)spawnEnemyClass].GetObject(spawnPosition);
-            enemy.Target = target;
+            if(enemy.Target == null) 
+                enemy.Target = target;
             enemy.Run();
 
             /// 3. enemySpawnTile 오브젝트풀에 반환
@@ -289,11 +290,11 @@ namespace WhalePark18.Manager
 
             /// 3. killCount가 10의 배수일 때마다 생성.
             ///     * 아직 Elite 개발 중
-            //if (killCountInfo.normal > 0 && killCountInfo.normal % 10 == 0)
-            //{
-            //    enemySpawnInfos[(int)EnemyClass.Normal].numberOfSpawnAtOnce++;
-            //    SpawnEnemyEvent(EnemyClass.Elite);
-            //}
+            if (killCountInfo.normal > 0 && killCountInfo.normal % 10 == 0)
+            {
+                enemySpawnInfos[(int)EnemyClass.Normal].numberOfSpawnAtOnce++;
+                //SpawnEnemyEvent(EnemyClass.Elite);
+            }
         }
     }
 }
