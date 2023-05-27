@@ -43,6 +43,8 @@ namespace WhalePark18.Manager
             ///         * (3600: 1시간을 초로 변환한 숫자)
             timeScore = (3600 - (int)playTime) > 0 ? 3600 - (int)playTime : 0;
             timeScore *= (killCountInfo.normal / goalNumberOfKill);
+
+            totalScore = killScore + timeScore;
         }
     }
 }
