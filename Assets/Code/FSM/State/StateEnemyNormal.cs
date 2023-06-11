@@ -18,7 +18,7 @@ namespace WhalePark18.FSM.State.StateEnemyNormal
             LogManager.ConsoleDebugLog($"[{gameObject.transform.parent.name}] Idle<Enemy1>", "Enter");
 
             /// 애니메이션 설정 후, Idle 상태를 실행한다.
-            owner.AnimatorController.SetBool(EnemyNormalAnimParam.isMovement.ToString(), false);
+            owner.AnimatorController.SetFloat(EnemyNormalAnimParam.Speed.ToString(), 0);
 
             Execute(owner);
         }
@@ -29,7 +29,7 @@ namespace WhalePark18.FSM.State.StateEnemyNormal
             LogManager.ConsoleDebugLog($"[{gameObject.transform.parent.name}] Idle<Enemy1>", "Execute");
 
             /// Idle 코루틴 실행
-            coroutine = StartCoroutine(OnIdle(owner));
+            coroutineHandle = StartCoroutine(OnIdle(owner));
         }
 
         public override void Exit(EnemyNormal owner)
@@ -38,9 +38,9 @@ namespace WhalePark18.FSM.State.StateEnemyNormal
             LogManager.ConsoleDebugLog($"[{gameObject.transform.parent.name}] Idle<Enemy1>", "Exit");
 
             /// Idle 코루틴 정지
-            if (coroutine != null)
+            if (coroutineHandle != null)
                 StopAllCoroutines();
-            coroutine = null;
+            coroutineHandle = null;
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace WhalePark18.FSM.State.StateEnemyNormal
             LogManager.ConsoleDebugLog($"[{gameObject.transform.parent.name}] Wander<Enemy1>", "Enter");
 
             /// 애니메이션 설정 후, Wander 상태를 실행한다.
-            owner.AnimatorController.SetBool(EnemyNormalAnimParam.isMovement.ToString(), true);
+            owner.AnimatorController.SetFloat(EnemyNormalAnimParam.Speed.ToString(), owner.Status.WalkSpeed);
             owner.NavMeshAgentController.speed = owner.Status.WalkSpeed;
             owner.NavMeshAgentController.stoppingDistance = 0;
 
@@ -96,7 +96,7 @@ namespace WhalePark18.FSM.State.StateEnemyNormal
             // #DEBUG
             LogManager.ConsoleDebugLog($"[{gameObject.transform.parent.name}] Wander<Enemy1>", "Execute");
 
-            coroutine = StartCoroutine(OnWander(owner));
+            coroutineHandle = StartCoroutine(OnWander(owner));
         }
 
         public override void Exit(EnemyNormal owner)
@@ -105,12 +105,12 @@ namespace WhalePark18.FSM.State.StateEnemyNormal
             LogManager.ConsoleDebugLog($"[{gameObject.transform.parent.name}] Wander<Enemy1>", "Exit");
 
             /// Wander 코루틴 정지
-            if (coroutine != null)
+            if (coroutineHandle != null)
                 StopAllCoroutines();
-            coroutine = null;
+            coroutineHandle = null;
 
             // #DEBUG
-            LogManager.ConsoleDebugLog($"[{gameObject.transform.parent.name}] Wander<Enemy1>", $"coroutine is null: {coroutine == null}");
+            LogManager.ConsoleDebugLog($"[{gameObject.transform.parent.name}] Wander<Enemy1>", $"coroutine is null: {coroutineHandle == null}");
 
             /// 경로 초기화
             owner.NavMeshAgentController.ResetPath();
@@ -165,7 +165,7 @@ namespace WhalePark18.FSM.State.StateEnemyNormal
             LogManager.ConsoleDebugLog($"[{gameObject.transform.parent.name}] Pursuit<Enemy1>", "Enter");
 
             /// 애니메이션 파라미터, 이동 속도를 설정한 후, Pursuit 상태 실행
-            owner.AnimatorController.SetBool(EnemyNormalAnimParam.isMovement.ToString(), true);
+            owner.AnimatorController.SetFloat(EnemyNormalAnimParam.Speed.ToString(), owner.Status.RunSpeed);
             owner.NavMeshAgentController.speed = owner.Status.RunSpeed;
 
             Execute(owner);
@@ -176,7 +176,7 @@ namespace WhalePark18.FSM.State.StateEnemyNormal
             // #DEBUG
             LogManager.ConsoleDebugLog($"[{gameObject.transform.parent.name}] Pursuit<Enemy1>", "Execute");
 
-            coroutine = StartCoroutine(OnPursuit(owner));
+            coroutineHandle = StartCoroutine(OnPursuit(owner));
         }
 
         public override void Exit(EnemyNormal owner)
@@ -184,9 +184,9 @@ namespace WhalePark18.FSM.State.StateEnemyNormal
             LogManager.ConsoleDebugLog($"[{gameObject.transform.parent.name}] Pursuit<Enemy1>", "Exit");
 
             /// Pursuit 코루틴 정지
-            if (coroutine != null)
+            if (coroutineHandle != null)
                 StopAllCoroutines();
-            coroutine = null;
+            coroutineHandle = null;
 
             /// 경로 초기화
             owner.NavMeshAgentController.ResetPath();
@@ -239,7 +239,7 @@ namespace WhalePark18.FSM.State.StateEnemyNormal
             LogManager.ConsoleDebugLog($"[{gameObject.transform.parent.name}] Attack<Enemy1>", "Execute");
 
             /// Attack 코루틴 실행
-            coroutine = StartCoroutine(OnAttack(owner));
+            coroutineHandle = StartCoroutine(OnAttack(owner));
         }
 
         public override void Exit(EnemyNormal owner)
@@ -248,11 +248,10 @@ namespace WhalePark18.FSM.State.StateEnemyNormal
             LogManager.ConsoleDebugLog($"[{gameObject.transform.parent.name}] Attack<Enemy1>", "Exit");
 
             /// Attack 코루틴 정지
-            if (coroutine != null)
+            if (coroutineHandle != null)
                 StopAllCoroutines();
-            coroutine = null;
+            coroutineHandle = null;
 
-            owner.AnimatorController.SetBool(EnemyNormalAnimParam.isAttack.ToString(), false);
             owner.NavMeshAgentController.ChangeState(EnemyNavMeshAgentStates.Move);
 
             if (IsBeforeMissileFired())
