@@ -293,7 +293,7 @@ namespace WhalePark18.Manager
             if (killCountInfo.normal > 0 && killCountInfo.normal % 10 == 0)
             {
                 enemySpawnInfos[(int)EnemyClass.Normal].numberOfSpawnAtOnce++;
-                //SpawnEnemyEvent(EnemyClass.Elite);
+                SpawnEnemyEvent(EnemyClass.Elite);
             }
         }
     }
