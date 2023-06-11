@@ -46,6 +46,11 @@ namespace WhalePark18.Character.Enemy
             return animator.GetBool(name);
         }
 
+        public void SetFloat(string name, float value)
+        {
+            animator.SetFloat(name, value);
+        }
+
         /// <summary>
         /// DoDie 애니메이션 트리거를 활성화 시키는 메소드
         /// </summary>
