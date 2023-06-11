@@ -53,19 +53,33 @@ namespace WhalePark18.Manager
         private ScoreSystem                 scoreSystem;
 
         private PlayerController            player;
-
-        private List<DestructiblePillar>    pillarList;
         [SerializeField]
         private LayerMask                   pillarLayerMask;
 
-        [Header("DEBUG")]
-        public GameObject windowDebug;
+        [Header("Debug")]
+        [Tooltip("디버그 모드")]
+        public bool DebugMode;
 
-        public bool isOnDebugMode;
-        public GameManagerStates startState;
-        public bool isStopSpawnEnemyBackground;
-        public bool isDisablePlayer;
-        public bool isDisplayLog;
+        [Tooltip("게임 시작 모드")]
+        public GameManagerStates StartState;
+
+        [Space(5)]
+        [Tooltip("플레이어 비활성화")]
+        public bool DeactivePlayer;
+
+        [Tooltip("로그 출력 비활성화")]
+        public bool DeactiveLog;
+
+        [Space(5)]
+        [Tooltip("적 소환 정지")]
+        public bool StopSpawnEnemy;
+
+        [Tooltip("Enemy 개발 중")]
+        public bool DevelopingEnemy;
+
+        [Space(5)]
+        [Tooltip("디버그용 윈도우")]
+        public GameObject WindowDebug;
 
         /****************************************
          * 프로퍼티
@@ -99,7 +113,7 @@ namespace WhalePark18.Manager
         private void Start()
         {
             // #DEBUG
-            if(isOnDebugMode)
+            if(DebugMode)
             {
                 stateMachine.Setup(Instance, states[(int)GameManagerStates.Debug]);
                 return;
@@ -131,7 +145,7 @@ namespace WhalePark18.Manager
             states[(int)GameManagerStates.Game] = stateObject.AddComponent<Game>();
             
             // #DEBUG
-            if(isOnDebugMode)
+            if(DebugMode)
                 states[(int)GameManagerStates.Debug] = stateObject.AddComponent<StateDebug>();
 
             /// 3.2. 상태 머신 초기화
