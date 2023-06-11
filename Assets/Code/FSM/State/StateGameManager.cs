@@ -70,22 +70,22 @@ namespace WhalePark18.FSM.State.GameManagerState
         {
             LogManager.ConsoleDebugLog("StateDebug<GameManager>", "Enter");
 
-            if(owner.startState.Equals(GameManagerStates.Main))
+            if(owner.StartState.Equals(GameManagerStates.Main))
             {
                 owner.Resume();
                 owner.SetCursorActive(true);
                 owner.WindowMain.SetActive(true);
                 owner.Player.SetActive(false);
             }
-            else if(owner.startState.Equals(GameManagerStates.Game))
+            else if(owner.StartState.Equals(GameManagerStates.Game))
             {
                 owner.SetCursorActive(false);
                 owner.Player.SetActive(true);
                 owner.WindowPlayerHUD.SetActive(true);
             }
-            else if(owner.startState.Equals(GameManagerStates.Debug))
+            else if(owner.StartState.Equals(GameManagerStates.Debug))
             {
-                if (owner.isDisablePlayer)
+                if (owner.DeactivePlayer)
                 {
                     owner.SetCursorActive(true);
                     owner.Player.SetActive(false);
@@ -95,7 +95,7 @@ namespace WhalePark18.FSM.State.GameManagerState
                     owner.SetCursorActive(false);
                     owner.Player.SetActive(true);
                 }
-                owner.windowDebug.SetActive(true);
+                owner.WindowDebug.SetActive(true);
             }
 
             Execute(owner);
@@ -103,18 +103,18 @@ namespace WhalePark18.FSM.State.GameManagerState
 
         public override void Execute(GameManager owner)
         {
-            if (owner.startState.Equals(GameManagerStates.Main))
+            if (owner.StartState.Equals(GameManagerStates.Main))
             {
 
             }
-            else if (owner.startState.Equals(GameManagerStates.Game))
+            else if (owner.StartState.Equals(GameManagerStates.Game))
             {
                 owner.Timer.Run();
                 EnemyManager.Instance.Setup(owner.Player.transform);
-                if(owner.isStopSpawnEnemyBackground == false)
+                if(owner.StopSpawnEnemy == false)
                     EnemyManager.Instance.SpawnEnemyBackground(EnemyClass.Normal);
             }
-            else if (owner.startState.Equals(GameManagerStates.Debug))
+            else if (owner.StartState.Equals(GameManagerStates.Debug))
             {
                 
             }
@@ -122,15 +122,15 @@ namespace WhalePark18.FSM.State.GameManagerState
 
         public override void Exit(GameManager owner)
         {
-            if (owner.startState.Equals(GameManagerStates.Main))
+            if (owner.StartState.Equals(GameManagerStates.Main))
             {
                 owner.WindowMain.SetActive(false);
             }
-            else if (owner.startState.Equals(GameManagerStates.Game))
+            else if (owner.StartState.Equals(GameManagerStates.Game))
             {
                 owner.WindowPlayerHUD.SetActive(false);
             }
-            else if (owner.startState.Equals(GameManagerStates.Debug))
+            else if (owner.StartState.Equals(GameManagerStates.Debug))
             {
 
             }
