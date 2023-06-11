@@ -315,7 +315,7 @@ namespace WhalePark18.Weapon
         {
             /// 화면 중앙에서 Ray를 발사해 피격된 모든 객체 정보를 hitInfoList에 담는다.
             Ray ray = mainCamera.ViewportPointToRay(Vector2.one * 0.5f);
-            RaycastHit[] hitInfoList = Physics.RaycastAll(ray, weaponSetting.attackDistance);
+            RaycastHit[] hitInfoList = Physics.RaycastAll(ray, weaponSetting.attackDistance, enemyMask, QueryTriggerInteraction.Ignore);
 
             /// 피격된 객체가 없다면 종료한다.
             if (hitInfoList.Length <= 0)
