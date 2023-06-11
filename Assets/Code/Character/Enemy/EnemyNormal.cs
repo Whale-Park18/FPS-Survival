@@ -15,7 +15,7 @@ using NUnit.Framework;
 namespace WhalePark18.Character.Enemy
 {
     public enum EnemyNormalStates { Idle = 0, Wander, Pursuit, Attack, }
-    public enum EnemyNormalAnimParam { isMovement, isAttack, doDie, }
+    public enum EnemyNormalAnimParam { Speed, isAttack, doDie, }
 
     public class EnemyNormal : EnemyBase
     {
@@ -37,6 +37,11 @@ namespace WhalePark18.Character.Enemy
         private float                       attackDistance = 5f;    // 공격 범위(이 범위 안에 들어오면 "Attack"상태로 변경)
         [SerializeField]
         private float                       attackRate = 1f;        // 공격 속도
+
+        [Header("Debug")]
+
+        [Tooltip("행동 정지 플래그")]
+        public bool DontAction;
 
         /****************************************
          * 프로퍼티
@@ -62,8 +67,11 @@ namespace WhalePark18.Character.Enemy
         private void Start()
         {
             // #DEBUG
-            //Setup(0);
-            //Run();
+            if (GameManager.Instance.DebugMode && GameManager.Instance.DevelopingEnemy)
+            {
+                Setup(0);
+                ChangeState(EnemyNormalStates.Idle);
+            }
         }
 
         protected override void OnVariableInitialized()
@@ -175,6 +183,8 @@ namespace WhalePark18.Character.Enemy
         /// <param name="newState">변경할 새로운 상태</param>
         public void ChangeState(EnemyNormalStates newState)
         {
+            if (DontAction) return;
+
             currentState = newState;
             stateMachine.ChangeState(states[(int)newState]);
         }
@@ -185,30 +195,34 @@ namespace WhalePark18.Character.Enemy
             this.canChangeState = canChange;
         }
 
-        public bool GetCanChangeState([System.Runtime.CompilerServices.CallerMemberName] string callerName = "")
+        private void OnDrawGizmosSelected()
         {
-            LogManager.ConsoleDebugLog("GetCanChangeState", $"Caller: {callerName}, Get: {canChangeState}");
-            return canChangeState;
-        }
-
-        protected void OnDrawGizmos()
-        {
-            if (target == null) return;
-            
-            /// "배회" 상태일 떄 이동할 경로 표시
-            Gizmos.color = Color.black;
-            Gizmos.DrawRay(transform.position, navMeshAgentController.destination - transform.position);
-
-            /// 목표 인식 범위
-            Gizmos.color = Color.red;
-            Gizmos.DrawWireSphere(transform.position, pursuitDistance);
 
             /// 추적 범위
-            Gizmos.color = Color.green;
-            Gizmos.DrawWireSphere(transform.position, wanderDistance);
+            {
+                Gizmos.color = Color.red;
+                Gizmos.DrawWireSphere(transform.position, pursuitDistance);
+            }
 
-            Gizmos.color = new Color(0.39f, 0.04f, 0.04f);
-            Gizmos.DrawWireSphere(transform.position, attackDistance);
+            /// 수색 범위
+            {
+                Gizmos.color = Color.green;
+                Gizmos.DrawWireSphere(transform.position, wanderDistance);
+            }
+
+            /// 공격 가능 범위
+            {
+                Gizmos.color = new Color(0.39f, 0.04f, 0.04f);
+                Gizmos.DrawWireSphere(transform.position, attackDistance);
+            }
+            
+            /// 현재 위치에서 도착 위치까지의 직선 거리
+            {
+                if (navMeshAgentController == null) return;
+
+                Gizmos.color = Color.black;
+                Gizmos.DrawRay(transform.position, navMeshAgentController.destination - transform.position);
+            }
         }
     }
 }
