@@ -34,6 +34,8 @@ namespace WhalePark18.Weapon
         protected WeaponType weaponType;                // 무기 종류
         [SerializeField]
         protected WeaponSetting weaponSetting;          // 무기 설정
+        [SerializeField]
+        protected LayerMask enemyMask;
 
         protected float lastAttackTime = 0;             // 마지막 발사시간 체크용
         protected bool isReload;                        // 재장전 중인지 체크
