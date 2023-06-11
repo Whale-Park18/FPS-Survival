@@ -51,6 +51,15 @@ namespace WhalePark18.Character.Enemy
         }
 
         /// <summary>
+        /// 디버그 용 메소드, 목적지가 제대로 설정됐는지 확인용
+        /// </summary>
+        public void SetDestination(Vector3 target, Transform targetIcon)
+        {
+            SetDestination(target);
+            targetIcon.position = target;
+        }
+
+        /// <summary>
         /// 경로 초기화 메소드
         /// </summary>
         public void ResetPath()
