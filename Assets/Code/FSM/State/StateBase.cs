@@ -4,7 +4,7 @@ namespace WhalePark18.FSM.State
 {
     public abstract class StateBase<T> : MonoBehaviour where T : MonoBehaviour
     {
-        protected Coroutine coroutine;
+        protected Coroutine coroutineHandle;
 
         /// <summary>
         /// 상태에 진입할 때, 처음 호출되는 메소드
