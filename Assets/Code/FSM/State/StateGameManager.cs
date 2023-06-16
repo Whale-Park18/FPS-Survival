@@ -79,9 +79,18 @@ namespace WhalePark18.FSM.State.GameManagerState
             }
             else if(owner.StartState.Equals(GameManagerStates.Game))
             {
-                owner.SetCursorActive(false);
-                owner.Player.SetActive(true);
-                owner.WindowPlayerHUD.SetActive(true);
+                if(owner.DeactivePlayer)
+                {
+                    owner.SetCursorActive(true);
+                    owner.Player.SetActive(false);
+                    owner.WindowPlayerHUD.SetActive(false);
+                }
+                else
+                {
+                    owner.SetCursorActive(false);
+                    owner.Player.SetActive(true);
+                    owner.WindowPlayerHUD.SetActive(true);
+                }
             }
             else if(owner.StartState.Equals(GameManagerStates.Debug))
             {
