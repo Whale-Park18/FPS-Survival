@@ -1,4 +1,5 @@
 using UnityEngine;
+using WhalePark18.Manager;
 
 namespace WhalePark18.Item.Active
 {
@@ -7,18 +8,20 @@ namespace WhalePark18.Item.Active
         [SerializeField]
         private AudioClip[] explosionAudioClips;
 
-        private AudioSource audioSource;
+        private AudioData audioData;
 
         private void Awake()
         {
-            audioSource = GetComponent<AudioSource>();
+            audioData = new AudioData(GetComponent<AudioSource>(), Manager.AudioType.Item);
         }
 
         private void Start()
         {
+            SoundManager.Instance.AddAudioSource(audioData);
+
             int index = Random.Range(0, explosionAudioClips.Length);
-            audioSource.clip = explosionAudioClips[index];
-            audioSource.Play();
+            audioData.audioSource.clip = explosionAudioClips[index];
+            audioData.audioSource.Play();
         }
     }
 }

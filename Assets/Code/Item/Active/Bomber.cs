@@ -1,5 +1,7 @@
 using System.Collections;
+using TMPro.EditorUtilities;
 using UnityEngine;
+using WhalePark18.Manager;
 
 namespace WhalePark18.Item.Active
 {
@@ -13,14 +15,19 @@ namespace WhalePark18.Item.Active
         private AudioClip[] engineClips;    // Á¦Æ® ¿£Áø Å¬¸³
 
         [SerializeField]
-        private GameObject bomb;            // ÆøÅº
+        private GameObject bombPrefab;      // ÆøÅº ÇÁ¸®ÆÕ
         private Transform target;           // Å¸°Ù
 
-        private AudioSource audioSource;
+        private AudioData audioData;
 
         private void Awake()
         {
-            audioSource = GetComponent<AudioSource>();
+            audioData = new AudioData(GetComponent<AudioSource>(), Manager.AudioType.Item);
+        }
+
+        private void Start()
+        {
+            SoundManager.Instance.AddAudioSource(audioData);
         }
 
         /// <summary>
@@ -53,9 +60,9 @@ namespace WhalePark18.Item.Active
         /// <returns></returns>
         private IEnumerator OnBomb()
         {
-            audioSource.clip = engineClips[Random.Range(0, engineClips.Length)];
-            audioSource.loop = true;
-            audioSource.Play();
+            audioData.audioSource.clip = engineClips[Random.Range(0, engineClips.Length)];
+            audioData.audioSource.loop = true;
+            audioData.audioSource.Play();
 
             Vector3 targetPosition = target.position;
             targetPosition.y = transform.position.y;
@@ -65,6 +72,8 @@ namespace WhalePark18.Item.Active
             Vector3 retreatPosition = transform.forward * 150f;
             retreatPosition.y = transform.position.y;
             yield return StartCoroutine("Move", retreatPosition);
+
+            SoundManager.Instance.RemoveAudioSource(audioData);
             Destroy(gameObject);
         }
 
@@ -97,7 +106,7 @@ namespace WhalePark18.Item.Active
 
         private void DropBomb()
         {
-            bomb.transform.parent = null;
+            var bomb = Instantiate(bombPrefab, transform.position - Vector3.down * 2f, Quaternion.Euler(new Vector3(90, 0, 0)));
             bomb.GetComponent<Bomb>().Use();
         }
     }

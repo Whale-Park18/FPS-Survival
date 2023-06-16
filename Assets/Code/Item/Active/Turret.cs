@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using WhalePark18.Manager;
 using WhalePark18.Projectile;
 
 namespace WhalePark18.Item.Active
@@ -41,7 +42,7 @@ namespace WhalePark18.Item.Active
         private TurretState turretState = TurretState.None; // 포탑 행동 상태
         private Transform target;                           // 포탑 목표
 
-        private AudioSource audioSource;
+        private AudioData audioData;
 
         public float DestroyTime
         {
@@ -50,11 +51,13 @@ namespace WhalePark18.Item.Active
 
         private void Awake()
         {
-            audioSource = GetComponent<AudioSource>();
+            audioData = new AudioData(GetComponent<AudioSource>(), Manager.AudioType.Item);
         }
 
         private void Start()
         {
+            SoundManager.Instance.AddAudioSource(audioData);
+
             AudioPlay(buildClip);
             StartCoroutine("SearchEnemy");
             StartCoroutine("AutoDestroyByTime", destroyTime);
@@ -179,14 +182,15 @@ namespace WhalePark18.Item.Active
 
         private void AudioPlay(AudioClip clip)
         {
-            audioSource.clip = clip;
-            audioSource.Play();
+            audioData.audioSource.clip = clip;
+            audioData.audioSource.Play();
         }
 
         private IEnumerator AutoDestroyByTime(float duration)
         {
             yield return new WaitForSeconds(duration);
 
+            SoundManager.Instance.RemoveAudioSource(audioData);
             Destroy(gameObject);
         }
 

@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using WhalePark18.Character.Enemy;
+using WhalePark18.Manager;
 using WhalePark18.Objects;
 
 namespace WhalePark18.Item.Active
@@ -33,12 +34,15 @@ namespace WhalePark18.Item.Active
 
         private void OnCollisionEnter(Collision collision)
         {
-            Bounds bounds = GetComponent<Collider>().bounds;
-            Instantiate(explosionPrefab, new Vector3(bounds.center.x, bounds.min.y, bounds.center.z), transform.rotation);
-
-            Damage();
-
-            Destroy(gameObject);
+            if (collision.transform.CompareTag("Ground"))
+            {
+                Bounds bounds = GetComponent<Collider>().bounds;
+                Instantiate(explosionPrefab, new Vector3(bounds.center.x, bounds.min.y, bounds.center.z), transform.rotation);
+        
+                Damage();
+        
+                Destroy(gameObject);
+            }
         }
 
         private void Damage()
