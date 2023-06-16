@@ -31,7 +31,7 @@ namespace WhalePark18.Weapon
         private void OnEnable()
         {
             /// 무기 변경시, 공격 사운드가 재생되는 현상 제어하기 위해 오디오 출력을 정지함
-            audioSource.Stop();
+            audioData.audioSource.Stop();
 
             /// 무기 활성화될 때 해당 무기 탄창과 탄 수  정보 갱신
             onMagazineEvent.Invoke(weaponSetting.currentMagazine);

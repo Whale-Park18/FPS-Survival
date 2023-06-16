@@ -189,7 +189,7 @@ namespace WhalePark18.Weapon
             {
                 /// 사운드가 재생중이 아니고, 현재 애니메이션이 Movement이면
                 /// 재장전 애니메이션(, 사운드) 재생이 종료되었다는 뜻
-                if (audioSource.isPlaying == false && animator.CurrentAnimationIs("Movement"))
+                if (audioData.audioSource.isPlaying == false && animator.CurrentAnimationIs("Movement"))
                 {
                     isReload = false;
 

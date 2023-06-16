@@ -1,6 +1,8 @@
+using NUnit.Framework.Internal.Commands;
 using UnityEngine;
 
 using WhalePark18.Character.Player;
+using WhalePark18.Manager;
 
 namespace WhalePark18.Weapon
 {
@@ -43,7 +45,7 @@ namespace WhalePark18.Weapon
         protected bool isAimModeChaing = false;         // 에임 모드 전환중 체크용
         protected bool isAimMode = false;               // 모드 전환 여부 체크용
 
-        protected AudioSource audioSource;              // 사운드 재생 컴포넌트
+        protected AudioData audioData;                  // 오디오 관련 정보
         protected PlayerStatus playerStatus;            // 플레이어 상태
         protected PlayerAnimatorController animator;    // 애니메이션 재생 제어
 
@@ -73,8 +75,18 @@ namespace WhalePark18.Weapon
 
         protected virtual void Awake()
         {
-            audioSource = GetComponent<AudioSource>();
+            audioData = new AudioData(GetComponent<AudioSource>(), Manager.AudioType.Player);
             animator    = GetComponent<PlayerAnimatorController>();
+        }
+
+        protected virtual void Start()
+        {
+            SoundManager.Instance.AddAudioSource(audioData);
+        }
+
+        protected void OnDestroy()
+        {
+            SoundManager.Instance.RemoveAudioSource(audioData);
         }
 
         /// <summary>
@@ -136,9 +148,9 @@ namespace WhalePark18.Weapon
             // 기존에 재생중인 사운드 정지
             // 새로운 사운드 clip으로 교체
             // 사운드 재생
-            audioSource.Stop();
-            audioSource.clip = clip;
-            audioSource.Play();
+            audioData.audioSource.Stop();
+            audioData.audioSource.clip = clip;
+            audioData.audioSource.Play();
         }
     }
 }
