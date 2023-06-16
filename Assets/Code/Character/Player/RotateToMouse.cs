@@ -20,8 +20,8 @@ namespace WhalePark18.Character.Player
         {
             if(GameManager.Instance.IsPause) return;
 
-            eulerAngleY += mouseX * rotateCamYAixsSpeed;    // 마우스 좌/우 이동으로 카메라 y축 회전
-            eulerAngleX -= mouseY * rotateCamXAixsSpeed;    // 마우스 위/아래 이동으로 카메라 x축 회전
+            eulerAngleY += mouseX * rotateCamYAixsSpeed * GameManager.Instance.MouseSetting.HorizontalSensitivity;    // 마우스 좌/우 이동으로 카메라 y축 회전
+            eulerAngleX -= mouseY * rotateCamXAixsSpeed * GameManager.Instance.MouseSetting.VirticalSensitivity; ;    // 마우스 위/아래 이동으로 카메라 x축 회전
 
             //카메라 x축 회전의 경우 회전 범위를 설정
             eulerAngleX = ClampAngle(eulerAngleX, limitMinX, limitMaxX);
