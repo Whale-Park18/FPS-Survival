@@ -1,14 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 using WhalePark18.Character.Player;
 using WhalePark18.FSM;
 using WhalePark18.FSM.State;
 using WhalePark18.FSM.State.GameManagerState;
 using WhalePark18.Objects;
-using UnityEngine.SceneManagement;
+using WhalePark18.UserSetting;
 
 namespace WhalePark18.Manager
 {
@@ -31,30 +33,29 @@ namespace WhalePark18.Manager
         [HideInInspector]
         public GameOverEvent gameOverEvent;
 
-        /****************************************
-         * GameManager Base
-         ****************************************/
-        private StateBase<GameManager>[]    states;
-        private StateMachine<GameManager>   stateMachine;
+        // State
+        private StateBase<GameManager>[] states;
+        private StateMachine<GameManager> stateMachine;
 
         [Header("Main")]
         [SerializeField]
-        private GameObject                  windowMain;
+        private GameObject windowMain;
 
         [Header("Game")]
         [SerializeField]
-        private GameObject                  windowPlayerHUD;
+        private GameObject windowPlayerHUD;
 
-        private bool                        isPause;            // [플래그] 게임이 일시정지 됬는지 확인
-        private int                         pauseStack = 0;     // 일시 정지 요청이 왔을 때 증가시키는 스택
-        private Timer                       timer;
+        private bool isPause;            // [플래그] 게임이 일시정지 됬는지 확인
+        private int pauseStack = 0;     // 일시 정지 요청이 왔을 때 증가시키는 스택
+        private Timer timer;
         [SerializeField]
-        private int                         goalNumberOfKill = 1000;
-        private ScoreSystem                 scoreSystem;
+        private int goalNumberOfKill = 1000;
+        private ScoreSystem scoreSystem;
 
-        private PlayerController            player;
-        [SerializeField]
-        private LayerMask                   pillarLayerMask;
+        private PlayerController player;
+
+        [Header("Setting Asset")]
+        public Mouse MouseSetting;
 
         [Header("Debug")]
         [Tooltip("디버그 모드")]
