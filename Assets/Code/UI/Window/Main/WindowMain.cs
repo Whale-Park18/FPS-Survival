@@ -10,7 +10,7 @@ using System.Dynamic;
 
 namespace WhalePark18.UI.Window.Main
 {
-    public enum MainMenu { Start, Explain, Exit }
+    public enum MainMenu { Start, Explain, Setting , Exit }
     public enum MainMenuAlpha { ImageBackground, ImageButton, Text }
 
     public class WindowMain : WindowBase
@@ -27,29 +27,44 @@ namespace WhalePark18.UI.Window.Main
         [SerializeField, Tooltip("ImageBackground, ImageButton, Text 최대 Alpha값")]
         private float[] maxAlphaValues;
 
+        private AudioData audioData;
+
         [Header("Window Explain")]
         [SerializeField]
-        GameObject windowGameExplain;
+        private GameObject windowGameExplain;
         [SerializeField]
-        GameObject panelMainMenu;
+        private GameObject panelMainMenu;
+
+        [Header("Window Setting")]
+        [SerializeField]
+        private GameObject windowSetting;
 
         private void Awake()
         {
+            audioData = new AudioData(GetComponent<AudioSource>(), Manager.AudioType.Music);
             ButtonBinding();
         }
 
-        private void OnEnable()
+        private void Start()
         {
+            /// 오디오 소스 매니저에 등록
+            SoundManager.Instance.AddAudioSource(audioData);
+
+            audioData.audioSource.Play();
             coroutineHandle = StartCoroutine(OnActive());
         }
 
         private void OnDisable()
         {
-            StopCoroutine(coroutineHandle);
-            coroutineHandle = null;
+            if (audioData.audioSource.isPlaying)
+                audioData.audioSource.Stop();
+            SoundManager.Instance.RemoveAudioSource(audioData);
 
-            // #DEBUG
-            //Reset();
+            if(coroutineHandle != null)
+            {
+                StopCoroutine(coroutineHandle);
+                coroutineHandle = null;
+            }
         }
 
         /// <summary>
@@ -59,6 +74,7 @@ namespace WhalePark18.UI.Window.Main
         {
             buttonMainMenuGroup[(int)MainMenu.Start].onClick.AddListener(OnClickGameStart);
             buttonMainMenuGroup[(int)MainMenu.Explain].onClick.AddListener(OnClickGameExplain);
+            buttonMainMenuGroup[(int)MainMenu.Setting].onClick.AddListener(OnclickGameSetting);
             buttonMainMenuGroup[(int)MainMenu.Exit].onClick.AddListener(OnClickGameExit);
         }
 
@@ -95,6 +111,11 @@ namespace WhalePark18.UI.Window.Main
         public void OnClickGameExplain()
         {
             windowGameExplain.SetActive(true);
+        }
+
+        public void OnclickGameSetting()
+        {
+            windowSetting.SetActive(true);
         }
 
         /// <summary>

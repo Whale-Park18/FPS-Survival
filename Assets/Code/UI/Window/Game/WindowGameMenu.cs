@@ -8,13 +8,16 @@ namespace WhalePark18.UI.Window.Game
 {
     public enum TemporaryMenu
     {
-        ReturnMain = 0, GameExit
+        ReturnMain = 0, GameSetting, GameExit
     }
 
     public class WindowGameMenu : WindowBase
     {
         [SerializeField]
         private Button[] buttonMenu;
+
+        [SerializeField]
+        private GameObject windowSetting;
 
         private void Start()
         {
@@ -33,6 +36,7 @@ namespace WhalePark18.UI.Window.Game
         private void ButtonBinding()
         {
             buttonMenu[(int)TemporaryMenu.ReturnMain].onClick.AddListener(OnClickReturnMain);
+            buttonMenu[(int)TemporaryMenu.GameSetting].onClick.AddListener(OnClickGameSetting);
             buttonMenu[(int)TemporaryMenu.GameExit].onClick.AddListener(OnClickGameExit);
         }
 
@@ -42,6 +46,11 @@ namespace WhalePark18.UI.Window.Game
         public void OnClickReturnMain()
         {
             GameManager.Instance.ReturnMain();
+        }
+
+        public void OnClickGameSetting()
+        {
+            windowSetting.SetActive(true);
         }
 
         /// <summary>
