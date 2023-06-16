@@ -18,7 +18,7 @@ namespace WhalePark18.Character.Player
         private PlayerStatus                status;             // 이동속도 등의 플레이어 정보
         private RotateToMouse               rotateToMouse;      // 마우스 이동으로 카메라 회전
         private MovementCharacterController movement;           // 키보드 입력으로 플레이어 이동, 점프
-        private AudioSource                 audioSource;        // 사운드 재생 제어
+        private AudioData                   audioData;          // 오디오 관련 정보
         private WeaponBase                  weapon;             // 무기 최상위 클래스를 이용항 공격 제어
         private PlayerHUDController         hudController;
         private bool                        active = true;
@@ -58,15 +58,25 @@ namespace WhalePark18.Character.Player
             status              = GetComponent<PlayerStatus>();
             rotateToMouse       = GetComponent<RotateToMouse>();
             movement            = GetComponent<MovementCharacterController>();
-            audioSource         = GetComponent<AudioSource>();
+            audioData           = new AudioData(GetComponent<AudioSource>(), Manager.AudioType.Player);
             hudController       = GetComponent<PlayerHUDController>();
 
             //SetActive(false);
         }
 
+        private void Start()
+        {
+            SoundManager.Instance.AddAudioSource(audioData);
+        }
+
+        private void OnDestroy()
+        {
+            SoundManager.Instance.RemoveAudioSource(audioData);
+        }
+
         private void Update()
         {
-            if (active == false)
+            if (active == false || GameManager.Instance.DeactivePlayer)
                 return;
 
             UpdateRotate();
@@ -92,7 +102,7 @@ namespace WhalePark18.Character.Player
             movement.enabled        = active;
             rotateToMouse.enabled   = active;
             
-            audioSource.Stop();
+            audioData.audioSource.Stop();
         }
 
         private void UpdateRotate()
@@ -119,14 +129,14 @@ namespace WhalePark18.Character.Player
                 /// 달리기가 입력 되었고 무기가 에임 모드가 아니라면 달리기 속도로 이동한다.
                 movement.MoveSpeed = isRun && weapon.IsAimMode == false ? status.RunSpeed : status.WalkSpeed;
                 weapon.Animator.MoveSpeed = isRun && weapon.IsAimMode == false ? 1 : 0.5f;
-                audioSource.clip = isRun && weapon.IsAimMode == false ? audioClipRun : audioClipWalk;
+                audioData.audioSource.clip = isRun && weapon.IsAimMode == false ? audioClipRun : audioClipWalk;
 
                 /// 방향키 입력 여부는 매 프레임 확인하기 때문에
                 /// 재새중일 때는 다시 재생하지 않도록 isPlaying으로 체크해서 재생
-                if (audioSource.isPlaying == false)
+                if (audioData.audioSource.isPlaying == false)
                 {
-                    audioSource.loop = true;
-                    audioSource.Play();
+                    audioData.audioSource.loop = true;
+                    audioData.audioSource.Play();
                 }
             }
             else
@@ -135,9 +145,9 @@ namespace WhalePark18.Character.Player
                 weapon.Animator.MoveSpeed = 0;
 
                 /// 멈췄을 때 사운드가 재생중이면 정지
-                if (audioSource.isPlaying == true)
+                if (audioData.audioSource.isPlaying == true)
                 {
-                    audioSource.Stop();
+                    audioData.audioSource.Stop();
                 }
             }
 
@@ -219,7 +229,6 @@ namespace WhalePark18.Character.Player
                     StopAllCoroutines();
                 }
             }
-
         }
 
         /// <summary>
