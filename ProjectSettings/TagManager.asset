@@ -12,6 +12,7 @@ TagManager:
   - ImpactEnemy
   - InteractionObject
   - Item
+  - Ground
   layers:
   - Default
   - TransparentFX
