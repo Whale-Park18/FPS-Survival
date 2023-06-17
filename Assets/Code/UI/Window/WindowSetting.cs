@@ -62,7 +62,7 @@ namespace WhalePark18.UI.Window
             _horizontalSensitivity.text.text = (sensitivity * 100).ToString();
             _horizontalSensitivity.slider.value = sensitivity;
 
-            sensitivity = GameManager.Instance.MouseSetting.VirticalSensitivity;
+            sensitivity = GameManager.Instance.MouseSetting.VerticalSensitivity;
             _verticalSensitivity.text.text = (sensitivity * 100).ToString();
             _verticalSensitivity.slider.value = sensitivity;
 
@@ -110,7 +110,7 @@ namespace WhalePark18.UI.Window
             sensitivity = Mathf.Round(sensitivity * 1000);
             sensitivity /= 1000;
 
-            GameManager.Instance.MouseSetting.VirticalSensitivity = sensitivity;
+            GameManager.Instance.MouseSetting.VerticalSensitivity = sensitivity;
             _verticalSensitivity.text.text = sensitivity.ToString();
         }
 

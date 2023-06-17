@@ -29,7 +29,7 @@ namespace WhalePark18.UI.Window.Game
         private void Awake()
         {
             buttonGameExit.onClick.AddListener(OnClickGameExit);
-            GameManager.Instance.gameOverEvent.AddListener(OnActive);
+            GameManager.Instance.GameOverEvent.AddListener(OnActive);
         }
 
         private void OnDisable()
