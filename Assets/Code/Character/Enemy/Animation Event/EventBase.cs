@@ -6,6 +6,9 @@ namespace WhalePark18.Character.Enemy.Event
     {
         protected T owner;
 
-        public abstract void Setup(T owner);
+        public void Setup(T owner)
+        {
+            this.owner = owner;
+        }
     }
 }
