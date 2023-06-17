@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Reflection;
-using Unity.PlasticSCM.Editor.WebApi;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -9,7 +6,6 @@ using WhalePark18.Character.Player;
 using WhalePark18.FSM;
 using WhalePark18.FSM.State;
 using WhalePark18.FSM.State.GameManagerState;
-using WhalePark18.Objects;
 using WhalePark18.UserSetting;
 
 namespace WhalePark18.Manager
@@ -31,31 +27,52 @@ namespace WhalePark18.Manager
     public class GameManager : MonoSingleton<GameManager>
     {
         [HideInInspector]
-        public GameOverEvent gameOverEvent;
+        public GameOverEvent GameOverEvent;
 
-        // State
-        private StateBase<GameManager>[] states;
-        private StateMachine<GameManager> stateMachine;
-
-        [Header("Main")]
+        [Header("Window")]
         [SerializeField]
-        private GameObject windowMain;
+        private GameObject      _windowMain;
+        
+        [SerializeField]
+        private GameObject      _windowPlayerHUD;
+
+        public GameObject       WindowMain => _windowMain;
+
+        public GameObject       WindowPlayerHUD => _windowPlayerHUD;
 
         [Header("Game")]
-        [SerializeField]
-        private GameObject windowPlayerHUD;
+        [Tooltip("목표 처치 수(일반 등급)")]
+        public int GoalNumberOfKill = 1000;
 
-        private bool isPause;            // [플래그] 게임이 일시정지 됬는지 확인
-        private int pauseStack = 0;     // 일시 정지 요청이 왔을 때 증가시키는 스택
-        private Timer timer;
-        [SerializeField]
-        private int goalNumberOfKill = 1000;
-        private ScoreSystem scoreSystem;
+        public bool             IsPause => _isPause;
 
-        private PlayerController player;
+        public Timer            Timer => _timer;
 
-        [Header("Setting Asset")]
-        public Mouse MouseSetting;
+        public PlayerController Player => _player;
+
+        [Header("Mouse Setting")]
+        [Tooltip("마우스 설정 파일 경로")]
+        public string DetailPath;
+
+        [Tooltip("Json 파일 이름")]
+        public string JsonFileName;
+
+        public Mouse MouseSetting { get => _mouseSetting; }
+        
+        // Game
+        private bool                _isPause;            // [플래그] 게임이 일시정지 됬는지 확인
+        private int                 _pauseStack = 0;     // 일시 정지 요청이 왔을 때 증가시키는 스택
+        private Timer               _timer;
+        private ScoreSystem         _scoreSystem;
+        private PlayerController    _player;
+
+        // Mouse Setting
+        private string _path;
+        private Mouse _mouseSetting;
+
+        // State
+        private StateBase<GameManager>[]    _states;
+        private StateMachine<GameManager>   _stateMachine;
 
         [Header("Debug")]
         [Tooltip("디버그 모드")]
@@ -82,17 +99,6 @@ namespace WhalePark18.Manager
         [Tooltip("디버그용 윈도우")]
         public GameObject WindowDebug;
 
-        /****************************************
-         * 프로퍼티
-         ****************************************/
-        public GameObject       WindowMain => windowMain;
-        public GameObject       WindowPlayerHUD => windowPlayerHUD;
-        public bool             IsPause => isPause;
-        public Timer            Timer => timer;
-        public int              GoalNumberOfKill => goalNumberOfKill;
-        public PlayerController Player => player;
-        public ScoreSystem      ScoreSystem => scoreSystem;
-
         /// <summary>
         /// GameManager가 인스턴스화 된 직후, 호출되는 초기화 메소드
         /// </summary>
@@ -106,6 +112,26 @@ namespace WhalePark18.Manager
 
             /// 3. 상태 관련 초기화
             OnStateInitialized();
+
+            _path = Application.dataPath + $"/{DetailPath}/{JsonFileName}.json";
+            if(File.Exists(_path))
+            {
+                var json = File.ReadAllText(_path);
+                _mouseSetting = JsonUtility.FromJson<Mouse>(json);
+            }
+            else
+            {
+                var directoryPath = Application.dataPath + $"/{DetailPath}";
+                if(Directory.Exists(directoryPath) == false)
+                    Directory.CreateDirectory(directoryPath);
+
+                _mouseSetting = new Mouse(1f, 1f);
+
+                var jsonFile = File.CreateText(_path);
+                jsonFile.Write(JsonUtility.ToJson(_mouseSetting));
+                jsonFile.Close();
+            }
+
         }
 
         /// <summary>
@@ -116,19 +142,27 @@ namespace WhalePark18.Manager
             // #DEBUG
             if(DebugMode)
             {
-                stateMachine.Setup(Instance, states[(int)GameManagerStates.Debug]);
+                _stateMachine.Setup(Instance, _states[(int)GameManagerStates.Debug]);
                 return;
             }
 
             /// StateMachine의 owner를 싱글톤 객체로, 초기 상태로 Main으로 설정한다.
-            stateMachine.Setup(Instance, states[(int)GameManagerStates.Main]);
+            _stateMachine.Setup(Instance, _states[(int)GameManagerStates.Main]);
+        }
+
+        protected override void OnApplicationQuit()
+        {
+            base.OnApplicationQuit();
+
+            var json = JsonUtility.ToJson(_mouseSetting);
+            File.WriteAllText(_path, json);
         }
 
         public void OnVariableInitialized()
         {
-            timer = GetComponent<Timer>();
-            scoreSystem = new ScoreSystem();
-            player = GameObject.Find("Player").GetComponent<PlayerController>();
+            _timer = GetComponent<Timer>();
+            _scoreSystem = new ScoreSystem();
+            _player = GameObject.Find("Player").GetComponent<PlayerController>();
         }
 
         private void OnStateInitialized()
@@ -141,16 +175,16 @@ namespace WhalePark18.Manager
             stateObject.transform.localScale = Vector3.zero;
 
             /// 3.1.2. 상태 컴포넌트 부착 및 초기화
-            states = new StateBase<GameManager>[3];
-            states[(int)GameManagerStates.Main] = stateObject.AddComponent<Main>();
-            states[(int)GameManagerStates.Game] = stateObject.AddComponent<Game>();
+            _states = new StateBase<GameManager>[3];
+            _states[(int)GameManagerStates.Main] = stateObject.AddComponent<Main>();
+            _states[(int)GameManagerStates.Game] = stateObject.AddComponent<Game>();
             
             // #DEBUG
             if(DebugMode)
-                states[(int)GameManagerStates.Debug] = stateObject.AddComponent<StateDebug>();
+                _states[(int)GameManagerStates.Debug] = stateObject.AddComponent<StateDebug>();
 
             /// 3.2. 상태 머신 초기화
-            stateMachine = new StateMachine<GameManager>();
+            _stateMachine = new StateMachine<GameManager>();
         }
 
         /// <summary>
@@ -159,7 +193,7 @@ namespace WhalePark18.Manager
         /// <param name="newState">변경할 새로운 상태</param>
         private void ChangeState(GameManagerStates newState)
         {
-            stateMachine.ChangeState(states[(int)newState]);
+            _stateMachine.ChangeState(_states[(int)newState]);
         }
 
         /// <summary>
@@ -182,11 +216,11 @@ namespace WhalePark18.Manager
             ///     * PlayerController를 비활성화해 플레이어 게임오브젝트를 조작할 수 없게 한다.
             SetCursorActive(true);
             Pause();
-            timer.Stop();
-            player.GetComponent<PlayerController>().enabled = false;
+            _timer.Stop();
+            _player.GetComponent<PlayerController>().enabled = false;
             
-            scoreSystem.CalculateScore(goalNumberOfKill, EnemyManager.Instance.KillCountInfo, timer.Time);
-            gameOverEvent.Invoke(scoreSystem.TotalScore, timer.ToString(), scoreSystem.KillScore);
+            _scoreSystem.CalculateScore(GoalNumberOfKill, EnemyManager.Instance.KillCountInfo, _timer.Time);
+            GameOverEvent.Invoke(_scoreSystem.TotalScore, _timer.ToString(), _scoreSystem.KillScore);
         }
 
         /// <summary>
@@ -194,6 +228,12 @@ namespace WhalePark18.Manager
         /// </summary>
         public void ReturnMain()
         {
+            /// 설정 백업
+            var json = JsonUtility.ToJson(_mouseSetting);
+            File.WriteAllText(_path, json);
+
+            SoundManager.Instance.BackupSetting();
+
             /// 씬을 다시 로딩해 메인으로 복귀한다.
             SceneManager.LoadScene(SceneName.Game.ToString());
         }
@@ -212,10 +252,10 @@ namespace WhalePark18.Manager
         public void Pause()
         {
             /// 일시 정지 스택을 1 증가시킨다.
-            pauseStack++;
-            isPause = pauseStack > 0;
+            _pauseStack++;
+            _isPause = _pauseStack > 0;
 
-            if (isPause)
+            if (_isPause)
                 Time.timeScale = 0f;
         }
 
@@ -225,10 +265,10 @@ namespace WhalePark18.Manager
         public void Resume()
         {
             /// 일시 정지 스택을 1 감소시킨다(단, 음수로 내려가진 않는다).
-            pauseStack = pauseStack - 1 <= 0 ? 0 : pauseStack - 1;
-            isPause = pauseStack > 0;
+            _pauseStack = _pauseStack - 1 <= 0 ? 0 : _pauseStack - 1;
+            _isPause = _pauseStack > 0;
 
-            if (isPause == false)
+            if (_isPause == false)
                 Time.timeScale = 1f;
         }
 
@@ -256,7 +296,7 @@ namespace WhalePark18.Manager
         /// <returns></returns>
         public string TimeToString()
         {
-            return timer.ToString();
+            return _timer.ToString();
         }
     }
 }

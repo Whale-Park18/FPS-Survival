@@ -1,8 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using UnityEditor;
+using System.IO;
 using UnityEngine;
+
 using WhalePark18.UserSetting;
 
 namespace WhalePark18.Manager
@@ -24,28 +24,77 @@ namespace WhalePark18.Manager
 
     public class SoundManager : MonoSingleton<SoundManager>
     {
-        [Header("Setting Asset")]
-        public Sound SoundSetting;
+        [Header("Sound Setting")]
+        [Tooltip("소리 설정 파일 경로")]
+        public string DetailPath;
 
-        // The AudioSorce in the scene
-        private Dictionary<int, AudioData> audioesInScene = new Dictionary<int, AudioData>();
+        [Tooltip("Json 파일 이름")]
+        public string JsonFileName;
+
+        public Sound SoundSetting { get => _soundSetting; }
+
+        // Sound Setting
+        private string _path;
+        private Sound _soundSetting;
+
+        // Audio Management
+        private Dictionary<int, AudioData> _audioesInScene = new Dictionary<int, AudioData>();
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            _path = Application.dataPath + $"/{DetailPath}/{JsonFileName}.json";
+            if(File.Exists(_path))
+            {
+                var json = File.ReadAllText(_path);
+                _soundSetting = JsonUtility.FromJson<Sound>(json);
+            }
+            else
+            {
+                var directoryPath = Application.dataPath + $"/{DetailPath}";
+                if (Directory.Exists(directoryPath) == false)
+                    Directory.CreateDirectory(directoryPath);
+
+                _soundSetting = new Sound(false, 1f, 1f, 1f, 1f);
+
+                var jsonFile = File.CreateText(_path);
+                jsonFile.Write(JsonUtility.ToJson(JsonUtility.ToJson(_soundSetting)));
+                jsonFile.Close();
+            }
+        }
+
+        protected override void OnApplicationQuit()
+        {
+            LogManager.ConsoleDebugLog($"{name}", "OnApplicationQuit");
+
+            base.OnApplicationQuit();
+
+            BackupSetting();
+        }
+
+        public void BackupSetting()
+        {
+            var json = JsonUtility.ToJson(_soundSetting);
+            File.WriteAllText(_path, json);
+        }
 
         private float CalculateVolume(AudioType type)
         {
-            float volume = SoundSetting.MasterVolume;
+            float volume = _soundSetting.MasterVolume;
 
             switch(type)
             {
                 case AudioType.Player:
-                    volume *= SoundSetting.PlayerVolume;
+                    volume *= _soundSetting.PlayerVolume;
                     break;
 
                 case AudioType.Item:
-                    volume *= SoundSetting.ItemVolume;
+                    volume *= _soundSetting.ItemVolume;
                     break;
 
                 case AudioType.Music:
-                    volume *= SoundSetting.MusicVolume;
+                    volume *= _soundSetting.MusicVolume;
                     break;
             }
 
@@ -56,16 +105,16 @@ namespace WhalePark18.Manager
         {
             var id = audioData.audioSource.GetInstanceID();
 
-            if (audioesInScene.ContainsKey(id))
+            if (_audioesInScene.ContainsKey(id))
                 return;
 
-            audioesInScene.Add(id, audioData);
+            _audioesInScene.Add(id, audioData);
             audioData.audioSource.volume = CalculateVolume(audioData.type);
         }
 
         public void RemoveAudioSource(AudioData audioData)
         {
-            audioesInScene.Remove(audioData.audioSource.GetInstanceID());
+            _audioesInScene.Remove(audioData.audioSource.GetInstanceID());
         }
 
         /// <summary>
@@ -73,7 +122,7 @@ namespace WhalePark18.Manager
         /// </summary>
         public void ResetAudioVolume()
         {
-            foreach(var audioData in audioesInScene.Values)
+            foreach(var audioData in _audioesInScene.Values)
             {
                 AudioType audioType = new AudioType();
                 switch(audioData.type)
