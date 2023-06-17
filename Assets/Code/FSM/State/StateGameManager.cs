@@ -1,7 +1,3 @@
-#define DEBUG
-
-using TMPro;
-using UnityEngine.Assertions.Must;
 using WhalePark18.Manager;
 
 namespace WhalePark18.FSM.State.GameManagerState
